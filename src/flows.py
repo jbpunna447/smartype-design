@@ -107,7 +107,7 @@ FLOWS = [
         ],
     },
     {
-        "slug": "ai-rewrite", "title": "AI rewrite", "kind": "change", "status": "decision",
+        "slug": "ai-rewrite", "title": "AI rewrite", "kind": "change", "status": "ready",
         "risky": ["editor", "privacy", "quota"], "ids": ["B1", "B2", "B3", "A2", "A3", "A4", "A5", "A9", "A10", "A11"],
         "summary": "Tap ✦ and the result is there (Premium) or one tap away (free); switch styles instantly; never lose the user's words.",
         "problem": [
@@ -164,12 +164,11 @@ FLOWS = [
             ("Undo after Replace", "applyRewriteReplacement() → EditorInstance.replaceTextFromAi()"),
             ("Pin limit", "AI_PINNED_STYLES_LIMIT = 4 (AiKeyboardStyles.kt)"),
         ],
-        "decisions": [
-            ("How free users' tries are counted", "To revisit. For now free users get a Rewrite button (nothing is sent on ✦), so they only spend a try when they ask for one."),
-        ],
+        "decisions": [],
         "decided": [
             ("Premium: tapping ✦ sends the text straight away", "Yes. Blocked in password fields and incognito, as now."),
             ("Free users: tapping ✦", "Opens the panel without sending. A Rewrite button sends one request for the selected style and the pinned styles."),
+            ("How many tries one Rewrite tap counts for free users", "Later, not blocking. Until then: one tap = one try; opening the panel and switching styles cost nothing."),
             ("Results kept in memory only", "Yes: until the text changes or the keyboard closes. Never written to disk, never logged."),
             ("All styles in one request, counted as one use", "Yes. It's also cheaper: the text and the instructions are sent once instead of once per style, with one round trip. Needs a server change (today the task takes one styleId and every request reserves one use)."),
         ],
