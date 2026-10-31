@@ -87,7 +87,7 @@ def _ovhead(title, status=None):
             f'<div class="s-btn" style="color:var(--on-surface-variant)"{ann("Close", "Saves and closes; back to the app", None, "close")}>{ic("close")}</div></div>')
 
 
-def _aibox(text=None, focus=False, placeholder="Ask AI to write or change this note", can_send=False):
+def _aibox(text=None, focus=False, placeholder="Ask AI to change this note", can_send=False):
     q = esc(text) + '<span class="s-caret"></span>' if text else esc(placeholder)
     return (f'<div class="s-aibox{" focus" if focus else ""}"{ann("Ask AI box", "Height 44 dp; radius 22 dp; free-text instruction; send 36 dp", "surface-container-highest; focus ring primary", "spark, send")}>'
             f'<span class="spk">{ic("spark", size=20)}</span><span class="q">{q}</span>'
@@ -109,39 +109,31 @@ def _note(head, body, bottom):
         f'<div class="s-ovbody">{body}</div>{bottom}</div></div>' + _kb(), ime=True)
 
 
-_DRAFT1 = ("Hi Ravi, thanks so much for getting the tap fixed so quickly. Could you send me the receipt for this month's rent when you get a chance? Thanks!")
-_DRAFT2 = ("Hi Ravi, thanks so much for getting the tap fixed so quickly. I'll pay this month's rent on Friday. Could you send me the receipt once it's in? Thanks!")
+_MSG0 = "hey ravi the tap is fixed thanks a lot. can u send the rent receipt"
+_MSG1 = 'Hey Ravi, the tap\'s fixed, thanks a lot! <span class="s-hl">I\'ll pay the rent on Friday.</span> Can you send me the receipt?'
 
 
-def _draft(n, of, text, note_has_text=False):
-    acts = ('<span class="s-mini fill">Replace note</span><span class="s-mini txt">Add below</span>' if note_has_text
-            else '<span class="s-mini fill">Use this</span>') + '<span class="s-mini txt">Try again</span>'
-    return (f'<div class="s-draft"{ann("Draft card", "Radius 16 dp; 1.5 dp primary border; padding 12 dp; actions 36 dp", "surface-container; border primary", "spark, chevron_left/right")}>'
-            f'<div class="m">{ic("spark", size=18)}Draft {n} of {of}<span class="nav">{ic("arrow_back", size=18)}{ic("arrow_forward", size=18)}</span></div>'
-            f'<div class="x">{esc(text)}</div><div class="acts">{acts}</div></div>')
+def _sugg(*labels):
+    return (f'<div class="s-ochips one"{ann("AI suggestions", "Chips 32 dp, picked from what the note looks like (a list, a message…); one tap = one AI use", "outline-variant; on-surface-variant", "spark")}>' +
+            "".join(f'<span class="s-achip">{ic("spark", size=16)}{esc(t)}</span>' for t in labels) + "</div>")
 
 
-_starters = "".join(f'<span class="s-achip">{t}</span>' for t in ("Reply to a message", "Ask for leave", "Say thank you", "Apologise"))
 S["nt-new"] = _note(_ovhead("New note"),
-                    '<div class="s-ph">Start writing, or tell AI what you need.</div>'
-                    f'<div class="s-ochips"{ann("Starters", "Chips 32 dp; tap fills the Ask AI box", "outline-variant; on-surface-variant")}>{_starters}</div>'
-                    f'<div class="s-ochips"><span class="s-achip ctx"{ann("Copied-text chip", "Shown only when the clipboard has text; tap to use it as context", "primary-container; on-primary-container", "content_paste")}>{ic("content_paste", size=18)}Use copied text: “Hi, the plumber came…”</span></div>',
-                    _aibox())
-S["nt-ask"] = _note(_ovhead("New note"),
-                    '<div class="s-ph">Start writing, or tell AI what you need.</div>'
-                    f'<div class="s-ochips"><span class="s-achip ctx">{ic("check", size=18)}Using copied text: “Hi, the plumber came…”</span></div>',
-                    _aibox("reply to Ravi, thank him for the tap, ask for the rent receipt, friendly", focus=True, can_send=True))
-S["nt-draft"] = _note(_ovhead("New note"),
-                      '<div class="s-you">reply to Ravi, thank him for the tap, ask for the rent receipt, friendly</div>' + _draft(1, 1, _DRAFT1) +
-                      f'<div class="s-ochips one"{ann("Quick changes", "Chips 32 dp; each sends one instruction", "outline-variant")}>' +
-                      "".join(f'<span class="s-achip">{t}</span>' for t in ("Shorter", "Friendlier", "More formal", "Add details")) + "</div>",
-                      _aibox(placeholder="Tell AI what to change"))
-S["nt-refined"] = _note(_ovhead("New note"),
-                        '<div class="s-you">mention I\'ll pay the rent on Friday</div>' + _draft(2, 2, _DRAFT2),
-                        _aibox(placeholder="Tell AI what to change"))
-S["nt-editor"] = _note(_ovhead("Reply to Ravi", "Saved 11:31"),
-                       f'<div class="s-ovtext sm"{ann("Note text", "Padding 16 dp; body-large 16/24 sp; the user edits freely", "on-surface")}>{esc(_DRAFT2)}<span class="s-caret"></span></div>',
-                       _aibox() + _foot(29))
+                    f'<div class="s-ovtext sm"{ann("Note text", "Opens with the cursor here and the keyboard up: just start typing or tap the Mic", "on-surface")}><span class="s-caret"></span>'
+                    '<span style="color:var(--on-surface-variant)">Write anything: a list, a message, something to keep</span></div>'
+                    f'<div class="s-ochips"><span class="s-achip ctx"{ann("Paste chip", "Only when something is copied; one tap pastes it into the note", "primary-container; on-primary-container", "content_paste")}>{ic("content_paste", size=18)}Paste “Order #48213 confirmed for Friday…”</span></div>',
+                    _aibox(placeholder="Ask AI to write something"))
+S["nt-grocery"] = _note(_ovhead("Groceries", "Saved 18:02"),
+                        '<div class="s-list-note">milk<br>eggs<br>onions<br>atta 5kg<br>tomatoes<br>dish soap<br>bread<span class="s-caret"></span></div>' +
+                        _sugg("Group by aisle", "Add quantities", "Make it a checklist"),
+                        _aibox() + _foot(9))
+S["nt-ask"] = _note(_ovhead("Ravi", "Saved 11:30"),
+                    f'<div class="s-ovtext sm">{esc(_MSG0)}</div>' + _sugg("Fix grammar", "More casual", "Shorter"),
+                    _aibox("add that I'll pay the rent on Friday", focus=True, can_send=True))
+S["nt-changed"] = _note(_ovhead("Ravi", "Saved 11:31"),
+                        f'<div class="s-ovtext sm"{ann("Changed text", "AI edits the note in place; what changed is tinted for a few seconds", "primary at 22%")}>{_MSG1}</div>'
+                        f'<div class="s-osnack"{ann("Undo message", "Inside the overlay; 6 s", "inverse-surface; action inverse-primary", "undo")}><span>Changed by AI</span><b>Undo</b></div>',
+                        _aibox() + _foot(20))
 
 # ---------- languages (app) ----------
 _help = '<div class="s-help">The keyboard switches between these with the 🌐 key. The first one is the default.</div>'

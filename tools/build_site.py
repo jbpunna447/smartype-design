@@ -21,6 +21,7 @@ sys.path.insert(0, SRC)
 
 import components  # noqa: E402
 from edges import EDGES  # noqa: E402
+from taps import TAPS  # noqa: E402
 from flows import BUILD_ORDER, FLOWS, RISK, RULES  # noqa: E402
 from screens import S  # noqa: E402
 
@@ -145,6 +146,11 @@ def flow_page(i, f):
             ncol = "".join(f'<div class="newtext">{E(x[1])}</div>' if x[0] == "text" else item_html(x, depth) for x in new)
             parts.append(f'<section class="step"><h3>{E(label)}</h3><div class="cmp"><div class="col today"><h4>Today</h4><div class="shots">{tcol}</div></div>'
                          f'<div class="col new"><h4>New</h4><div class="shots">{ncol}</div></div></div></section>')
+    taps = f.get("taps") or TAPS.get(f["slug"])
+    if taps:
+        parts.append('<h2>Steps and taps</h2><p style="color:var(--on-surface-variant);margin:0 0 10px">The main tasks: how many taps today and in the new design, and whether the user types or speaks.</p>'
+                     '<div class="tbl"><table><thead><tr><th>Task</th><th>Today</th><th>New</th><th>Typing or speaking</th></tr></thead><tbody>' +
+                     "".join(f"<tr><td>{E(a)}</td><td>{E(b)}</td><td>{E(c)}</td><td>{E(d)}</td></tr>" for a, b, c, d in taps) + "</tbody></table></div>")
     if f.get("later"):
         L = f["later"]
         parts.append(f'<h2>Later: new features this needs</h2><p>{E(L["intro"])}</p><ul>' + "".join(f"<li>{E(x)}</li>" for x in L["items"]) +
