@@ -56,7 +56,7 @@
 .s-ime { flex: 0 0 auto; background: var(--kb-bg); color: var(--kb-on); display: flex; flex-direction: column; }
 .s-row48 { height: 48px; flex: 0 0 48px; display: flex; align-items: center; padding: 0 4px; }
 .s-btn { width: 48px; height: 48px; flex: 0 0 48px; display: grid; place-items: center; color: var(--kb-on-var); position: relative; }
-.s-btn .c { width: 40px; height: 40px; border-radius: 20px; display: grid; place-items: center; }
+.s-btn .c { width: 36px; height: 36px; border-radius: 18px; display: grid; place-items: center; }
 .s-btn.ai .c { background: linear-gradient(135deg, var(--ai-gradient-start), var(--ai-gradient-end)); color: var(--on-ai-gradient); }
 .s-btn.on .c { box-shadow: 0 0 0 2px var(--kb-bg), 0 0 0 4px var(--kb-primary); }
 .s-btn.plain.on .c { background: var(--kb-key-var); color: var(--kb-on); box-shadow: none; }

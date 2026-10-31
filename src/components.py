@@ -88,16 +88,16 @@ def smartbar(active=None, emoji=False, annotate=True):
         cls = "s-btn " + ("ai" if ai else "plain") + (" on" if on else "")
         a = ""
         if annotate and label == "Rewrite":
-            a = ann("AI action button", "Touch target 48 × 48 dp; circle 40 dp; icon 24 dp",
+            a = ann("AI action button", "Touch target 48 × 48 dp; circle 36 dp; icon 20 dp",
                     "ai-gradient-start → ai-gradient-end (135°); icon on-ai-gradient", "spark (brand)")
         elif annotate and label == "Clipboard":
             a = ann("Plain action button", "Touch target 48 × 48 dp; icon 24 dp", "icon: keyboard on-surface-variant", "content_paste")
         elif annotate and on:
-            a = ann("Open panel's button", "Ring 2 dp, offset 2 dp", "ring: keyboard primary", icon)
-        btns.append(f'<div class="{cls}" title="{label}"{a}><div class="c">{ic(icon, fill=on and not ai)}</div></div>')
+            a = ann("Open panel's button", "Ring 2 dp with a 2 dp gap: 44 dp overall", "ring: keyboard primary", icon)
+        btns.append(f'<div class="{cls}" title="{label}"{a}><div class="c">{ic(icon, fill=on and not ai, size=20 if ai else 24)}</div></div>')
     mic_a = ann("Mic button", "Same as an AI action button, pinned to the right", "ai-gradient", "mic") if annotate else ""
     btns.append('<div class="s-sp"></div>')
-    btns.append(f'<div class="s-btn ai" title="Voice"{mic_a}><div class="c">{ic("mic")}</div></div>')
+    btns.append(f'<div class="s-btn ai" title="Voice"{mic_a}><div class="c">{ic("mic", size=20)}</div></div>')
     a = ann("Smartbar", "Actions row of the stacked smartbar; height 48 dp; side padding 4 dp",
             "keyboard background") if annotate else ""
     return f'<div class="s-row48"{a}>' + "".join(btns) + "</div>"
@@ -217,7 +217,7 @@ def voicebar(state="listening"):
         return f'<div class="s-row48"{va}>{dele}{mid}</div>'
     rec = f'<div class="s-rec"{ann("Recording dot and timer", "Dot 8 dp; timer 13 sp monospace")}><i></i>0:07</div>'
     lang = f'<span class="s-lang"{ann("Language chip", "Height 32 dp; radius 12 dp; Auto-detect by default", "border keyboard line", "arrow_drop_down")}>Auto{ic("arrow_drop_down", size=20)}</span>'
-    done = f'<div class="s-btn ai"{ann("Done", "AI action button; inserts the text", "ai-gradient", "check")}><div class="c">{ic("check")}</div></div>'
+    done = f'<div class="s-btn ai"{ann("Done", "AI action button; inserts the text", "ai-gradient", "check")}><div class="c">{ic("check", size=20)}</div></div>'
     return f'<div class="s-row48"{va}>{dele}{rec}{wave()}{lang}{done}</div>'
 
 

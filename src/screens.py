@@ -80,8 +80,8 @@ S["nt-list"] = device(chat(title="Mail", msgs=(), placeholder="Compose email") +
     "Notes", f'<div class="s-b out" style="flex:0 0 48px"{ann("New note", "Height 48 dp; radius 14 dp; 1.5 dp border", "keyboard primary", "add")}>{ic("add", size=20)}New note</div><div class="s-list">{_nl}</div>')), ime=True)
 _edhead = (f'<div class="s-phead"{ann("Editor header", "Height 48 dp; status 12 sp", "keyboard background")}><div class="s-btn" style="color:var(--kb-on)">{ic("arrow_back")}</div>'
            f'<div class="t">Leave request to Arjun</div><span class="meta">Saved 11:31</span><div class="s-btn" style="width:40px;flex-basis:40px"{ann("More", "Copy, Share, Delete", None, "more_vert")}>{ic("more_vert")}</div></div>')
-_edbar = (f'<div class="s-edbar"{ann("Note tools", "Height 48 dp; AI action buttons + Insert", "keyboard background")}>' +
-          "".join(f'<div class="s-btn ai"><div class="c">{ic(n)}</div></div>' for n in ("spark", "translate", "format_list_bulleted", "mic")) +
+_edbar = (f'<div class="s-edbar"{ann("Note tools", "Height 48 dp; AI action buttons (36 dp circles, 20 dp icons) + Insert", "keyboard background")}>' +
+          "".join(f'<div class="s-btn ai"><div class="c">{ic(n, size=20)}</div></div>' for n in ("spark", "translate", "format_list_bulleted", "mic")) +
           f'<div class="s-sp"></div><div class="s-ins"{ann("Insert", "Height 40 dp in a 48 dp row; radius 14 dp", "ai-gradient; on-ai-gradient")}>Insert</div></div>')
 S["nt-editor"] = device(chat(title="Mail", msgs=(), placeholder="Compose email", caret=False, field_ann=False) +
                         f'<div class="s-editor"{ann("Note editor", "Opens over the keyboard; keys type into the note", "keyboard theme colours")}>{_edhead}'
