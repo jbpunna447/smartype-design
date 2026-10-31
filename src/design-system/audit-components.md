@@ -35,7 +35,7 @@ Cards, list rows, chips, sheets, dialogs, feedback and keyboard panels as they a
 4. Add `SmarTypeChip` and `SmarTypeBadge`; swap `SmarTypeStatusChip` to a badge, then `FlorisChip`, `FilterChip` and the AI panel chips to chips.
 5. Add `SmarTypeDialog`; route every confirmation through it, including removing a language.
 6. Add a snackbar host to the app scaffold; replace in-app toasts with snackbars or banners, starting with the auth and subscription messages.
-7. Rework `KeyboardPanelHeader` and `KeyboardPanelActionRow` into the KeyboardPanel frame: ABC in the dock, scope line instead of the source quote, Back returns to the keys.
+7. Rework `KeyboardPanelHeader` and `KeyboardPanelActionRow` into the KeyboardPanel frame: `arrow_back` and the panel name in the header, the smartbar visible above the panel, a selection hint instead of the source quote, Back returns to the keys.
 8. Replace corner literals with shape tokens (`radius-xs` for the small ones, `radius-sm` for chips).
 
 Steps 1 to 6 are presentation only. Step 7 touches keyboard navigation (Back handling in `KeyboardPanelBackStack`), so it needs a device test. Nothing here changes how text is replaced in other apps.

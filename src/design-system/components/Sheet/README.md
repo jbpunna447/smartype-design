@@ -29,6 +29,7 @@ Bottom sheets (`SmarTypeSheet`) for choosing and editing, dialogs (`SmarTypeDial
 
 - Fill `inverse-surface`, text `inverse-on-surface`, action in `inverse-primary`, corners `radius-md`, 16 dp above the bottom bar.
 - One line, past tense, optional single action ("Undo", "View"). Shows for 4 seconds, 10 with an action.
+- Inside the keyboard, undo messages ("Replaced · Undo", "Inserted · Undo") show in the suggestion row for 6 seconds instead of a snackbar.
 - In the app, snackbars replace Android toasts. Toasts are only for messages from outside the app's screens (the keyboard service, the floating bubble), and even there prefer an inline message in the panel.
 
 ## Replaces

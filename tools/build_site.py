@@ -1,4 +1,4 @@
-"""Builds the static site in site/ from the sources in src/ and assets/.
+"""Builds the static site in site/ from src/ and assets/.
 
 Usage, from the repository root: python3 tools/build_site.py
 Needs the `markdown` package (pip install markdown).
@@ -14,259 +14,393 @@ import zipfile
 import markdown
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PAGES = os.path.join(ROOT, "src/pages")
-EARLIER = os.path.join(ROOT, "src/earlier")
+SRC = os.path.join(ROOT, "src")
 ASSETS = os.path.join(ROOT, "assets")
 OUT = os.path.join(ROOT, "site")
+sys.path.insert(0, SRC)
 
-ART = {
-    "35LbtmyEzT7Fo2dtRtjKr3": "fix-1.html",
-    "FxYnWeVkWAqp9jiFsF7eX9": "fix-1b.html",
-    "S9q9FYBfXkpjXAcdkVzZ8x": "fix-2.html",
-    "D3bcP4UMorE7H4W5rwbLyG": "fix-4.html",
-    "75JNwaBPJxeKmsfuEyZroy": "fix-5.html",
-    "GT2ALjSxSacdjsXVZKyNcp": "design-system/index.html",
-    "KuPQvh8SvC84k8hfWpwSWv": "brand.html",
-    "T4oCuTJSNaGKPxsLmRAWTV": "art.html",
-    "4q7weqFHQKBAJesyBaZHXz": "review.html",
-    "1uKRxMiqhVnyA2AeXy6hkx": "specs.html",
-    "JWLJCTirqnZnqtBPyespDQ": "index.html",
-    "2RqjhWzGiQBbEwiVxLbA7a": "audit.html",
-}
+import components  # noqa: E402
+from flows import BUILD_ORDER, FLOWS, RISK, RULES  # noqa: E402
+from screens import S  # noqa: E402
 
-NAV = [
-    ("index.html", "Hand-off"),
-    ("audit.html", "Audit"),
-    ("fix-1b.html", "1b Smartbar"),
-    ("fix-1.html", "1 AI panel"),
-    ("fix-2.html", "2 Languages"),
-    ("fix-4.html", "4 Errors"),
-    ("fix-5.html", "5 Setup"),
-    ("design-system/index.html", "Design system"),
-    ("review.html", "Review"),
-    ("specs.html", "Specs"),
-    ("brand.html", "Brand"),
-    ("art.html", "Art"),
-]
-
-NAV_CSS = """<style>
-.stx-nav{position:sticky;top:0;z-index:1000;display:flex;gap:2px;align-items:center;overflow-x:auto;
-  background:#0b1416;border-bottom:1px solid #22363a;padding:0 max(12px,env(safe-area-inset-left,0px));
-  font:500 13px/1 "Google Sans Flex","DM Sans",system-ui,sans-serif;scrollbar-width:none}
-.stx-nav::-webkit-scrollbar{display:none}
-.stx-nav a{color:#b5cacf;text-decoration:none;padding:13px 10px;white-space:nowrap;border-bottom:2px solid transparent}
-.stx-nav a:hover,.stx-nav a:focus-visible{color:#fff}
-.stx-nav a[aria-current=page]{color:#5fd3df;border-bottom-color:#5fd3df}
-.stx-nav .stx-brand{color:#fff;font-weight:700;padding-right:14px}
-.stx-note{max-width:1040px;margin:18px auto 0;padding:12px 16px;border-radius:12px;background:#fbf0d9;color:#4d3800;
-  font:14px/1.5 "Google Sans Flex","DM Sans",system-ui,sans-serif;box-sizing:border-box}
-.stx-note a{color:#4d3800;font-weight:700}
-.stx-notewrap{padding:0 16px}
-@media (prefers-color-scheme:dark){.stx-note{background:#352a10;color:#f6dfa6}.stx-note a{color:#f6dfa6}}
-</style>"""
+E = html.escape
+DS = os.path.join(SRC, "design-system")
+TOKENS = json.load(open(os.path.join(DS, "tokens.json")))
+SPRITE = components.sprite()
+STATUS = {"ready": ("ready", "Ready to build"), "review": ("ready", "Ready to build"), "decision": ("decision", "Needs a decision")}
+KIND = {"change": ("change", "Change"), "new": ("new", "New feature")}
 
 
-def nav(current, depth):
-    up = "../" * depth
-    links = [f'<a class="stx-brand" href="{up}index.html">SmarType UX</a>']
-    for href, label in NAV:
-        cur = ' aria-current="page"' if href == current else ""
-        links.append(f'<a href="{up}{href}"{cur}>{label}</a>')
-    return NAV_CSS + '<nav class="stx-nav" aria-label="Site">' + "".join(links) + "</nav>"
+def read(p):
+    with open(p) as f:
+        return f.read()
 
 
-def note(text):
-    return f'<div class="stx-notewrap"><div class="stx-note">{text}</div></div>'
-
-
-def relink(s, depth):
-    up = "../" * depth
-
-    def sub(m):
-        target = ART.get(m.group(1))
-        return up + target if target else m.group(0)
-
-    return re.sub(r"https://claude\.ai/artifact/([A-Za-z0-9]+)", sub, s)
-
-
-HEAD_RE = re.compile(r"^\s*(?:<title>.*?</title>|<meta[^>]*>|<link[^>]*>|<style>.*?</style>|\s)+", re.S)
-
-
-def wrap_fragment(src, current, depth=0, banner=""):
-    m = HEAD_RE.match(src)
-    head, body = (m.group(0), src[m.end():]) if m else ("", src)
-    return (
-        '<!doctype html>\n<html lang="en"><head><meta charset="utf-8">'
-        '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
-        + head + "</head><body>" + nav(current, depth) + banner + relink(body, depth) + "</body></html>\n"
-    )
-
-
-def inject_full(src, current, depth=0, banner=""):
-    i = src.index("<body>") + len("<body>")
-    return relink(src[:i] + nav(current, depth) + banner + src[i:], depth)
-
-
-def write(path, text):
-    full = os.path.join(OUT, path)
+def write(rel, text):
+    full = os.path.join(OUT, rel)
     os.makedirs(os.path.dirname(full), exist_ok=True)
     with open(full, "w") as f:
         f.write(text)
 
 
-def read(path):
-    with open(path) as f:
-        return f.read()
-
-
-if os.path.exists(OUT):
-    shutil.rmtree(OUT)
-os.makedirs(OUT)
-
-# Pages written in this project (fragments)
-for src, dst in [
-    ("handoff.html", "index.html"),
-    ("audit.html", "audit.html"),
-    ("fix1-ai-panel.html", "fix-1.html"),
-    ("fix1b-smartbar.html", "fix-1b.html"),
-    ("fix2-languages.html", "fix-2.html"),
-    ("fix4-errors.html", "fix-4.html"),
-    ("fix5-setup.html", "fix-5.html"),
-]:
-    write(dst, wrap_fragment(read(os.path.join(PAGES, src)), dst))
-
-# Earlier pages (full HTML), each with a note on what's superseded
-write("review.html", inject_full(read(os.path.join(EARLIER, "review.html")), "review.html",
-      banner=note('Source review from 25 Oct (build 138). The fixes are in the fix pages; <a href="audit.html">the audit</a> lists which findings are covered.')))
-write("specs.html", inject_full(read(os.path.join(EARLIER, "specs.html")), "specs.html",
-      banner=note('Partly superseded by <a href="fix-1b.html">Fix 1b</a>: the feature is called <b>Notes</b>, voice records in the smartbar and inserts with ✓, and Back is ‹ (no ABC key). Still valid here: the voice engine, pause handling, spoken commands, permission, privacy, and the Notes data and migration rules. The free AI allowance is a one-time trial, not daily.')))
-write("brand.html", inject_full(read(os.path.join(EARLIER, "brand.html")), "brand.html",
-      banner=note('The icon, logo and usage rules here stand. The "App interface" colour proposal (blue accent, blue AI gradient) was <b>not adopted</b>: the app keeps its teal. Use the <a href="design-system/index.html">design system</a> colours. Downloads are on the <a href="index.html#downloads">hand-off page</a>.')))
-write("art.html", inject_full(read(os.path.join(EARLIER, "art.html")), "art.html",
-      banner=note("The clay art placed in today's layouts and wording. The onboarding and sign-in screens are replaced by <a href=\"fix-5.html\">Fix 5</a>; build those from there.")))
-
-# Design system
-DS = os.path.join(ROOT, "src/design-system")
-tokens = json.load(open(os.path.join(DS, "tokens.json")))
-
-
 def tokens_css():
     themes = {"dark": {}, "light": {}, "amoled": {}}
-    for t in tokens["color"]["tokens"]:
-        v = t["value"]
+
+    def put(name, v):
         for th in themes:
-            themes[th][t["name"]] = v if isinstance(v, str) else v.get(th) or v.get("dark")
-    for group in ("spacing", "radius", "opacity"):
-        for t in tokens[group]["tokens"]:
-            val = t["value"]
-            for th in themes:
-                themes[th][t["name"]] = val if isinstance(val, str) else val.get(th) or val.get("dark")
-    for t in tokens["shadow"]["tokens"]:
-        v = t["value"]
-        for th in themes:
-            themes[th][t["name"]] = v if isinstance(v, str) else v.get(th) or v.get("dark")
+            themes[th][name] = v if isinstance(v, str) else v.get(th) or v.get("dark")
+
+    for t in TOKENS["color"]["tokens"]:
+        put(t["name"], t["value"])
+    for g in ("spacing", "radius", "opacity", "shadow"):
+        for t in TOKENS[g]["tokens"]:
+            put(t["name"], t["value"])
+
     def block(d):
         return "".join(f"--{k}:{v};" for k, v in d.items())
-    fam = tokens["type"]["families"]["sans"]
-    return (
-        f":root{{--font-sans:{fam};{block(themes['dark'])}color-scheme:dark}}\n"
-        f"@media (prefers-color-scheme:light){{:root:not([data-theme]){{{block(themes['light'])}color-scheme:light}}}}\n"
-        f":root[data-theme=light]{{{block(themes['light'])}color-scheme:light}}\n"
-        f":root[data-theme=amoled]{{{block(themes['amoled'])}}}\n"
-    )
+
+    fam = TOKENS["type"]["families"]["sans"]
+    return (f":root{{--font-sans:{fam};{block(themes['dark'])}color-scheme:dark}}\n"
+            f"@media (prefers-color-scheme:light){{:root:not([data-theme]){{{block(themes['light'])}color-scheme:light}}}}\n"
+            f":root[data-theme=light]{{{block(themes['light'])}color-scheme:light}}\n"
+            f":root[data-theme=amoled]{{{block(themes['amoled'])}}}\n")
 
 
-write("design-system/tokens.css", tokens_css())
-shutil.copy(os.path.join(DS, "components/bundle.css"), os.path.join(OUT, "design-system/bundle.css"))
-
-DS_CSS = """<style>
-body{margin:0;background:var(--background);color:var(--on-surface);font:15px/1.6 var(--font-sans)}
-.wrap{max-width:980px;margin:0 auto;padding:28px 16px 70px}
-.wrap h1{font-size:34px;line-height:1.15;margin:8px 0 12px}.wrap h2{font-size:22px;margin:34px 0 8px}.wrap h3{font-size:17px}
-.wrap table{border-collapse:collapse;width:100%;font-size:14px;display:block;overflow-x:auto}
-.wrap th,.wrap td{border-bottom:1px solid var(--outline-variant);padding:8px 10px;text-align:left;vertical-align:top}
-.wrap code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.85em;background:var(--surface-container);padding:1px 5px;border-radius:4px}
-.wrap a{color:var(--primary)}
-.eyebrow{font:500 12px "JetBrains Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--primary)}
-.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:18px 0}
-.toc a{display:block;background:var(--surface-container-low);border-radius:14px;padding:12px 14px;text-decoration:none;color:var(--on-surface)}
-.toc a b{display:block}.toc a span{color:var(--on-surface-variant);font-size:13px}
-.pv{border:1px solid var(--outline-variant);border-radius:16px;padding:16px;margin:16px 0;background:var(--surface-container-low);overflow-x:auto}
-.swatch{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
-.swatch div{border:1px solid var(--outline-variant);border-radius:10px;overflow:hidden;font-size:12.5px}
-.swatch i{display:block;height:44px}.swatch p{margin:0;padding:6px 8px}
-.themes{display:flex;gap:6px;margin:10px 0}.themes button{font:inherit;border:1px solid var(--outline);background:transparent;color:var(--on-surface);border-radius:8px;padding:4px 10px;cursor:pointer}
-</style>"""
-
-THEME_JS = """<div class="themes" role="group" aria-label="Theme"><button data-t="dark">Dark</button><button data-t="light">Light</button><button data-t="amoled">AMOLED</button></div>
-<script>document.querySelectorAll('.themes button').forEach(b=>b.onclick=()=>document.documentElement.dataset.theme=b.dataset.t)</script>"""
+NAV = [("index.html#flows", "Flows"), ("backlog.html", "Backlog"), ("design-system/index.html", "Design system"),
+       ("design-system/icons.html", "Icons"), ("downloads.html", "Downloads")]
 
 
-def ds_page(dst, title, inner, depth=1):
-    head = (f'<title>{html.escape(title)}</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">'
-            '<link rel="stylesheet" href="tokens.css"><link rel="stylesheet" href="bundle.css">' + DS_CSS)
-    page = ('<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-            + head + "</head><body>" + nav("design-system/index.html", depth) + '<div class="wrap">' + inner + "</div></body></html>\n")
-    write(dst, relink(page, depth))
+def page(rel, title, body, current=None, extra_head=""):
+    up = "../" * rel.count("/")
+    links = "".join(f'<a href="{up}{h}"{" aria-current=page" if h == current else ""}>{E(l)}</a>' for h, l in NAV)
+    seg = ('<div class="seg" role="group" aria-label="Theme">' +
+           "".join(f'<button type="button" data-theme-btn="{v}">{l}</button>' for v, l in (("auto", "Auto"), ("dark", "Dark"), ("light", "Light"))) + "</div>")
+    head = (f'<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
+            f'<title>{E(title)}</title>'
+            '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">'
+            f'<link rel="stylesheet" href="{up}assets/tokens.css"><link rel="stylesheet" href="{up}assets/site.css"><link rel="stylesheet" href="{up}assets/spec.css">'
+            f'{extra_head}<script src="{up}assets/spec.js"></script></head>')
+    nav = f'<nav class="top" aria-label="Site"><a class="brand" href="{up}index.html">SmarType design</a>{links}<span class="sp"></span>{seg}</nav>'
+    return head + "<body>" + SPRITE + nav + f'<main class="wrap">{body}</main></body></html>\n'
 
 
-def md(path):
-    return markdown.markdown(read(path), extensions=["tables"])
+def tag(cls, text):
+    return f'<span class="tag {cls}">{E(text)}</span>'
 
 
-ADDENDUM = note('<b>Updated after Fix 1b.</b> The panel header is now ‹ and the panel name (no keyboard-icon toggle, no ABC key), the smartbar stays visible above the panel, and the dock holds content actions only. The preview below still shows the earlier frame. Full list: <a href="../audit.html">audit, section 4</a>.')
+def flow_tags(f):
+    k, kl = KIND[f["kind"]]
+    s, sl = STATUS[f["status"]]
+    out = tag(k, kl) + tag(s, sl)
+    if f["risky"]:
+        out += tag("review", "Plan review")
+    return out
+
+
+# ---------- flow pages ----------
+
+def screen_html(sid, caption, depth):
+    dev = S[sid].replace("{root}", "../" * depth)
+    return (f'<figure class="spec-screen" id="{sid}"><div class="spec-stage">{dev}</div><figcaption>{E(caption)}</figcaption>'
+            '<details class="spec-table"><summary>Spec: sizes, tokens and icons</summary><div class="tbl"><table><thead><tr>'
+            '<th>Element</th><th>Size (dp)</th><th>Component</th><th>Tokens</th><th>Icon</th></tr></thead><tbody></tbody></table></div></details></figure>')
+
+
+def item_html(it, depth):
+    if it[0] == "img":
+        return f'<figure><img src="{"../" * depth}assets/today/{it[1]}" alt="{E(it[2])}" loading="lazy"><figcaption>{E(it[2])}</figcaption></figure>'
+    if it[0] == "scr":
+        return screen_html(it[1], it[2], depth)
+    return f'<figure><div class="none">{E(it[1])}</div></figure>'
+
+
+def flow_page(i, f):
+    depth = 1
+    parts = [f'<div class="crumb"><a href="../index.html#flows">All flows</a> › {E(f["title"])}</div>',
+             f'<div class="tags">{flow_tags(f)}{"".join(tag("id", x) for x in f["ids"])}</div>',
+             f'<h1>{E(f["title"])}</h1><p class="lede">{E(f["summary"])}</p>',
+             '<div class="toolbar"><button type="button" class="mbtn" id="measure-toggle" aria-pressed="false">Show measurements</button>'
+             '<span class="hint">New screens are drawn at real size: 1 px = 1 dp on a 360 × 800 dp phone. Open "Spec" under any screen for sizes, tokens and icons.</span></div>']
+    parts.append('<section class="problem"><h2>The problem</h2>' + "".join(f"<p>{E(p)}</p>" for p in f["problem"]) + "</section>")
+    if f.get("order"):
+        t, n = f["order"]
+        parts.append('<div class="flowline"><b>Today</b>' + "".join(f"<span>{E(x)}</span>" for x in t) + "</div>"
+                     '<div class="flowline new"><b>New</b>' + "".join(f"<span>{E(x)}</span>" for x in n) + "</div>")
+    if f["kind"] == "new":
+        parts.append('<h2>What to build</h2><ol class="build">' + "".join(f"<li>{E(x)}</li>" for x in f["build"]) + "</ol>")
+        parts.append('<h2>The new screens</h2><div class="shots">' + "".join(item_html(x, depth) for x in f["new"]) + "</div>")
+    else:
+        parts.append("<h2>Today and new</h2>")
+        for label, today, new in f["compare"]:
+            tcol = "".join(item_html(x, depth) for x in today)
+            ncol = "".join(f'<div class="newtext">{E(x[1])}</div>' if x[0] == "text" else item_html(x, depth) for x in new)
+            parts.append(f'<section class="step"><h3>{E(label)}</h3><div class="cmp"><div class="col today"><h4>Today</h4><div class="shots">{tcol}</div></div>'
+                         f'<div class="col new"><h4>New</h4><div class="shots">{ncol}</div></div></div></section>')
+    if f.get("later"):
+        L = f["later"]
+        parts.append(f'<h2>Later: new features this needs</h2><p>{E(L["intro"])}</p><ul>' + "".join(f"<li>{E(x)}</li>" for x in L["items"]) +
+                     '</ul><div class="shots">' + "".join(item_html(x, depth) for x in L["screens"]) + "</div>")
+    if f.get("changes"):
+        parts.append('<h2>What changes</h2><div class="tbl"><table><thead><tr><th>Moment</th><th>Today</th><th>New</th></tr></thead><tbody>' +
+                     "".join(f"<tr><td>{E(a)}</td><td>{E(b)}</td><td>{E(c)}</td></tr>" for a, b, c in f["changes"]) + "</tbody></table></div>")
+    if f.get("copy"):
+        parts.append('<h2>Wording</h2><div class="tbl"><table><thead><tr><th>Where</th><th>Text</th></tr></thead><tbody>' +
+                     "".join(f"<tr><td>{E(a)}</td><td>{E(b)}</td></tr>" for a, b in f["copy"]) + "</tbody></table></div>")
+    parts.append('<h2>Done when</h2><ul class="check">' + "".join(f"<li>{E(x)}</li>" for x in f["done"]) + "</ul>")
+    dev = '<details class="dev"><summary>For developers</summary>'
+    if f["decisions"]:
+        dev += ('<h3>Open decisions for the owner</h3><div class="tbl"><table><thead><tr><th>Decision</th><th>Recommendation</th></tr></thead><tbody>' +
+                "".join(f"<tr><td>{E(a)}</td><td>{E(b)}</td></tr>" for a, b in f["decisions"]) + "</tbody></table></div>")
+    dev += ('<h3>Where in the code</h3><div class="tbl"><table><thead><tr><th>Change</th><th>Where</th></tr></thead><tbody>' +
+            "".join(f"<tr><td>{E(a)}</td><td><code>{E(b)}</code></td></tr>" for a, b in f["code"]) + "</tbody></table></div>")
+    if f["risky"]:
+        dev += ("<h3>Risky areas</h3><p>This touches " + ", ".join(E(RISK[r]) for r in f["risky"]) +
+                ". Per the app repository's AGENTS.md, a plan that touches these needs the owner's plan review before work starts.</p>")
+    parts.append(dev + "</details>")
+    prev = FLOWS[i - 1] if i > 0 else None
+    nxt = FLOWS[i + 1] if i + 1 < len(FLOWS) else None
+    parts.append('<div class="pn">' + (f'<a href="{prev["slug"]}.html"><small>Previous</small>{E(prev["title"])}</a>' if prev else "<span></span>") +
+                 (f'<a href="{nxt["slug"]}.html"><small>Next</small>{E(nxt["title"])}</a>' if nxt else "") + "</div>")
+    return page(f"flows/{f['slug']}.html", f"{f['title']} · SmarType", "".join(parts), current="index.html#flows")
+
+
+# ---------- backlog (from the review) ----------
+
+def review_findings():
+    s = read(os.path.join(ROOT, "archive/earlier/review.html"))
+    out = {}
+    for m in re.finditer(r'<article class="finding[^"]*"[^>]*>(.*?)</article>', s, re.S):
+        a = m.group(1)
+        fid = re.search(r'class="id">([^<]+)<', a).group(1)
+        sev = re.search(r'class="sev [^"]+">([^<]+)<', a).group(1)
+        title = html.unescape(re.sub("<[^>]+>", "", re.search(r"<h3>(.*?)</h3>", a, re.S).group(1)))
+        paras = re.findall(r'<div class="label">([^<]+)</div><p[^>]*>(.*?)</p>', a, re.S)
+        d = {k: html.unescape(re.sub("<[^>]+>", "", v)) for k, v in paras}
+        out[fid] = dict(sev=sev, title=title, what=d.get("What happens", ""), fix=d.get("Proposed fix", ""))
+    return out
+
+
+BACKLOG = ["A8", "K5", "A7", "S2", "S1", "AS3", "AS1", "V1", "K1", "K4", "P2", "P3", "H3", "H2", "T1", "K2", "A6", "V3", "V4", "AS2", "D2"]
+
+
+def backlog_page():
+    R = review_findings()
+    rows = []
+    for fid in BACKLOG:
+        r = R[fid]
+        img = f"{fid}-1.jpg"
+        shot = (f'<img src="assets/today/{img}" alt="" loading="lazy">' if os.path.exists(os.path.join(ASSETS, "screens/today", img))
+                else '<div class="ph"></div>')
+        rows.append(f'<div class="bl">{shot}<div><div class="tags">{tag("id", fid)}{tag("later", r["sev"])}</div>'
+                    f'<h3 style="margin-top:10px">{E(r["title"])}</h3><p><b>What happens.</b> {E(r["what"])}</p>'
+                    f'<p><b>Direction.</b> {E(r["fix"])}</p></div></div>')
+    body = ('<h1>Backlog</h1><p class="lede">Problems from the UX review that aren\'t designed yet. Each one has today\'s screen, what goes wrong, and a direction. '
+            'Nothing here is ready to build.</p>' + "".join(rows))
+    return page("backlog.html", "Backlog · SmarType", body, current="backlog.html")
+
+
+# ---------- home ----------
+
+def home_page():
+    cards = "".join(f'<a class="card" href="flows/{f["slug"]}.html"><div class="tags">{flow_tags(f)}</div><b>{E(f["title"])}</b>'
+                    f'<span class="s">{E(f["summary"])}</span><div class="tags">{"".join(tag("id", x) for x in f["ids"][:6])}</div></a>' for f in FLOWS)
+    by = {f["slug"]: f for f in FLOWS}
+    order = "".join(f'<li><a href="flows/{s}.html">{E(by[s]["title"])}</a>: {E(t)}</li>' for s, t in BUILD_ORDER)
+    dec = "".join(f'<tr><td><a href="flows/{f["slug"]}.html">{E(f["title"])}</a></td><td>{E(a)}</td><td>{E(b)}</td></tr>' for f in FLOWS for a, b in f["decisions"])
+    body = (
+        '<h1>SmarType: what changes, and why</h1>'
+        '<p class="lede">Every flow we\'re changing in the SmarType keyboard app. Each page shows the problem, today\'s screens next to the new ones, '
+        'what changes, and when it\'s done. New screens are drawn at real size with measurements, tokens and icons.</p>'
+        '<div class="howto"><div><b>1 · The problem</b>What goes wrong for the user today.</div><div><b>2 · Today and new</b>Real screenshots beside the new designs.</div>'
+        '<div><b>3 · What changes</b>Each moment: today, new.</div><div><b>4 · Done when</b>The checklist to accept the work.</div>'
+        '<div><b>5 · For developers</b>Code, decisions, risky areas.</div></div>'
+        f'<h2 id="flows">Flows</h2><div class="grid">{cards}</div>'
+        '<p class="note" style="margin-top:16px"><b>Change</b> improves something that exists. <b>New feature</b> is new work. <b>Plan review</b>: it touches a risky area of the app '
+        '(sign-in, payments, the AI quota, text in other apps, typed-text privacy), so the owner reviews the plan first.</p>'
+        f'<h2>Suggested build order</h2><ol class="build">{order}</ol>'
+        f'<h2>Open decisions</h2><div class="tbl"><table><thead><tr><th>Flow</th><th>Decision</th><th>Recommendation</th></tr></thead><tbody>{dec}</tbody></table></div>'
+        '<h2>Rules for every change</h2><ul class="check">' + "".join(f"<li>{E(r)}</li>" for r in RULES) + "</ul>"
+        '<h2>Also here</h2><div class="grid">'
+        '<a class="card" href="backlog.html"><b>Backlog</b><span class="s">21 problems from the review that aren\'t designed yet.</span></a>'
+        '<a class="card" href="design-system/index.html"><b>Design system</b><span class="s">Principles, components and tokens.</span></a>'
+        '<a class="card" href="design-system/icons.html"><b>Icons</b><span class="s">Material Symbols Rounded: which icon goes where, and the files.</span></a>'
+        '<a class="card" href="downloads.html"><b>Downloads</b><span class="s">App icon, illustrations and icon files.</span></a></div>')
+    return page("index.html", "SmarType design", body, current="index.html#flows")
+
+
+# ---------- icons ----------
+
+ICON_USES = [
+    ("Rewrite (AI)", "spark", "Brand, the only custom icon"), ("Translate", "translate", ""), ("Format", "format_list_bulleted", ""),
+    ("Clipboard", "content_paste", ""), ("Notes", "sticky_note_2", "Filled when its panel is open"), ("Emoji", "mood", ""),
+    ("More (smartbar)", "more_horiz", ""), ("Mic", "mic", ""), ("Back", "arrow_back", "Every panel and app bar"),
+    ("Overflow menu", "more_vert", ""), ("Delete recording, remove", "delete", ""), ("Done (voice), selected row", "check", ""),
+    ("New note, add language", "add", ""), ("Pin", "keep", "Filled when pinned"), ("Drag handle", "drag_indicator", ""),
+    ("Globe key, languages", "language", ""), ("Copy", "content_copy", ""), ("Share", "share", ""), ("Undo", "undo", ""),
+    ("Search", "search", ""), ("Row opens a screen", "chevron_right", ""), ("Dropdown", "arrow_drop_down", ""),
+    ("Info banner", "info", ""), ("Warning banner", "warning", ""), ("Error banner", "error", ""), ("Settings", "settings", ""),
+    ("Keyboard", "keyboard", ""), ("Close", "close", ""), ("Numbered list", "format_list_numbered", ""), ("Table", "table", ""),
+    ("Summarise", "summarize", ""), ("Password fields", "lock", ""), ("Google sign-in", "google", "Google's brand mark (ic_google_g_icon)"),
+]
+
+
+def icon_svg(name, fill=False):
+    return components.ic(name, fill=fill).replace(' class="s-ic"', "")
+
+
+def icons_page():
+    cards = "".join(
+        f'<div><span class="pair">{icon_svg(n)}{icon_svg(n, True) if n not in ("spark", "google") else ""}</span><b>{E(use)}</b><code>{E(n)}</code>'
+        f'{f"<span>{E(note)}</span>" if note else ""}</div>' for use, n, note in ICON_USES)
+    body = ('<div class="crumb"><a href="index.html">Design system</a> › Icons</div><h1>Icons</h1>'
+            '<p class="lede">One package for every icon: <b>Material Symbols Rounded</b> by Google (Apache 2.0). It\'s the native Material 3 set, so it matches Android and Gboard.</p>'
+            '<h2>Rules</h2><ul class="check">'
+            '<li>Style: Rounded, outlined, weight 400, grade 0, 24 dp. Filled only for a selected or active state (the right-hand icon in each pair).</li>'
+            '<li>Import only the icons you use, as Android vector drawables (the download below has them), into one place such as a <code>SmarTypeIcons</code> object.</li>'
+            '<li>Replace <code>material-icons-extended</code> (the old Material Icons, no longer updated) over time. Today the app mixes three styles across 104 files: about 280 filled, 100 outlined and 11 rounded.</li>'
+            '<li>Exceptions: the brand spark for AI, the Google G on the sign-in button, and keyboard-only glyphs Material doesn\'t have (for example the kana switchers).</li>'
+            '<li>Icon colour comes from the surrounding text colour (<code>on-surface-variant</code>, or <code>primary</code> when active). Icon-only buttons always have a content description.</li></ul>'
+            f'<h2>Which icon goes where</h2><div class="icons">{cards}</div>'
+            '<h2>Files</h2><p><a href="../downloads/smartype-icons.zip" download>smartype-icons.zip</a>: every icon above as SVG and as Android vector drawables (24 dp), plus the licence.</p>')
+    return page("design-system/icons.html", "Icons · SmarType", body, current="design-system/icons.html")
+
+
+def android_vector(svg_text, viewport, translate_y):
+    paths = re.findall(r'<path([^>]*?)\sd="([^"]+)"([^>]*)>', svg_text)
+    out = []
+    for before, d, after in paths:
+        fill = re.search(r'fill="([^"]+)"', before + after)
+        out.append(f'    <path android:fillColor="{fill.group(1) if fill else "@android:color/white"}" android:pathData="{d}"/>')
+    vw, vh = viewport
+    inner = "\n".join(out)
+    if translate_y:
+        inner = f'  <group android:translateY="{translate_y}">\n{inner}\n  </group>'
+    return (f'<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp"\n'
+            f'    android:viewportWidth="{vw}" android:viewportHeight="{vh}" android:tint="?attr/colorControlNormal">\n{inner}\n</vector>\n')
+
+
+def icons_zip():
+    ms = os.path.join(ASSETS, "icons/material-symbols-rounded")
+    with zipfile.ZipFile(os.path.join(OUT, "downloads/smartype-icons.zip"), "w", zipfile.ZIP_DEFLATED) as z:
+        for f in sorted(os.listdir(ms)):
+            s = read(os.path.join(ms, f))
+            z.writestr(f"svg/{f}", s)
+            z.writestr(f"android/ic_{f[:-4].replace('-', '_')}.xml", android_vector(s, (960, 960), 960))
+        sp = read(os.path.join(ASSETS, "icons/brand/spark.svg"))
+        z.writestr("svg/spark.svg", sp)
+        z.writestr("android/ic_spark.xml", android_vector(sp, (24, 24), 0))
+        z.writestr("LICENSE-material-symbols.txt",
+                   "Material Symbols by Google, version 0.48.0 (@material-symbols/svg-400, rounded).\n"
+                   "Licensed under the Apache License, Version 2.0: https://www.apache.org/licenses/LICENSE-2.0\n")
+
+
+# ---------- design system ----------
+
+def md(p):
+    return markdown.markdown(read(p), extensions=["tables"])
+
 
 COMPONENTS = ["Button", "Card", "Chip", "ListRow", "Sheet", "EmptyState", "KeyboardPanel"]
-toc = "".join(f'<a href="{c.lower()}.html"><b>{c}</b><span>Component</span></a>' for c in COMPONENTS)
-toc += '<a href="tokens.html"><b>Tokens</b><span>Colour, type, spacing, radius</span></a>'
-toc += '<a href="audit-buttons.html"><b>Button audit</b><span>Today\'s code</span></a><a href="audit-components.html"><b>Component audit</b><span>Today\'s code</span></a><a href="illustrations.html"><b>Illustrations</b><span>Prompts and export sizes</span></a>'
-ds_page("design-system/index.html", "SmarType Design System",
-        '<div class="eyebrow">Design system</div><h1>SmarType design system</h1>' + THEME_JS + f'<div class="toc">{toc}</div>' + md(os.path.join(DS, "README.md")))
-for c in COMPONENTS:
-    pv = read(os.path.join(DS, f"components/{c}/preview.html"))
-    banner = ADDENDUM.replace("../audit.html", "../audit.html") if c == "KeyboardPanel" else ""
-    ds_page(f"design-system/{c.lower()}.html", f"{c} · SmarType", '<div class="eyebrow">Component</div>' + banner + THEME_JS
-            + f'<div class="pv">{pv}</div>' + md(os.path.join(DS, f"components/{c}/README.md")))
-for name in ["audit-buttons", "audit-components", "illustrations"]:
-    ds_page(f"design-system/{name}.html", f"{name.replace('-', ' ').title()} · SmarType", md(os.path.join(DS, f"{name}.md")))
+DS_HEAD = ('<link rel="stylesheet" href="bundle.css"><style>.pv{border:1px solid var(--outline-variant);border-radius:16px;padding:16px;margin:16px 0;background:var(--surface-container-low);overflow-x:auto}'
+           '.swatch{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}.swatch div{border:1px solid var(--outline-variant);border-radius:10px;overflow:hidden;font-size:12.5px}'
+           '.swatch i{display:block;height:44px}.swatch p{margin:0;padding:6px 8px}.toc{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin:18px 0}'
+           '.toc a{display:block;background:var(--surface-container-low);border-radius:14px;padding:12px 14px;text-decoration:none;color:var(--on-surface)}.toc a span{display:block;color:var(--on-surface-variant);font-size:13px}</style>')
 
-sw = ""
-for t in tokens["color"]["tokens"]:
-    sw += f'<div><i style="background:var(--{t["name"]})"></i><p><b>{t["name"]}</b><br>{html.escape(t.get("usage", ""))}</p></div>'
-type_rows = "".join(
-    f'<tr><td><code>{s["name"]}</code></td><td>{s["fontSize"]} / {s["lineHeight"]}</td><td>{s["fontWeight"]}</td><td>{html.escape(s.get("usage", ""))}</td></tr>'
-    for g in tokens["type"]["groups"] for s in g["styles"])
-other = ""
-for group in ("spacing", "radius", "shadow", "opacity"):
-    for t in tokens[group]["tokens"]:
-        v = t["value"] if isinstance(t["value"], str) else " / ".join(f"{k}: {x}" for k, x in t["value"].items())
-        other += f'<tr><td><code>{t["name"]}</code></td><td>{html.escape(v)}</td><td>{html.escape(t.get("usage", ""))}</td></tr>'
-ds_page("design-system/tokens.html", "Tokens · SmarType",
-        '<div class="eyebrow">Tokens</div><h1>Tokens</h1>' + THEME_JS + f'<h2>Colour</h2><div class="swatch">{sw}</div>'
-        f'<h2>Type</h2><table><tr><th>Style</th><th>Size / line</th><th>Weight</th><th>Use</th></tr>{type_rows}</table>'
-        f'<h2>Spacing, radius, elevation, state</h2><table><tr><th>Token</th><th>Value</th><th>Use</th></tr>{other}</table>'
-        '<p>Machine-readable: <a href="tokens.css">tokens.css</a>.</p>')
 
-# Downloads
-os.makedirs(os.path.join(OUT, "downloads"), exist_ok=True)
+def ds_write(rel, title, inner):
+    write(rel, page(rel, title, inner, current="design-system/index.html", extra_head=DS_HEAD))
 
+
+def design_system():
+    shutil.copy(os.path.join(DS, "components/bundle.css"), os.path.join(OUT, "design-system/bundle.css"))
+    toc = "".join(f'<a href="{c.lower()}.html"><b>{c}</b><span>Component</span></a>' for c in COMPONENTS)
+    toc += ('<a href="icons.html"><b>Icons</b><span>Material Symbols Rounded</span></a><a href="tokens.html"><b>Tokens</b><span>Colour, type, spacing, radius</span></a>'
+            '<a href="audit-buttons.html"><b>Button audit</b><span>Today\'s code</span></a><a href="audit-components.html"><b>Component audit</b><span>Today\'s code</span></a>'
+            '<a href="illustrations.html"><b>Illustrations</b><span>Prompts and export sizes</span></a>')
+    ds_write("design-system/index.html", "Design system · SmarType", f'<h1>Design system</h1><div class="toc">{toc}</div>' + md(os.path.join(DS, "README.md")))
+    for c in COMPONENTS:
+        if c == "KeyboardPanel":
+            pv = ('<div class="toolbar"><button type="button" class="mbtn" id="measure-toggle" aria-pressed="false">Show measurements</button><span class="hint">Real size: 1 px = 1 dp.</span></div>'
+                  '<div class="shots" style="margin:20px 0">' + screen_html("ai-open", "Rewrite panel", 1) + screen_html("er-ai", "Unavailable: one banner, no dock", 1) + "</div>")
+        else:
+            pv = f'<div class="pv">{read(os.path.join(DS, f"components/{c}/preview.html"))}</div>'
+        ds_write(f"design-system/{c.lower()}.html", f"{c} · SmarType",
+                 f'<div class="crumb"><a href="index.html">Design system</a> › {c}</div>' + pv + md(os.path.join(DS, f"components/{c}/README.md")))
+    for name in ("audit-buttons", "audit-components", "illustrations"):
+        ds_write(f"design-system/{name}.html", f"{name.replace('-', ' ').capitalize()} · SmarType",
+                 '<div class="crumb"><a href="index.html">Design system</a></div>' + md(os.path.join(DS, f"{name}.md")))
+    sw = "".join(f'<div><i style="background:var(--{t["name"]})"></i><p><b>{t["name"]}</b><br>{E(t.get("usage", ""))}</p></div>' for t in TOKENS["color"]["tokens"])
+    type_rows = "".join(f'<tr><td><code>{s["name"]}</code></td><td>{s["fontSize"]} / {s["lineHeight"]}</td><td>{s["fontWeight"]}</td><td>{E(s.get("usage", ""))}</td></tr>'
+                        for g in TOKENS["type"]["groups"] for s in g["styles"])
+    other = ""
+    for g in ("spacing", "radius", "shadow", "opacity"):
+        for t in TOKENS[g]["tokens"]:
+            v = t["value"] if isinstance(t["value"], str) else " / ".join(f"{k}: {x}" for k, x in t["value"].items())
+            other += f'<tr><td><code>{t["name"]}</code></td><td>{E(v)}</td><td>{E(t.get("usage", ""))}</td></tr>'
+    ds_write("design-system/tokens.html", "Tokens · SmarType",
+             '<div class="crumb"><a href="index.html">Design system</a> › Tokens</div><h1>Tokens</h1>'
+             '<p>Values are dp in Android, shown as px. Switch the theme at the top right to see light and dark.</p>'
+             f'<h2>Colour</h2><div class="swatch">{sw}</div><h2>Type</h2><div class="tbl"><table><thead><tr><th>Style</th><th>Size / line</th><th>Weight</th><th>Use</th></tr></thead><tbody>{type_rows}</tbody></table></div>'
+             f'<h2>Spacing, radius, elevation, state</h2><div class="tbl"><table><thead><tr><th>Token</th><th>Value</th><th>Use</th></tr></thead><tbody>{other}</tbody></table></div>'
+             '<p>Machine-readable: <a href="../assets/tokens.css">tokens.css</a>.</p>')
+    write("design-system/icons.html", icons_page())
+
+
+# ---------- downloads ----------
 
 def zip_dir(src, dst, prefix, skip=()):
     with zipfile.ZipFile(dst, "w", zipfile.ZIP_DEFLATED) as z:
         for root, dirs, files in os.walk(src):
             dirs[:] = sorted(d for d in dirs if d not in skip)
             for f in sorted(files):
-                if f.startswith("."):
-                    continue
-                p = os.path.join(root, f)
-                z.write(p, os.path.join(prefix, os.path.relpath(p, src)))
+                if not f.startswith("."):
+                    p = os.path.join(root, f)
+                    z.write(p, os.path.join(prefix, os.path.relpath(p, src)))
 
 
-zip_dir(os.path.join(ASSETS, "brand"), os.path.join(OUT, "downloads/smartype-brand-assets.zip"), "smartype-brand")
-zip_dir(os.path.join(ASSETS, "illustrations"), os.path.join(OUT, "downloads/smartype-illustrations.zip"), "smartype-illustrations", skip=("source",))
+def downloads_page():
+    zip_dir(os.path.join(ASSETS, "brand"), os.path.join(OUT, "downloads/smartype-brand-assets.zip"), "smartype-brand")
+    zip_dir(os.path.join(ASSETS, "illustrations"), os.path.join(OUT, "downloads/smartype-illustrations.zip"), "smartype-illustrations", skip=("source",))
+    shutil.copy(os.path.join(ASSETS, "brand/preview/logo-480.png"), os.path.join(OUT, "assets/art/logo.png"))
+    art = "".join(f'<figure><img src="assets/art/{n}.webp" alt=""><figcaption><code>{n}</code></figcaption></figure>'
+                  for n in ("art_onb_suggestions", "art_signin", "art_subscription", "art_empty_languages"))
+    body = ('<h1>Downloads</h1><p class="lede">Files developers need. Everything else is on the flow pages.</p>'
+            '<h2>App icon and logo</h2><div class="bl" style="border:0"><img src="assets/art/logo.png" alt="SmarType keycap logo" style="box-shadow:none;border-radius:24px">'
+            '<div><ul class="check"><li>Launcher icon: the keycap at 50% of a white adaptive-icon background (108 dp canvas, 72 dp visible, 66 dp safe zone).</li>'
+            '<li>Themed icon (Android 13+): the monochrome S and spark.</li><li>Play Store icon: 512 px, keycap at 74%.</li>'
+            '<li>Don\'t recolour, crop or add effects. The app\'s accent stays teal.</li></ul>'
+            '<p><a href="downloads/smartype-brand-assets.zip" download>smartype-brand-assets.zip</a>: adaptive layers, legacy icons, monochrome layer, Play Store icon, <code>ic_launcher.xml</code>.</p></div></div>'
+            f'<h2>Illustrations</h2><p>Soft clay art for onboarding, sign-in, Premium and empty states. Show at 160–240 dp; never inside the keyboard.</p><div class="art">{art}</div>'
+            '<p><a href="downloads/smartype-illustrations.zip" download>smartype-illustrations.zip</a>: WebP at mdpi, xhdpi and xxhdpi, plus 2000 px masters.</p>'
+            '<h2>Icons</h2><p><a href="downloads/smartype-icons.zip" download>smartype-icons.zip</a>: Material Symbols Rounded as SVG and Android vector drawables. '
+            'See <a href="design-system/icons.html">Icons</a> for which goes where.</p>')
+    return page("downloads.html", "Downloads · SmarType", body, current="downloads.html")
 
-with open(os.path.join(OUT, "vercel.json"), "w") as f:
-    json.dump({"cleanUrls": False, "trailingSlash": False}, f, indent=2)
-    f.write("\n")
-print("built", sum(len(fs) for _, _, fs in os.walk(OUT)), "files")
 
+def main():
+    if os.path.exists(OUT):
+        shutil.rmtree(OUT)
+    for d in ("assets/today", "assets/art", "downloads", "flows", "design-system"):
+        os.makedirs(os.path.join(OUT, d))
+    write("assets/tokens.css", tokens_css())
+    for f in ("site.css", "spec.css", "spec.js"):
+        shutil.copy(os.path.join(SRC, f), os.path.join(OUT, "assets", f))
+    for f in os.listdir(os.path.join(ASSETS, "screens/today")):
+        shutil.copy(os.path.join(ASSETS, "screens/today", f), os.path.join(OUT, "assets/today", f))
+    for n in ("art_onb_suggestions", "art_signin", "art_subscription", "art_empty_languages"):
+        shutil.copy(os.path.join(ASSETS, f"illustrations/android/drawable-xxhdpi/{n}.webp"), os.path.join(OUT, f"assets/art/{n}.webp"))
+    icons_zip()
+    write("index.html", home_page())
+    for i, f in enumerate(FLOWS):
+        write(f"flows/{f['slug']}.html", flow_page(i, f))
+    write("backlog.html", backlog_page())
+    design_system()
+    write("downloads.html", downloads_page())
+    with open(os.path.join(OUT, "vercel.json"), "w") as fh:
+        json.dump({"cleanUrls": False, "trailingSlash": False}, fh, indent=2)
+        fh.write("\n")
+    print("built", sum(len(fs) for _, _, fs in os.walk(OUT)), "files")
+
+
+if __name__ == "__main__":
+    main()

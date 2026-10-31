@@ -36,7 +36,7 @@ One button component for the whole app, `SmarTypeButton`, in six variants and th
 
 ## In the keyboard
 
-`KeyboardPanelButton` stays, because its colours come from the keyboard theme. It follows the same variants, sizes, corners and rules. Its default style changes from the gradient (`PRIMARY`) to `SECONDARY`, so the gradient is opt-in and only on Rewrite, Translate and Insert.
+`KeyboardPanelButton` stays, because its colours come from the keyboard theme. It follows the same variants, sizes, corners and rules. Its default style changes from the gradient (`PRIMARY`) to `SECONDARY`, so the gradient is opt-in and only on AI actions: Replace and Insert of an AI result.
 
 ## What the consumer provides
 

@@ -25,7 +25,7 @@ SmarType is a calm, keyboard-first Android app. The app is dark by default, buil
 - Use `primary-container` with `on-primary-container` for soft emphasis (tonal buttons, the current step, info banners).
 - `secondary` means success only ("Keyboard ready", "Saved"). `tertiary-container` is for neutral badges ("Free plan").
 - `error` is for errors and destructive actions, always with a word or icon, never colour alone.
-- The AI gradient (`ai-gradient-start` to `ai-gradient-end`, text `on-ai-gradient`) is reserved for AI actions: Rewrite, Translate, voice Done, Premium upgrade. The keyboard keeps its own gradient (`brand-cyan` to `brand-teal`).
+- The AI gradient (`ai-gradient-start` to `ai-gradient-end`, text `on-ai-gradient`) is reserved for AI actions: Rewrite, Translate, Format, the mic and voice Done, Replace and Insert of an AI result, and Premium upgrade. The rule "one AI button per screen" applies to labelled buttons, not to the smartbar's round entry buttons. The keyboard keeps its own gradient (`brand-cyan` to `brand-teal`).
 - `amoled` keeps every role from `dark` and sets `background`, `surface` and the container steps to near-black.
 - Every text pair here has been checked: at least 4.5:1 in all three themes. `outline` on `background` is 4.2:1 in light: use it for control borders (3:1 needed), not for text.
 
@@ -74,7 +74,8 @@ SmarType is a calm, keyboard-first Android app. The app is dark by default, buil
 
 ## Iconography
 
-- Material Symbols Rounded, outlined, 24 dp, weight 400. Filled only for the selected state (bottom navigation, toggled tool).
+- Material Symbols Rounded (Apache 2.0), outlined, 24 dp, weight 400, grade 0. Filled only for the selected state (bottom navigation, toggled tool). One package for every icon; see Icons for the list and the files.
+- Exceptions: the brand spark (AI) and the Google G on the sign-in button.
 - Icons sit in `on-surface-variant`, or `primary` when they show a selected or active state.
 - The spark ✦ is the AI symbol. Use it only on AI entry points and AI actions.
 - Every icon-only button has a content description. Decorative icons have none.
@@ -89,4 +90,4 @@ SmarType is a calm, keyboard-first Android app. The app is dark by default, buil
 
 - The keys, key labels and keyboard background follow the user's keyboard theme (the built-in SmarType themes or their own). This system does not restyle them.
 - App-owned keyboard panels (AI, Translate, Clipboard, Voice) take their colours from the active keyboard theme, as the code does today, and use this system's type, spacing, radii and states.
-- Back, or an ABC key, from any panel always returns to the letter keys.
+- `arrow_back` in the panel header, or system Back, from any panel always returns to the letter keys.

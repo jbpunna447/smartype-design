@@ -14,7 +14,7 @@ A flat container for one piece of content (`SmarTypeCard`), plus a `SmarTypeBann
 ## Banner
 
 - For status the user should notice but not act on immediately: "Sign in to use AI", "SmarType is on", "AI can't run on this device right now".
-- `Info`: `primary-container`. `Success`: `secondary-container`. `Error`: `error-container`. Corners `radius-md`, padding 12 by 16 dp.
+- `Info`: `primary-container`. `Success`: `secondary-container`. `Warning`: `warning-container` with `on-warning-container`, for "something is limited, but nothing failed" (for example "Premium isn't available on this phone"). `Error`: `error-container`. Corners `radius-md`, padding 12 by 16 dp.
 - Leading icon, bold first line (the fact), regular second line (what it means), optional text action on the right.
 - One banner per screen, at the top of the content. It replaces toasts for anything that stays true.
 
