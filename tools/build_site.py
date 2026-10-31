@@ -151,6 +151,9 @@ def flow_page(i, f):
     if f["decisions"]:
         dev += ('<h3>Open decisions for the owner</h3><div class="tbl"><table><thead><tr><th>Decision</th><th>Recommendation</th></tr></thead><tbody>' +
                 "".join(f"<tr><td>{E(a)}</td><td>{E(b)}</td></tr>" for a, b in f["decisions"]) + "</tbody></table></div>")
+    if f.get("decided"):
+        dev += ('<h3>Decided</h3><div class="tbl"><table><thead><tr><th>Question</th><th>Decision</th></tr></thead><tbody>' +
+                "".join(f"<tr><td>{E(a)}</td><td>{E(b)}</td></tr>" for a, b in f["decided"]) + "</tbody></table></div>")
     dev += ('<h3>Where in the code</h3><div class="tbl"><table><thead><tr><th>Change</th><th>Where</th></tr></thead><tbody>' +
             "".join(f"<tr><td>{E(a)}</td><td><code>{E(b)}</code></td></tr>" for a, b in f["code"]) + "</tbody></table></div>")
     if f["risky"]:

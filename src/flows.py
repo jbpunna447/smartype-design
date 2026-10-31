@@ -67,7 +67,7 @@ FLOWS = [
         "decisions": [],
     },
     {
-        "slug": "keyboard-bar", "title": "The bar above the keys", "kind": "change", "status": "decision",
+        "slug": "keyboard-bar", "title": "The bar above the keys", "kind": "change", "status": "ready",
         "risky": [], "ids": ["K3", "K4", "V3"],
         "summary": "Two fixed rows: a smartbar that never changes, and suggestions in a row of their own.",
         "problem": [
@@ -101,20 +101,21 @@ FLOWS = [
             ("Quick actions today", "ime/smartbar/quickaction/QuickActionArrangement.kt, QuickAction.kt"),
             ("Panel frame", "ime/ui/KeyboardPanel.kt"),
         ],
-        "decisions": [
-            ("Today's smartbar is customisable (QuickActionArrangement)", "Keep the main buttons fixed; move each user's other quick actions into ⋯ in their current order, once, on update."),
+        "decisions": [],
+        "decided": [
+            ("Today's smartbar is customisable (QuickActionArrangement)", "The main buttons are fixed for everyone (existing users are few). Anyone who customised it gets their other quick actions moved into ⋯ in their current order, once, on update."),
         ],
     },
     {
         "slug": "ai-rewrite", "title": "AI rewrite", "kind": "change", "status": "decision",
         "risky": ["editor", "privacy", "quota"], "ids": ["B1", "B2", "B3", "A2", "A3", "A4", "A5", "A9", "A10", "A11"],
-        "summary": "Tap ✦ and the result is there; switch styles instantly; never lose the user's words.",
+        "summary": "Tap ✦ and the result is there (Premium) or one tap away (free); switch styles instantly; never lose the user's words.",
         "problem": [
             "You type, tap ✦, and get a panel that repeats your message in a quote box, waits for you to pick a style and tap Rewrite, and hides the style chips once a result shows (B1, B2, B3).",
             "A rewrite can fail silently (A2). Replace has no Undo (A5). System Back closes the whole keyboard (A9), and the way back is an ↵ icon that looks like Enter (A10). The chosen style isn't remembered (A3), and a ✅ on the Grammar fix chip reads as \"done\" (A4).",
         ],
         "compare": [
-            ("Open", [("img", "B140-1.jpg", "Quote box; nothing happens until Rewrite (build 140)")], [("scr", "ai-open", "Runs Fix grammar straight away; other pinned styles come in the same request")]),
+            ("Open", [("img", "B140-1.jpg", "Quote box; nothing happens until Rewrite (build 140)")], [("scr", "ai-open", "Premium: runs straight away; all pinned styles in the same request"), ("scr", "ai-free", "Free: nothing is sent until Rewrite")]),
             ("Loading", [("img", "A2-1.jpg", "Can close with no result and no error")], [("scr", "ai-loading", "Skeleton in place; the panel keeps its height")]),
             ("Error", [("text", "The panel closes silently (A2)")], [("scr", "ai-error", "One banner and Try again; the text wasn't changed")]),
             ("After Replace", [("img", "A5-2.jpg", "No way back")], [("scr", "ai-replaced", "\"Replaced with Fix grammar · Undo\" for 6 s")]),
@@ -122,7 +123,8 @@ FLOWS = [
             ("Empty field", [("text", "A panel with nothing to do")], [("scr", "ai-empty", "No request; says what to do")]),
         ],
         "changes": [
-            ("Tap ✦ with text", "Quote box; pick a style; tap Rewrite", "Panel opens and sends one request for Fix grammar and the pinned styles (up to 4). The last-used style shows first (A3)"),
+            ("Tap ✦ with text (Premium)", "Quote box; pick a style; tap Rewrite", "Panel opens and sends one request for Fix grammar and the pinned styles (up to 4). The last-used style shows first (A3)"),
+            ("Tap ✦ with text (free)", "Same as Premium", "Panel opens with the styles and a Rewrite button; nothing is sent until Rewrite. One request for all styles, one try"),
             ("Results arrive", "One style per request", "Every style's result is kept in memory for this text; tapping another chip shows it instantly"),
             ("A style that isn't pinned", "—", "One request for that style; added to the same set"),
             ("Tap ✦ with an empty field", "Panel with nothing to do", "No request; \"Type something first\""),
@@ -142,7 +144,8 @@ FLOWS = [
             ("Selection only", "Selected text only (shown only when part of the text is selected)"),
         ],
         "done": [
-            "Tapping ✦ with text sends exactly one request and shows the preselected style's result; there is no Rewrite button.",
+            "Premium: tapping ✦ with text sends exactly one request and shows the preselected style's result; there is no Rewrite button.",
+            "Free users: tapping ✦ sends nothing; Rewrite sends one request for all styles and counts as one try.",
             "Switching between style chips after results arrive sends no further requests.",
             "Stored results are dropped when the text changes or the keyboard closes; nothing is written to disk.",
             "Every request ends in results or an error banner; the panel never closes by itself (20 tries on a slow network, airplane mode toggled mid-request).",
@@ -162,9 +165,13 @@ FLOWS = [
             ("Pin limit", "AI_PINNED_STYLES_LIMIT = 4 (AiKeyboardStyles.kt)"),
         ],
         "decisions": [
-            ("Tapping ✦ sends the text straight away", "Yes: it's an explicit tap. Blocked in password fields and incognito, as now."),
+            ("How free users' tries are counted", "To revisit. For now free users get a Rewrite button (nothing is sent on ✦), so they only spend a try when they ask for one."),
+        ],
+        "decided": [
+            ("Premium: tapping ✦ sends the text straight away", "Yes. Blocked in password fields and incognito, as now."),
+            ("Free users: tapping ✦", "Opens the panel without sending. A Rewrite button sends one request for the selected style and the pinned styles."),
             ("Results kept in memory only", "Yes: until the text changes or the keyboard closes. Never written to disk, never logged."),
-            ("One ✦ tap = one use, however many styles", "Yes. Needs a server change: today every request reserves one use, and the free allowance is a one-time trial (AI_FREE_TRIAL_LIMIT, default 5)."),
+            ("All styles in one request, counted as one use", "Yes. It's also cheaper: the text and the instructions are sent once instead of once per style, with one round trip. Needs a server change (today the task takes one styleId and every request reserves one use)."),
         ],
     },
     {
@@ -218,8 +225,8 @@ FLOWS = [
         "decisions": [],
     },
     {
-        "slug": "voice", "title": "Voice typing", "kind": "change", "status": "decision",
-        "risky": ["privacy", "editor"], "ids": ["D1", "D2"],
+        "slug": "voice", "title": "Voice typing", "kind": "change", "status": "ready",
+        "risky": ["privacy", "editor", "quota"], "ids": ["D1", "D2"],
         "summary": "Record inside the keyboard, then insert the text with one tap.",
         "problem": [
             "Tapping the mic hands you to Google voice typing, a different keyboard (D1). It gives up after about 3 seconds of silence, and a 60-word dictation came back as one run-on sentence with no punctuation and about 6 misheard phrases (D2).",
@@ -227,18 +234,19 @@ FLOWS = [
         "compare": [
             ("Tap the mic", [("img", "D1-1.jpg", "Google voice typing replaces SmarType")], [("scr", "vo-listen", "The smartbar turns into a recorder: delete, timer, waveform, language, ✓")]),
             ("Pause", [("img", "D1-2.jpg", "3 s of silence ends it")], [("scr", "vo-pause", "Pauses don't end the recording")]),
-            ("Finish", [("img", "D2-1.jpg", "Run-on text, no punctuation")], [("scr", "vo-trans", "✓ transcribes"), ("scr", "vo-inserted", "Inserted at the cursor, with Undo")]),
+            ("Finish", [("img", "D2-1.jpg", "Run-on text, no punctuation")], [("scr", "vo-trans", "✓ transcribes and tidies up"), ("scr", "vo-inserted", "Inserted at the cursor, with Undo")]),
             ("No microphone permission", [("text", "—")], [("scr", "vo-denied", "Says so, with Allow")]),
         ],
         "changes": [
             ("Tap the mic", "Switches to another voice keyboard", "Recording starts in the smartbar. First time: the microphone permission, asked through a small SmarType screen"),
             ("Delete or system Back", "—", "The recording is thrown away; nothing is transcribed or inserted"),
-            ("✓ Done", "—", "\"Transcribing…\", then the text goes in at the cursor with \"Inserted · Undo\" for 6 s"),
+            ("✓ Done", "—", "\"Transcribing and tidying up…\", then the tidied text goes in at the cursor with \"Inserted · Undo\" for 6 s"),
             ("Pauses", "Ends after ~3 s", "Never end the recording: the recogniser restarts and the parts are joined. After 5 s the row says \"Still listening\""),
             ("Time limit", "—", "5 minutes; the timer turns amber at 4:30"),
             ("Language", "Google's", "Auto-detect by default (Android 14+); older phones use the active keyboard language"),
             ("Spoken commands", "—", "\"new line\", \"new paragraph\", \"full stop\", \"comma\", \"question mark\", \"delete that\""),
-            ("Tidy up (D2)", "—", "Optional setting, off by default: an AI pass adds punctuation and fixes likely mishearings. Costs 1 AI use"),
+            ("Tidy up (D2)", "—", "Part of transcribing: an AI pass adds punctuation and sentences and fixes likely mishearings. Counts as 1 AI use"),
+            ("Tidy-up can't run (offline, no tries left)", "—", "Inserts the plain transcription and says \"Inserted without tidy-up\""),
             ("Transcription fails", "—", "\"Couldn't transcribe · Try again\"; the recording is kept until the user retries or deletes it"),
             ("Password fields", "—", "The mic is disabled"),
         ],
@@ -249,6 +257,7 @@ FLOWS = [
             "After ✓, the text is inserted at the cursor only, and Undo removes exactly that text for 6 s.",
             "No audio file is written; no log, analytics event or crash report contains transcript text.",
             "The mic is disabled in password fields.",
+            "Each voice message counts as one AI use; if the tidy-up can't run, the plain text is inserted and nothing is counted.",
         ],
         "code": [
             ("Today's hand-off", "FlorisImeService.switchToVoiceInputMethod; KeyCode.VOICE_INPUT"),
@@ -256,11 +265,13 @@ FLOWS = [
             ("New session", "ime/voice/VoiceSession (new), like AiRewriteSession in the keyboard service scope"),
             ("Insert and Undo", "commitText at the cursor through EditorInstance"),
             ("Permission", "RECORD_AUDIO, asked from a small SmarType activity; update the Play Data safety form"),
+            ("Tidy-up", "New managed AI task (e.g. AiTask.CleanDictation) in :usage:firebase and functions/src/prompts.ts; counted by the quota"),
         ],
-        "decisions": [
-            ("Where speech is transcribed", "On the phone (SpeechRecognizer): no server, no cost, audio stays on the phone. Cloud transcription goes through the Functions and the quota and needs a plan review."),
-            ("Tidy up after voice", "A setting, off by default, because it spends AI uses."),
-            ("Does a voice message count as an AI use?", "No, while it's on the phone. Tidy up does."),
+        "decisions": [],
+        "decided": [
+            ("Where speech is transcribed", "On the phone (SpeechRecognizer): audio never leaves the phone."),
+            ("Tidy up", "Always part of the transcribing step: punctuation, sentences and likely mishearings are fixed before the text is inserted."),
+            ("Does a voice message count as an AI use?", "Yes, one use per message (the tidy-up is an AI request)."),
         ],
     },
     {

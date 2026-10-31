@@ -24,6 +24,10 @@ S["ai-open"] = device(chat(text=TYPED) + _kb(panel_html=panel(
     "Rewrite",
     chips([("Fix grammar", "sel"), "Polite", "Professional", "Shorter"]) + result("Fix grammar", "I'm running late for the meeting, sorry.", "Show changes"),
     badge="4 left", dock=dock(("Copy", "q"), ("Replace", "ai")))), ime=True)
+S["ai-free"] = device(chat(text=TYPED) + _kb(panel_html=panel(
+    "Rewrite", chips([("Fix grammar", "sel"), "Polite", "Professional", "Shorter"], annotate=False) +
+    kbanner("info", "Pick a style, then tap Rewrite.", "Free plan: 4 tries left. One tap rewrites in all your styles."),
+    badge="4 left", dock=dock(("Rewrite", "ai")))), ime=True)
 S["ai-loading"] = device(chat(text=TYPED) + _kb(panel_html=panel(
     "Rewrite", chips([("Fix grammar", "sel"), "Polite", "Professional", "Shorter"], annotate=False) + result("Writing your options…", "", skel=True),
     badge="4 left", dock=dock(("Copy", "q"), ("Replace", "ai"), annotate=False))), ime=True)

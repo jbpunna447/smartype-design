@@ -210,7 +210,7 @@ def voicebar(state="listening"):
                 f'<div class="s-vmsg">Microphone is off<b>Allow</b></div></div>')
     dele = f'<div class="s-btn{" dis" if state == "transcribing" else ""}" style="color:var(--kb-on)"{ann("Delete recording", "Touch target 48 dp; discards without transcribing", "keyboard on-background", "delete")}>{ic("delete")}</div>'
     if state == "transcribing":
-        mid = f'<div class="s-prog"{ann("Progress", "Height 32 dp; radius 16 dp; 3 dp indeterminate bar", "keyboard key surface; bar keyboard primary")}>Transcribing… · Hindi detected</div>'
+        mid = f'<div class="s-prog"{ann("Progress", "Height 32 dp; radius 16 dp; 3 dp indeterminate bar", "keyboard key surface; bar keyboard primary")}>Transcribing and tidying up… · Hindi</div>'
         return f'<div class="s-row48"{va}>{dele}{mid}</div>'
     rec = f'<div class="s-rec"{ann("Recording dot and timer", "Dot 8 dp; timer 13 sp monospace")}><i></i>0:07</div>'
     lang = f'<span class="s-lang"{ann("Language chip", "Height 32 dp; radius 12 dp; Auto-detect by default", "border keyboard line", "arrow_drop_down")}>Auto{ic("arrow_drop_down", size=20)}</span>'
