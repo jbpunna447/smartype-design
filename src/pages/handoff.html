@@ -1,0 +1,115 @@
+<title>SmarType UX Handoff</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{--bg:#eef3f4;--surface:#fff;--ink:#10282e;--muted:#4c6066;--line:#d4e3e6;--accent:#0b727b;--soft:#d2eef2;--warn:#8a5a00;--warnbg:#fbf0d9;--f:"Google Sans Flex","DM Sans",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#071012;--surface:#122024;--ink:#ddebee;--muted:#b5cacf;--line:#2f4347;--accent:#5fd3df;--soft:#0f4f57;--warn:#f2c46b;--warnbg:#352a10;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#071012;--surface:#122024;--ink:#ddebee;--muted:#b5cacf;--line:#2f4347;--accent:#5fd3df;--soft:#0f4f57;--warn:#f2c46b;--warnbg:#352a10;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:15px;line-height:1.55;margin:0}
+.wrap{max-width:1040px;margin:0 auto;padding-block:36px 70px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:clamp(28px,4vw,38px);font-weight:700;margin:6px 0 10px;text-wrap:balance}
+h2{font-size:22px;margin:40px 0 12px}
+p{max-width:72ch}
+.lede{color:var(--muted);font-size:16.5px;margin:0}
+a{color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:6px;text-decoration:none;color:var(--ink)}
+.card:hover{border-color:var(--accent)}
+.card .n{font-family:var(--mono);font-size:12px;color:var(--accent)}
+.card b{font-size:17px}
+.card span{color:var(--muted);font-size:14px}
+.card .ids{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.risk{display:inline-block;align-self:flex-start;font-size:11.5px;font-weight:700;border-radius:6px;padding:2px 8px;background:var(--warnbg);color:var(--warn)}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+code{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 5px;border-radius:4px}
+ol.steps{padding-left:22px;display:grid;gap:8px}
+ul.ac{list-style:none;padding:0;display:grid;gap:6px}
+ul.ac li{padding-left:26px;position:relative}
+ul.ac li::before{content:"✓";position:absolute;left:4px;color:var(--accent);font-weight:700}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px}
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">Developer hand-off · 1 Nov 2026</div>
+  <h1>SmarType UX fix pack</h1>
+  <p class="lede">Everything needed to build the UX fixes from the end-to-end review: five fix specs, the design system they're built on, and the brand and art assets. Each fix page has screens in dark and light, behaviour tables, acceptance criteria and code pointers. Checked against build 140 (main @ 0cb177d63).</p>
+
+  <h2>The fixes</h2>
+  <div class="grid">
+    <a class="card" href="https://claude.ai/artifact/FxYnWeVkWAqp9jiFsF7eX9"><span class="n">Fix 1b · start here</span><b>Smartbar, voice and panels</b><span>Two fixed rows (smartbar and suggestions). Rewrite, Translate and Format as separate buttons; every panel has a ‹ Name header; voice recording inside the keyboard; Clipboard and Notes split; Notes as a drafting space.</span><span class="ids">B1–B6 · D1 · A10 · N1–N3</span><span class="risk">Editor text · Typed-text privacy</span></a>
+    <a class="card" href="https://claude.ai/artifact/35LbtmyEzT7Fo2dtRtjKr3"><span class="n">Fix 1</span><b>AI panel behaviour</b><span>Runs on ✦ with one request for all styles, kept in memory. Errors with Try again, Replace with Undo, Back returns to the keys. Build the look from 1b.</span><span class="ids">A2 · A3 · A5 · A9 · A11</span><span class="risk">Editor text · Managed AI quota</span></a>
+    <a class="card" href="https://claude.ai/artifact/S9q9FYBfXkpjXAcdkVzZ8x"><span class="n">Fix 2</span><b>Languages</b><span>Save English as a real language on first launch so adding Hindi never removes it. 🌐 stays in SmarType. Indian languages suggested first. Details sheet and reorder. Transliteration and Hindi suggestions are phase 2 (new features).</span><span class="ids">L1–L5</span></a>
+    <a class="card" href="https://claude.ai/artifact/D3bcP4UMorE7H4W5rwbLyG"><span class="n">Fix 4</span><b>Error messages</b><span>Map error codes to app strings; never show backend exception text. Plain messages on Home, Premium, the AI panel, sign-in and toasts.</span><span class="ids">H1 · P1 · A1 · O4 · V2 · sign-in failure</span><span class="risk">Payments · Auth · App Check</span></a>
+    <a class="card" href="https://claude.ai/artifact/75JNwaBPJxeKmsfuEyZroy"><span class="n">Fix 5</span><b>Setup and onboarding</b><span>Keyboard working first, a real try, then a benefit-led, skippable sign-in. Two intro pages, three-line privacy, status chips, one primary button per screen.</span><span class="ids">O1 · O2 · O3 · O5</span><span class="risk">Auth</span></a>
+    <div class="card"><span class="n">Fix 3</span><b>Mic hand-off</b><span>Merged into Fix 1b: the mic records inside the keyboard instead of switching to another voice keyboard.</span><span class="ids">D1</span></div>
+  </div>
+
+  <h2>Foundations and assets</h2>
+  <div class="grid">
+    <a class="card" href="https://claude.ai/artifact/2RqjhWzGiQBbEwiVxLbA7a"><span class="n">Audit · read first</span><b>What was checked and corrected</b><span>Every spec checked against the code, the other pages and the review: 13 facts corrected, 15 contradictions resolved, 10 design holes, the design system addendum, and the findings not covered yet.</span></a>
+    <a class="card" href="https://claude.ai/artifact/GT2ALjSxSacdjsXVZKyNcp"><span class="n">Design system</span><b>Tokens and components</b><span>Colours, type (Google Sans Flex), shapes, Button, Card, ListRow, Chip, Sheet, KeyboardPanel, EmptyState, and the button audit. Every fix uses these.</span></a>
+    <a class="card" href="https://claude.ai/artifact/KuPQvh8SvC84k8hfWpwSWv"><span class="n">Brand kit</span><b>Icon and logo</b><span>Adaptive launcher icon, Play Store icon, monochrome layer. Files in <code>design-handoff/01-brand/</code>.</span></a>
+    <a class="card" href="https://claude.ai/artifact/T4oCuTJSNaGKPxsLmRAWTV"><span class="n">Illustrations</span><b>Art in screens</b><span>Clay art for onboarding, sign-in, Premium and empty states. WebP at mdpi, xhdpi and xxhdpi in <code>design-handoff/02-illustrations/android/</code>.</span></a>
+    <a class="card" href="https://claude.ai/artifact/4q7weqFHQKBAJesyBaZHXz"><span class="n">Source</span><b>UX review (47 findings)</b><span>The original findings with screenshots. The IDs on this page (A2, L1, …) point there.</span></a>
+  </div>
+
+  <h2 id="downloads">Downloads</h2>
+  <div class="grid">
+    <a class="card" href="downloads/smartype-brand-assets.zip" download><span class="n">ZIP · 1 MB</span><b>Brand assets</b><span>Adaptive launcher icon layers, legacy icons, monochrome layer, Play Store icon, <code>ic_launcher.xml</code>.</span></a>
+    <a class="card" href="downloads/smartype-illustrations.zip" download><span class="n">ZIP</span><b>Illustrations</b><span>The four finished clay illustrations as WebP at mdpi, xhdpi and xxhdpi, plus 2000 px masters.</span></a>
+  </div>
+
+  <h2>Suggested build order</h2>
+  <ol class="steps">
+    <li><b>Fix 4 copy only</b>: replace the user-facing strings and stop showing backend messages. Small, safe, and it removes the worst first impressions. (The logic parts of Fix 4 wait for the plan review.)</li>
+    <li><b>Fix 2 Languages</b>: the "save English as a real language" change plus the 🌐 behaviour. Self-contained; fixes two High findings.</li>
+    <li><b>Fix 1b + Fix 1 together</b>: the smartbar and panels first (layout, ‹ Name headers, Back), then auto-run and caching, then Format, then Clipboard/Notes, then voice.</li>
+    <li><b>Fix 5 Setup</b>: after Fix 4, because its sign-in screen uses Fix 4's "Couldn't sign in" state.</li>
+  </ol>
+
+  <h2>Needs the owner's plan review first</h2>
+  <p style="margin:0 0 10px;color:var(--muted)">Per AGENTS.md, a plan that touches these areas needs the owner's review before work starts.</p>
+  <div class="tbl"><table>
+    <tr><th>Fix</th><th>What touches a risky area</th><th>Area</th></tr>
+    <tr><td>1 / 1b</td><td>Replace, Undo and inserting transcribed or note text into other apps</td><td>Editor text changes</td></tr>
+    <tr><td>1</td><td>One request for all styles; how a ✦ tap counts against the quota</td><td>Managed AI quota (Functions)</td></tr>
+    <tr><td>1b</td><td>Voice audio and note text; cloud transcription if chosen</td><td>Typed-text privacy; Firebase backend</td></tr>
+    <tr><td>4</td><td>Hiding Upgrade, when the entitlement toast fires, the sign-in failure state</td><td>Payments and entitlements; Auth; App Check</td></tr>
+    <tr><td>5</td><td>Moving sign-in after setup; sign-in from ✦</td><td>Auth and account identity</td></tr>
+  </table></div>
+
+  <h2>Open decisions for the owner</h2>
+  <div class="tbl"><table>
+    <tr><th>Decision</th><th>Recommendation</th><th>Spec</th></tr>
+    <tr><td>Tapping ✦ sends the text to AI straight away</td><td>Yes; it's an explicit tap</td><td>Fix 1</td></tr>
+    <tr><td>AI results kept in memory only</td><td>Yes; never written to disk</td><td>Fix 1</td></tr>
+    <tr><td>One ✦ tap = one use, even with several styles returned</td><td>Yes</td><td>Fix 1</td></tr>
+    <tr><td>Styles per request</td><td>Up to 6</td><td>Fix 1</td></tr>
+    <tr><td>Where voice is transcribed</td><td>On the device first (<code>SpeechRecognizer</code>)</td><td>Fix 1b</td></tr>
+    <tr><td>Emoji on the smartbar</td><td>Only when there's room and the keyboard has no emoji key of its own</td><td>Fix 1b</td></tr>
+    <tr><td>Batch all styles in one request that counts as one use</td><td>Yes. The free allowance is a one-time trial (default 5), so auto-run must not spend several</td><td>Fix 1</td></tr>
+    <tr><td>Suggestion row when empty</td><td>Decided: keep its height, so the app doesn't jump</td><td>Fix 1b</td></tr>
+    <tr><td>Voice: ✓ instead of a paper plane; "Tidy up" after voice</td><td>✓ decided; Tidy up as a setting, off by default (open)</td><td>Fix 1b</td></tr>
+    <tr><td>Today's customised smartbars</td><td>Main buttons fixed; each user's other actions move into ⋯ once</td><td>Fix 1b</td></tr>
+    <tr><td>"Describe what to write" for new drafts</td><td>Yes, in a later release</td><td>Fix 1b</td></tr>
+  </table></div>
+
+  <h2>Rules that apply to every fix</h2>
+  <ul class="ac">
+    <li>Use the design-system tokens and components; no one-off colours or buttons.</li>
+    <li>One primary action per screen or panel; secondary actions are tonal or text. Task screens put it full width at the bottom.</li>
+    <li>Every panel and screen has the same way back: ‹ and system Back.</li>
+    <li>No internal words on screen (token, catalog, Firebase, Firestore, subtype, managed AI).</li>
+    <li>No log, analytics event or crash report carries typed text, candidates, clipboard, notes, audio or AI text.</li>
+    <li>Check each change at 360 dp and 412 dp, at large font, and in light, dark and AMOLED themes.</li>
+    <li>Lint adds no new finding; follow the test tiers and device test in AGENTS.md.</li>
+  </ul>
+
+  <h2>Not designed yet</h2>
+  <div class="note">21 of the 47 review findings aren't designed yet, among them TalkBack on keyboard panels (A8), dictation quality (D2), settings summaries and search (S1, S2), Writing styles (AS3), and two Premium issues that need a device check first (P2, P3). The full list is on the <a href="https://claude.ai/artifact/2RqjhWzGiQBbEwiVxLbA7a">audit page</a>. Illustrations 1, 3, 4, 6 and 9–14 are still to be exported.</div>
+</div>

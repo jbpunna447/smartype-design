@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SmarType Design System</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"><link rel="stylesheet" href="tokens.css"><link rel="stylesheet" href="bundle.css"><style>
+body{margin:0;background:var(--background);color:var(--on-surface);font:15px/1.6 var(--font-sans)}
+.wrap{max-width:980px;margin:0 auto;padding:28px 16px 70px}
+.wrap h1{font-size:34px;line-height:1.15;margin:8px 0 12px}.wrap h2{font-size:22px;margin:34px 0 8px}.wrap h3{font-size:17px}
+.wrap table{border-collapse:collapse;width:100%;font-size:14px;display:block;overflow-x:auto}
+.wrap th,.wrap td{border-bottom:1px solid var(--outline-variant);padding:8px 10px;text-align:left;vertical-align:top}
+.wrap code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.85em;background:var(--surface-container);padding:1px 5px;border-radius:4px}
+.wrap a{color:var(--primary)}
+.eyebrow{font:500 12px "JetBrains Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--primary)}
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:18px 0}
+.toc a{display:block;background:var(--surface-container-low);border-radius:14px;padding:12px 14px;text-decoration:none;color:var(--on-surface)}
+.toc a b{display:block}.toc a span{color:var(--on-surface-variant);font-size:13px}
+.pv{border:1px solid var(--outline-variant);border-radius:16px;padding:16px;margin:16px 0;background:var(--surface-container-low);overflow-x:auto}
+.swatch{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.swatch div{border:1px solid var(--outline-variant);border-radius:10px;overflow:hidden;font-size:12.5px}
+.swatch i{display:block;height:44px}.swatch p{margin:0;padding:6px 8px}
+.themes{display:flex;gap:6px;margin:10px 0}.themes button{font:inherit;border:1px solid var(--outline);background:transparent;color:var(--on-surface);border-radius:8px;padding:4px 10px;cursor:pointer}
+</style></head><body><style>
+.stx-nav{position:sticky;top:0;z-index:1000;display:flex;gap:2px;align-items:center;overflow-x:auto;
+  background:#0b1416;border-bottom:1px solid #22363a;padding:0 max(12px,env(safe-area-inset-left,0px));
+  font:500 13px/1 "Google Sans Flex","DM Sans",system-ui,sans-serif;scrollbar-width:none}
+.stx-nav::-webkit-scrollbar{display:none}
+.stx-nav a{color:#b5cacf;text-decoration:none;padding:13px 10px;white-space:nowrap;border-bottom:2px solid transparent}
+.stx-nav a:hover,.stx-nav a:focus-visible{color:#fff}
+.stx-nav a[aria-current=page]{color:#5fd3df;border-bottom-color:#5fd3df}
+.stx-nav .stx-brand{color:#fff;font-weight:700;padding-right:14px}
+.stx-note{max-width:1040px;margin:18px auto 0;padding:12px 16px;border-radius:12px;background:#fbf0d9;color:#4d3800;
+  font:14px/1.5 "Google Sans Flex","DM Sans",system-ui,sans-serif;box-sizing:border-box}
+.stx-note a{color:#4d3800;font-weight:700}
+.stx-notewrap{padding:0 16px}
+@media (prefers-color-scheme:dark){.stx-note{background:#352a10;color:#f6dfa6}.stx-note a{color:#f6dfa6}}
+</style><nav class="stx-nav" aria-label="Site"><a class="stx-brand" href="../index.html">SmarType UX</a><a href="../index.html">Hand-off</a><a href="../audit.html">Audit</a><a href="../fix-1b.html">1b Smartbar</a><a href="../fix-1.html">1 AI panel</a><a href="../fix-2.html">2 Languages</a><a href="../fix-4.html">4 Errors</a><a href="../fix-5.html">5 Setup</a><a href="../design-system/index.html" aria-current="page">Design system</a><a href="../review.html">Review</a><a href="../specs.html">Specs</a><a href="../brand.html">Brand</a><a href="../art.html">Art</a></nav><div class="wrap"><div class="eyebrow">Design system</div><h1>SmarType design system</h1><div class="themes" role="group" aria-label="Theme"><button data-t="dark">Dark</button><button data-t="light">Light</button><button data-t="amoled">AMOLED</button></div>
+<script>document.querySelectorAll('.themes button').forEach(b=>b.onclick=()=>document.documentElement.dataset.theme=b.dataset.t)</script><div class="toc"><a href="button.html"><b>Button</b><span>Component</span></a><a href="card.html"><b>Card</b><span>Component</span></a><a href="chip.html"><b>Chip</b><span>Component</span></a><a href="listrow.html"><b>ListRow</b><span>Component</span></a><a href="sheet.html"><b>Sheet</b><span>Component</span></a><a href="emptystate.html"><b>EmptyState</b><span>Component</span></a><a href="keyboardpanel.html"><b>KeyboardPanel</b><span>Component</span></a><a href="tokens.html"><b>Tokens</b><span>Colour, type, spacing, radius</span></a><a href="audit-buttons.html"><b>Button audit</b><span>Today's code</span></a><a href="audit-components.html"><b>Component audit</b><span>Today's code</span></a><a href="illustrations.html"><b>Illustrations</b><span>Prompts and export sizes</span></a></div><p>SmarType is a calm, keyboard-first Android app. The app is dark by default, built on Material 3 with a teal accent, set in Google Sans Flex, and saves its boldest moments (3D artwork and the AI gradient) for the few places that matter. This system writes down the app as it looks today (its colours, radii and type scale come straight from the code), so new screens and fixes stay consistent with it. It is not a redesign. These rules apply to the SmarType app and to the app-owned panels inside the keyboard. The keyboard keys themselves follow the user's chosen keyboard theme.</p>
+<h2>Principles</h2>
+<ul>
+<li><strong>Calm first.</strong> Neutral surfaces, one accent, generous spacing. If a screen needs a second accent colour, it probably needs fewer things on it.</li>
+<li><strong>Dark by default, light as an equal.</strong> Design every screen in <code>dark</code> first, then check <code>light</code> and <code>amoled</code>. Never ship a screen that only works in one.</li>
+<li><strong>The keyboard is the product.</strong> Settings exist to make typing better. Lead with what the user does (type, rewrite, dictate), not with configuration.</li>
+<li><strong>AI only when asked.</strong> The spark ✦ and the AI gradient appear only on things that send text to AI after a tap. Nothing else gets them.</li>
+<li><strong>One bold moment per screen.</strong> A 3D illustration or the AI gradient, not both, and never on a dense settings screen.</li>
+<li><strong>Reference: Gboard.</strong> Familiar Google patterns: Material 3 components, a plain settings list, no surprises. SmarType differs in its teal identity and its AI.</li>
+</ul>
+<h2>Writing</h2>
+<ul>
+<li>Speak to the user as "you". Sentence case for everything: titles, buttons, chips. ("Open keyboard settings", not "Open Keyboard Settings".)</li>
+<li>Name things by what people recognise: "keyboard languages", not "subtypes"; "Sign in with Google", not "Firebase Authentication".</li>
+<li>Buttons say exactly what happens: "Turn on SmarType", "Replace", "Insert". The confirmation echoes it: "Replaced · Undo".</li>
+<li>Errors say what went wrong and what to do, with no blame and no internal terms. Write "AI can't run on this device right now. Your text wasn't sent." Never write "App verification failed. Update SmarType and try again."</li>
+<li>No emoji in interface text. The only glyph that carries meaning is ✦ for AI. Style chips may show their own emoji because that is the content.</li>
+<li>Numbers as digits ("3 styles", "Step 1 of 3"). Times as "11:31", relative dates as "Yesterday".</li>
+</ul>
+<h2>Colour</h2>
+<ul>
+<li>Build screens from the Material 3 roles in this system. Page: <code>background</code>. Groups and cards: <code>surface-container-low</code>, then <code>surface-container</code> and <code>surface-container-high</code> for raised layers. Text: <code>on-surface</code>; secondary text: <code>on-surface-variant</code>.</li>
+<li><code>primary</code> is the single accent: the main button, selected states, links, the focus ring. Text on it is <code>on-primary</code>.</li>
+<li>Use <code>primary-container</code> with <code>on-primary-container</code> for soft emphasis (tonal buttons, the current step, info banners).</li>
+<li><code>secondary</code> means success only ("Keyboard ready", "Saved"). <code>tertiary-container</code> is for neutral badges ("Free plan").</li>
+<li><code>error</code> is for errors and destructive actions, always with a word or icon, never colour alone.</li>
+<li>The AI gradient (<code>ai-gradient-start</code> to <code>ai-gradient-end</code>, text <code>on-ai-gradient</code>) is reserved for AI actions: Rewrite, Translate, voice Done, Premium upgrade. The keyboard keeps its own gradient (<code>brand-cyan</code> to <code>brand-teal</code>).</li>
+<li><code>amoled</code> keeps every role from <code>dark</code> and sets <code>background</code>, <code>surface</code> and the container steps to near-black.</li>
+<li>Every text pair here has been checked: at least 4.5:1 in all three themes. <code>outline</code> on <code>background</code> is 4.2:1 in light: use it for control borders (3:1 needed), not for text.</li>
+</ul>
+<h2>Type</h2>
+<ul>
+<li>One family: Google Sans Flex (variable). Hierarchy comes from size and weight, never from a second typeface. Until the font ships in the app, the fallback is DM Sans.</li>
+<li>Screen title: <code>title-large</code> in the small top app bar, <code>headline-large</code> when the bar is expanded. Section headers: <code>title-small</code> in <code>primary</code>.</li>
+<li>Row titles: <code>title-medium</code>; row summaries: <code>body-medium</code> in <code>on-surface-variant</code>.</li>
+<li>Buttons: <code>label-large</code>. Chips: <code>label-medium</code>. Badges and step labels: <code>label-small</code>, the smallest text allowed.</li>
+<li>Onboarding headlines: <code>display-small</code> or <code>headline-medium</code>, never larger on a phone.</li>
+<li>Non-Latin scripts (Devanagari and others) fall back to the system Noto fonts; keep line heights from the style so mixed lines don't jump.</li>
+</ul>
+<h2>Layout and spacing</h2>
+<ul>
+<li>4 dp grid. Side gutter <code>space-4</code> (16 dp), <code>space-5</code> on wide phones. Card padding <code>space-4</code>. Gap between cards <code>space-3</code>. Gap between sections <code>space-6</code>.</li>
+<li>Touch targets at least <code>space-12</code> (48 dp). Prefer min-heights over fixed heights so text can grow at large font sizes.</li>
+<li>One column on phones. Primary action at the bottom of task screens (onboarding, setup), at the top right for app bar actions.</li>
+<li>Test every screen at font scale 1.5 and at 320 dp width: nothing clips, text wraps.</li>
+</ul>
+<h2>Shape and elevation</h2>
+<ul>
+<li>Buttons <code>radius-md</code> (see Components → Button); chips and fields <code>radius-sm</code>; cards <code>radius-lg</code>; dialogs and sheet tops <code>radius-xl</code>. <code>radius-full</code> only for avatars, dots and switch thumbs, never for buttons.</li>
+<li>Dark and AMOLED show depth with tonal steps (<code>surface-container-*</code>), not shadows. Light uses <code>elevation-1</code> for menus and <code>elevation-2</code> for dialogs and sheets. Cards stay flat (<code>elevation-0</code>).</li>
+<li>Dividers: <code>outline-variant</code>, 1 dp, only between rows inside one group.</li>
+</ul>
+<h2>States</h2>
+<ul>
+<li>Pressed, hovered, focused and dragged states use a layer of the content colour at <code>state-pressed</code>, <code>state-hover</code>, <code>state-focus</code> and <code>state-dragged</code>.</li>
+<li>Disabled: content at <code>disabled-content</code>, container at <code>disabled-container</code>. A disabled control still says why nearby ("Sign in to use AI").</li>
+<li>Focus ring: 2 dp solid <code>primary</code>, offset 2 dp. It reaches at least 3:1 on every surface in every theme.</li>
+<li>Loading: keep the layout stable and show a progress indicator in place of the action; never blank the screen.</li>
+</ul>
+<h2>Motion</h2>
+<ul>
+<li>Short and purposeful: 100 ms for presses and toggles, 200 ms for panels and chips, 300 ms for screen transitions, using Material's emphasized easing.</li>
+<li>One orchestrated moment at most per screen (the welcome keycap rising, the AI result appearing). No looping decoration.</li>
+<li>With "Remove animations" on, cross-fade at 100 ms or cut.</li>
+</ul>
+<h2>Illustration</h2>
+<ul>
+<li>3D artwork appears only on onboarding, empty states and celebration moments, never on settings or inside the keyboard.</li>
+<li>Style: soft clay 3D icons. Rounded, slightly inflated shapes with a smooth soft-touch matte finish, perfectly smooth (no fingerprints, tool marks or handmade texture). Graphite clay keycaps, soft white clay details and one teal clay accent, No text, no people, no device frames.</li>
+<li>Ship art with a transparent background: one image per illustration for every theme and surface. It must read on both the dark and the light <code>background</code>.</li>
+<li>The recurring subject is a plain graphite keycap with a teal spark, not the logo. The full list, prompts and export sizes are in the Illustrations section.</li>
+<li>Show art at 160 to 240 dp wide, ship it as WebP at 3x, under 80 KB each.</li>
+</ul>
+<h2>Iconography</h2>
+<ul>
+<li>Material Symbols Rounded, outlined, 24 dp, weight 400. Filled only for the selected state (bottom navigation, toggled tool).</li>
+<li>Icons sit in <code>on-surface-variant</code>, or <code>primary</code> when they show a selected or active state.</li>
+<li>The spark ✦ is the AI symbol. Use it only on AI entry points and AI actions.</li>
+<li>Every icon-only button has a content description. Decorative icons have none.</li>
+</ul>
+<h2>Logo</h2>
+<ul>
+<li>The SmarType mark is a graphite keycap with a frosted S (its lower half drawn as voice bars) and a glowing spark. Use the files in Logos; never redraw it.</li>
+<li>App icon: the keycap at 50% of a white adaptive-icon background. Themed icons use the monochrome S and spark.</li>
+<li>Keep clear space of at least 25% of the keycap's width. Don't recolour, crop or add effects. A teal version of the mark is planned; until then, use these files as they are.</li>
+</ul>
+<h2>The keyboard</h2>
+<ul>
+<li>The keys, key labels and keyboard background follow the user's keyboard theme (the built-in SmarType themes or their own). This system does not restyle them.</li>
+<li>App-owned keyboard panels (AI, Translate, Clipboard, Voice) take their colours from the active keyboard theme, as the code does today, and use this system's type, spacing, radii and states.</li>
+<li>Back, or an ABC key, from any panel always returns to the letter keys.</li>
+</ul></div></body></html>

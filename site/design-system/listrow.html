@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ListRow · SmarType</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"><link rel="stylesheet" href="tokens.css"><link rel="stylesheet" href="bundle.css"><style>
+body{margin:0;background:var(--background);color:var(--on-surface);font:15px/1.6 var(--font-sans)}
+.wrap{max-width:980px;margin:0 auto;padding:28px 16px 70px}
+.wrap h1{font-size:34px;line-height:1.15;margin:8px 0 12px}.wrap h2{font-size:22px;margin:34px 0 8px}.wrap h3{font-size:17px}
+.wrap table{border-collapse:collapse;width:100%;font-size:14px;display:block;overflow-x:auto}
+.wrap th,.wrap td{border-bottom:1px solid var(--outline-variant);padding:8px 10px;text-align:left;vertical-align:top}
+.wrap code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.85em;background:var(--surface-container);padding:1px 5px;border-radius:4px}
+.wrap a{color:var(--primary)}
+.eyebrow{font:500 12px "JetBrains Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--primary)}
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:18px 0}
+.toc a{display:block;background:var(--surface-container-low);border-radius:14px;padding:12px 14px;text-decoration:none;color:var(--on-surface)}
+.toc a b{display:block}.toc a span{color:var(--on-surface-variant);font-size:13px}
+.pv{border:1px solid var(--outline-variant);border-radius:16px;padding:16px;margin:16px 0;background:var(--surface-container-low);overflow-x:auto}
+.swatch{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.swatch div{border:1px solid var(--outline-variant);border-radius:10px;overflow:hidden;font-size:12.5px}
+.swatch i{display:block;height:44px}.swatch p{margin:0;padding:6px 8px}
+.themes{display:flex;gap:6px;margin:10px 0}.themes button{font:inherit;border:1px solid var(--outline);background:transparent;color:var(--on-surface);border-radius:8px;padding:4px 10px;cursor:pointer}
+</style></head><body><style>
+.stx-nav{position:sticky;top:0;z-index:1000;display:flex;gap:2px;align-items:center;overflow-x:auto;
+  background:#0b1416;border-bottom:1px solid #22363a;padding:0 max(12px,env(safe-area-inset-left,0px));
+  font:500 13px/1 "Google Sans Flex","DM Sans",system-ui,sans-serif;scrollbar-width:none}
+.stx-nav::-webkit-scrollbar{display:none}
+.stx-nav a{color:#b5cacf;text-decoration:none;padding:13px 10px;white-space:nowrap;border-bottom:2px solid transparent}
+.stx-nav a:hover,.stx-nav a:focus-visible{color:#fff}
+.stx-nav a[aria-current=page]{color:#5fd3df;border-bottom-color:#5fd3df}
+.stx-nav .stx-brand{color:#fff;font-weight:700;padding-right:14px}
+.stx-note{max-width:1040px;margin:18px auto 0;padding:12px 16px;border-radius:12px;background:#fbf0d9;color:#4d3800;
+  font:14px/1.5 "Google Sans Flex","DM Sans",system-ui,sans-serif;box-sizing:border-box}
+.stx-note a{color:#4d3800;font-weight:700}
+.stx-notewrap{padding:0 16px}
+@media (prefers-color-scheme:dark){.stx-note{background:#352a10;color:#f6dfa6}.stx-note a{color:#f6dfa6}}
+</style><nav class="stx-nav" aria-label="Site"><a class="stx-brand" href="../index.html">SmarType UX</a><a href="../index.html">Hand-off</a><a href="../audit.html">Audit</a><a href="../fix-1b.html">1b Smartbar</a><a href="../fix-1.html">1 AI panel</a><a href="../fix-2.html">2 Languages</a><a href="../fix-4.html">4 Errors</a><a href="../fix-5.html">5 Setup</a><a href="../design-system/index.html" aria-current="page">Design system</a><a href="../review.html">Review</a><a href="../specs.html">Specs</a><a href="../brand.html">Brand</a><a href="../art.html">Art</a></nav><div class="wrap"><div class="eyebrow">Component</div><div class="themes" role="group" aria-label="Theme"><button data-t="dark">Dark</button><button data-t="light">Light</button><button data-t="amoled">AMOLED</button></div>
+<script>document.querySelectorAll('.themes button').forEach(b=>b.onclick=()=>document.documentElement.dataset.theme=b.dataset.t)</script><div class="pv"><!-- @dsCard group="Lists" height=560 subtitle="Settings rows in a group" -->
+<div class="st-demo">
+  <div class="st-cols">
+    <div style="width:340px">
+      <p class="st-section">Typing and input</p>
+      <div class="st-group">
+        <div class="st-row"><span class="lead">⌨</span><div class="txt"><div class="t">Keyboard</div><div class="s">Height, number row, key sounds</div></div><span class="trail">›</span></div>
+        <div class="st-row"><span class="lead">▤</span><div class="txt"><div class="t">Smartbar</div><div class="s">Actions above your keyboard</div></div><span class="trail">›</span></div>
+        <div class="st-row"><span class="lead">A</span><div class="txt"><div class="t">Typing</div><div class="s">Autocorrect, suggestions, capitalisation</div></div><span class="trail">›</span></div>
+      </div>
+      <p class="st-section" style="margin-top:20px">Suggestions</p>
+      <div class="st-group">
+        <div class="st-row"><div class="txt"><div class="t">Autocorrect</div><div class="s">Fix typos when you press space</div></div><span class="st-switch on"></span></div>
+        <div class="st-row"><div class="txt"><div class="t">Next-word suggestions</div></div><span class="st-switch"></span></div>
+        <div class="st-row disabled"><div class="txt"><div class="t">AI suggestions</div><div class="s">Sign in to turn this on</div></div><span class="st-switch"></span></div>
+      </div>
+    </div>
+    <div style="width:340px">
+      <p class="st-section">Keyboard languages</p>
+      <div class="st-group">
+        <div class="st-row"><span class="trail">≡</span><div class="txt"><div class="t">English</div><div class="s">QWERTY · Default</div></div><span class="trail">›</span></div>
+        <div class="st-row"><span class="trail">≡</span><div class="txt"><div class="t">Hindi (India)</div><div class="s">Transliteration on QWERTY</div></div><span class="trail">›</span></div>
+      </div>
+      <p class="st-section" style="margin-top:20px">Account</p>
+      <div class="st-group">
+        <div class="st-row"><span class="lead" style="border-radius:var(--radius-full)">J</span><div class="txt"><div class="t">Jagadeesh</div><div class="s">Signed in with Google</div></div><span class="st-badge success">Premium</span></div>
+        <div class="st-row"><div class="txt"><div class="t" style="color:var(--error)">Sign out</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div><h1>ListRow</h1>
+<p>The row every settings and list screen is built from (<code>SmarTypeListRow</code>), always inside a <code>SmarTypeListGroup</code> under a section header.</p>
+<h2>Anatomy</h2>
+<ul>
+<li>Group: fill <code>surface-container-low</code>, corners <code>radius-lg</code>, no gap between rows, a 1 dp <code>outline-variant</code> divider between them.</li>
+<li>Section header above each group: <code>title-small</code> in <code>primary</code>, 8 dp above the group, <code>space-6</code> above the header.</li>
+<li>Row: minimum 56 dp tall (72 dp with a summary), 12 by 16 dp padding, 16 dp gap between parts.</li>
+<li>Leading (optional): a 40 dp icon tile (<code>primary-container</code>, <code>radius-sm</code>), an avatar (<code>radius-full</code>), or a drag handle. Use the same leading type for every row in a group.</li>
+<li>Text: title <code>title-medium</code>, summary <code>body-medium</code> in <code>on-surface-variant</code>, at most 2 lines.</li>
+<li>Trailing (one of): chevron <code>›</code> (opens a screen), switch, value text, badge, or nothing.</li>
+</ul>
+<h2>Rules</h2>
+<ul>
+<li>Every row in "Typing and input" and similar groups has a summary that names what's inside ("Autocorrect, suggestions, capitalisation"). No bare titles in a group where others have summaries.</li>
+<li>A row with a switch toggles when the whole row is tapped, not just the switch.</li>
+<li>Disabled rows keep their layout, dim title and summary to <code>disabled-content</code>, and the summary says why ("Sign in to turn this on").</li>
+<li>Destructive rows ("Sign out", "Delete all notes") use <code>error</code> for the title, sit last in their group, and always confirm with a dialog.</li>
+<li>Reorderable rows (languages, pinned styles) show a drag handle as the leading part and lift with <code>state-dragged</code> while moving.</li>
+<li>Home uses the same grouped rows as Settings. It doesn't show each row as its own card.</li>
+</ul>
+<h2>Replaces</h2>
+<p><code>SettingsListItem</code> (Material <code>ListItem</code>), the JetPref <code>Preference</code>, <code>SwitchPreference</code> and <code>ListPreference</code> row visuals, <code>SmarTypeSettingsGroup</code> and <code>SmarTypeSectionHeader</code> (kept, restyled), and the separate cards on Home.</p>
+<h2>What the consumer provides</h2>
+<p><code>title</code>, optional <code>summary</code>, <code>leading</code>, <code>trailing</code> (chevron, switch with state, value, badge), <code>onClick</code>, <code>enabled</code>, and for disabled rows the reason text.</p></div></body></html>

@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Button · SmarType</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"><link rel="stylesheet" href="tokens.css"><link rel="stylesheet" href="bundle.css"><style>
+body{margin:0;background:var(--background);color:var(--on-surface);font:15px/1.6 var(--font-sans)}
+.wrap{max-width:980px;margin:0 auto;padding:28px 16px 70px}
+.wrap h1{font-size:34px;line-height:1.15;margin:8px 0 12px}.wrap h2{font-size:22px;margin:34px 0 8px}.wrap h3{font-size:17px}
+.wrap table{border-collapse:collapse;width:100%;font-size:14px;display:block;overflow-x:auto}
+.wrap th,.wrap td{border-bottom:1px solid var(--outline-variant);padding:8px 10px;text-align:left;vertical-align:top}
+.wrap code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.85em;background:var(--surface-container);padding:1px 5px;border-radius:4px}
+.wrap a{color:var(--primary)}
+.eyebrow{font:500 12px "JetBrains Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--primary)}
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:18px 0}
+.toc a{display:block;background:var(--surface-container-low);border-radius:14px;padding:12px 14px;text-decoration:none;color:var(--on-surface)}
+.toc a b{display:block}.toc a span{color:var(--on-surface-variant);font-size:13px}
+.pv{border:1px solid var(--outline-variant);border-radius:16px;padding:16px;margin:16px 0;background:var(--surface-container-low);overflow-x:auto}
+.swatch{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.swatch div{border:1px solid var(--outline-variant);border-radius:10px;overflow:hidden;font-size:12.5px}
+.swatch i{display:block;height:44px}.swatch p{margin:0;padding:6px 8px}
+.themes{display:flex;gap:6px;margin:10px 0}.themes button{font:inherit;border:1px solid var(--outline);background:transparent;color:var(--on-surface);border-radius:8px;padding:4px 10px;cursor:pointer}
+</style></head><body><style>
+.stx-nav{position:sticky;top:0;z-index:1000;display:flex;gap:2px;align-items:center;overflow-x:auto;
+  background:#0b1416;border-bottom:1px solid #22363a;padding:0 max(12px,env(safe-area-inset-left,0px));
+  font:500 13px/1 "Google Sans Flex","DM Sans",system-ui,sans-serif;scrollbar-width:none}
+.stx-nav::-webkit-scrollbar{display:none}
+.stx-nav a{color:#b5cacf;text-decoration:none;padding:13px 10px;white-space:nowrap;border-bottom:2px solid transparent}
+.stx-nav a:hover,.stx-nav a:focus-visible{color:#fff}
+.stx-nav a[aria-current=page]{color:#5fd3df;border-bottom-color:#5fd3df}
+.stx-nav .stx-brand{color:#fff;font-weight:700;padding-right:14px}
+.stx-note{max-width:1040px;margin:18px auto 0;padding:12px 16px;border-radius:12px;background:#fbf0d9;color:#4d3800;
+  font:14px/1.5 "Google Sans Flex","DM Sans",system-ui,sans-serif;box-sizing:border-box}
+.stx-note a{color:#4d3800;font-weight:700}
+.stx-notewrap{padding:0 16px}
+@media (prefers-color-scheme:dark){.stx-note{background:#352a10;color:#f6dfa6}.stx-note a{color:#f6dfa6}}
+</style><nav class="stx-nav" aria-label="Site"><a class="stx-brand" href="../index.html">SmarType UX</a><a href="../index.html">Hand-off</a><a href="../audit.html">Audit</a><a href="../fix-1b.html">1b Smartbar</a><a href="../fix-1.html">1 AI panel</a><a href="../fix-2.html">2 Languages</a><a href="../fix-4.html">4 Errors</a><a href="../fix-5.html">5 Setup</a><a href="../design-system/index.html" aria-current="page">Design system</a><a href="../review.html">Review</a><a href="../specs.html">Specs</a><a href="../brand.html">Brand</a><a href="../art.html">Art</a></nav><div class="wrap"><div class="eyebrow">Component</div><div class="themes" role="group" aria-label="Theme"><button data-t="dark">Dark</button><button data-t="light">Light</button><button data-t="amoled">AMOLED</button></div>
+<script>document.querySelectorAll('.themes button').forEach(b=>b.onclick=()=>document.documentElement.dataset.theme=b.dataset.t)</script><div class="pv"><!-- @dsCard group="Actions" height=520 subtitle="Static rendition of the proposed SmarTypeButton" -->
+<style>
+  body{margin:0;background:var(--background);color:var(--on-surface);font-family:var(--font-sans)}
+  .wrap{padding:20px;display:grid;gap:22px}
+  .row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  .lab{font-size:12px;line-height:16px;font-weight:500;letter-spacing:.1px;color:var(--on-surface-variant);margin:0 0 8px;text-transform:uppercase}
+  .phone{width:320px;border-radius:24px;background:var(--surface-container-low);padding:16px;display:grid;gap:8px}
+  .phone p{margin:0 0 8px;font-size:14px;line-height:20px;color:var(--on-surface-variant)}
+  .pair{display:flex;justify-content:flex-end;gap:8px}
+</style>
+<div class="wrap">
+  <div>
+    <p class="lab">Variants · medium 48 dp</p>
+    <div class="row">
+      <button class="st-btn st-filled">Turn on SmarType</button>
+      <button class="st-btn st-ai">✦ Rewrite</button>
+      <button class="st-btn st-tonal">Copy</button>
+      <button class="st-btn st-outlined">Choose layout</button>
+      <button class="st-btn st-text">Not now</button>
+      <button class="st-btn st-danger">Remove</button>
+    </div>
+  </div>
+  <div>
+    <p class="lab">States · filled</p>
+    <div class="row">
+      <button class="st-btn st-filled">Enabled</button>
+      <button class="st-btn st-filled is-pressed">Pressed</button>
+      <button class="st-btn st-filled is-focus">Focused</button>
+      <button class="st-btn st-filled" disabled>Disabled</button>
+      <button class="st-btn st-filled" aria-busy="true"><span class="spin"></span>Saving</button>
+    </div>
+  </div>
+  <div>
+    <p class="lab">Sizes</p>
+    <div class="row">
+      <button class="st-btn st-filled size-l">Large 56</button>
+      <button class="st-btn st-filled">Medium 48</button>
+      <button class="st-btn st-tonal size-s">Small 40</button>
+      <button class="st-icon" aria-label="Settings">⚙</button>
+      <button class="st-icon tonal" aria-label="Search">⌕</button>
+    </div>
+  </div>
+  <div class="row" style="align-items:flex-start;gap:20px">
+    <div class="phone">
+      <p class="lab">Bottom of a task screen</p>
+      <p>One large filled button, full width. A text button under it for the way out.</p>
+      <button class="st-btn st-filled size-l full">Open keyboard settings</button>
+      <button class="st-btn st-text full">Skip for now</button>
+    </div>
+    <div class="phone">
+      <p class="lab">Dialog</p>
+      <p>Remove Hindi (India) from your keyboard languages?</p>
+      <div class="pair"><button class="st-btn st-text">Cancel</button><button class="st-btn st-danger-text">Remove</button></div>
+    </div>
+  </div>
+</div>
+</div><h1>Button</h1>
+<p>One button component for the whole app, <code>SmarTypeButton</code>, in six variants and three sizes, so every call to action looks and behaves the same.</p>
+<h2>Variants</h2>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Use it for</th>
+<th>Tokens</th>
+<th>Today's code it replaces</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Filled</code></td>
+<td>The one main action on a screen: Turn on SmarType, Add keyboard language, Save, Continue.</td>
+<td><code>primary</code> / <code>on-primary</code></td>
+<td><code>FlorisButton</code>, <code>FlorisPrimaryButton</code>, raw <code>Button</code></td>
+</tr>
+<tr>
+<td><code>Ai</code></td>
+<td>Actions that send text to AI or sell AI: Rewrite, Translate, voice Done, Upgrade to Premium. Nothing else.</td>
+<td><code>ai-gradient-start</code> → <code>ai-gradient-end</code> / <code>on-ai-gradient</code></td>
+<td><code>GradientButton</code>, <code>CompactGradientButton</code>, <code>CircularGradientButton</code>, the gradient branch of <code>SmarTypeAiActionButton</code></td>
+</tr>
+<tr>
+<td><code>Tonal</code></td>
+<td>A useful second action: Copy, Try again, Keep talking, Manage subscription.</td>
+<td><code>primary-container</code> / <code>on-primary-container</code></td>
+<td><code>FlorisSecondaryButton</code>, raw <code>FilledTonalButton</code></td>
+</tr>
+<tr>
+<td><code>Outlined</code></td>
+<td>An alternative of equal weight beside a filled one, or a choice: Choose layout, Restore purchase.</td>
+<td><code>primary</code> text, <code>outline</code> border</td>
+<td><code>FlorisOutlinedButton</code>, raw <code>OutlinedButton</code></td>
+</tr>
+<tr>
+<td><code>Text</code></td>
+<td>The low-emphasis way out: Skip, Not now, Cancel, dialog actions, Learn more.</td>
+<td><code>primary</code></td>
+<td><code>FlorisTextButton</code>, <code>FlorisSkipButton</code>, raw <code>TextButton</code></td>
+</tr>
+<tr>
+<td><code>Danger</code></td>
+<td>Confirming something that can't be undone (filled in a sheet, text style in a dialog): Remove, Delete, Sign out.</td>
+<td><code>error</code> / <code>on-error</code></td>
+<td>ad hoc red buttons (Account Sign out)</td>
+</tr>
+</tbody>
+</table>
+<h2>Sizes</h2>
+<ul>
+<li><strong>Large, 56 dp:</strong> only the full-width action pinned to the bottom of a task screen (onboarding, setup, subscription). Label <code>label-large</code> at 16 sp.</li>
+<li><strong>Medium, 48 dp:</strong> the default everywhere else, including keyboard panels.</li>
+<li><strong>Small, 40 dp:</strong> inline actions inside a card or banner. Its touch target still extends to 48 dp.</li>
+<li>Every size has a minimum height, not a fixed one, so text can grow at font scale 1.5.</li>
+<li>Corners: <code>radius-md</code> (14 dp) for all sizes. Never fully round.</li>
+<li>Icon: optional, 18 dp, before the label, with an 8 dp gap. The ✦ icon only on <code>Ai</code>.</li>
+</ul>
+<h2>Rules</h2>
+<ul>
+<li>At most <strong>one</strong> <code>Filled</code> or <code>Ai</code> button per screen or panel. Everything else steps down to <code>Tonal</code>, <code>Outlined</code> or <code>Text</code>.</li>
+<li>The AI gradient never appears on a button that doesn't involve AI. "Add keyboard language" is <code>Filled</code>.</li>
+<li>Task screens (onboarding, setup, sign-in, subscription) put their main action at the bottom, in thumb reach; never in the top bar.</li>
+<li>Bottom-of-screen actions: full width, 16 dp side gutter, 12 dp above the system navigation area. A second action goes below as <code>Text</code>, never side by side at 50/50.</li>
+<li>Dialogs: <code>Text</code> buttons, right-aligned, the confirming action last (rightmost). A destructive confirm uses the <code>Danger</code> text style.</li>
+<li>Labels are verbs in sentence case and say what happens: "Turn on SmarType", not "Next" or "OK" when a verb fits.</li>
+<li>Disabled: container <code>disabled-container</code>, label <code>disabled-content</code>. Show the reason next to it ("Sign in to use AI"). If the action can never work in this state, hide it instead.</li>
+<li>Loading: the button keeps its size, the label is replaced by a spinner and a short verb ("Saving"), and it doesn't accept taps.</li>
+<li>Pressed, hover and focus use the state layers (<code>state-pressed</code>, <code>state-hover</code>, <code>state-focus</code>). Focus adds a 2 dp <code>primary</code> ring.</li>
+</ul>
+<h2>In the keyboard</h2>
+<p><code>KeyboardPanelButton</code> stays, because its colours come from the keyboard theme. It follows the same variants, sizes, corners and rules. Its default style changes from the gradient (<code>PRIMARY</code>) to <code>SECONDARY</code>, so the gradient is opt-in and only on Rewrite, Translate and Insert.</p>
+<h2>What the consumer provides</h2>
+<p><code>text</code> (or a slot), <code>onClick</code>, <code>variant</code>, <code>size</code> (default medium), optional <code>icon</code>, <code>enabled</code>, <code>loading</code>, <code>fillMaxWidth</code>, and a <code>modifier</code> for test tags.</p></div></body></html>

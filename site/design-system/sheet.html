@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sheet · SmarType</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"><link rel="stylesheet" href="tokens.css"><link rel="stylesheet" href="bundle.css"><style>
+body{margin:0;background:var(--background);color:var(--on-surface);font:15px/1.6 var(--font-sans)}
+.wrap{max-width:980px;margin:0 auto;padding:28px 16px 70px}
+.wrap h1{font-size:34px;line-height:1.15;margin:8px 0 12px}.wrap h2{font-size:22px;margin:34px 0 8px}.wrap h3{font-size:17px}
+.wrap table{border-collapse:collapse;width:100%;font-size:14px;display:block;overflow-x:auto}
+.wrap th,.wrap td{border-bottom:1px solid var(--outline-variant);padding:8px 10px;text-align:left;vertical-align:top}
+.wrap code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.85em;background:var(--surface-container);padding:1px 5px;border-radius:4px}
+.wrap a{color:var(--primary)}
+.eyebrow{font:500 12px "JetBrains Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--primary)}
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:18px 0}
+.toc a{display:block;background:var(--surface-container-low);border-radius:14px;padding:12px 14px;text-decoration:none;color:var(--on-surface)}
+.toc a b{display:block}.toc a span{color:var(--on-surface-variant);font-size:13px}
+.pv{border:1px solid var(--outline-variant);border-radius:16px;padding:16px;margin:16px 0;background:var(--surface-container-low);overflow-x:auto}
+.swatch{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.swatch div{border:1px solid var(--outline-variant);border-radius:10px;overflow:hidden;font-size:12.5px}
+.swatch i{display:block;height:44px}.swatch p{margin:0;padding:6px 8px}
+.themes{display:flex;gap:6px;margin:10px 0}.themes button{font:inherit;border:1px solid var(--outline);background:transparent;color:var(--on-surface);border-radius:8px;padding:4px 10px;cursor:pointer}
+</style></head><body><style>
+.stx-nav{position:sticky;top:0;z-index:1000;display:flex;gap:2px;align-items:center;overflow-x:auto;
+  background:#0b1416;border-bottom:1px solid #22363a;padding:0 max(12px,env(safe-area-inset-left,0px));
+  font:500 13px/1 "Google Sans Flex","DM Sans",system-ui,sans-serif;scrollbar-width:none}
+.stx-nav::-webkit-scrollbar{display:none}
+.stx-nav a{color:#b5cacf;text-decoration:none;padding:13px 10px;white-space:nowrap;border-bottom:2px solid transparent}
+.stx-nav a:hover,.stx-nav a:focus-visible{color:#fff}
+.stx-nav a[aria-current=page]{color:#5fd3df;border-bottom-color:#5fd3df}
+.stx-nav .stx-brand{color:#fff;font-weight:700;padding-right:14px}
+.stx-note{max-width:1040px;margin:18px auto 0;padding:12px 16px;border-radius:12px;background:#fbf0d9;color:#4d3800;
+  font:14px/1.5 "Google Sans Flex","DM Sans",system-ui,sans-serif;box-sizing:border-box}
+.stx-note a{color:#4d3800;font-weight:700}
+.stx-notewrap{padding:0 16px}
+@media (prefers-color-scheme:dark){.stx-note{background:#352a10;color:#f6dfa6}.stx-note a{color:#f6dfa6}}
+</style><nav class="stx-nav" aria-label="Site"><a class="stx-brand" href="../index.html">SmarType UX</a><a href="../index.html">Hand-off</a><a href="../audit.html">Audit</a><a href="../fix-1b.html">1b Smartbar</a><a href="../fix-1.html">1 AI panel</a><a href="../fix-2.html">2 Languages</a><a href="../fix-4.html">4 Errors</a><a href="../fix-5.html">5 Setup</a><a href="../design-system/index.html" aria-current="page">Design system</a><a href="../review.html">Review</a><a href="../specs.html">Specs</a><a href="../brand.html">Brand</a><a href="../art.html">Art</a></nav><div class="wrap"><div class="eyebrow">Component</div><div class="themes" role="group" aria-label="Theme"><button data-t="dark">Dark</button><button data-t="light">Light</button><button data-t="amoled">AMOLED</button></div>
+<script>document.querySelectorAll('.themes button').forEach(b=>b.onclick=()=>document.documentElement.dataset.theme=b.dataset.t)</script><div class="pv"><!-- @dsCard group="Containment" height=440 subtitle="Bottom sheet for choices, dialog for confirmations" -->
+<div class="st-demo">
+  <div class="st-cols">
+    <div>
+      <p class="lab">Bottom sheet · choose or edit</p>
+      <div class="st-scrim">
+        <div class="st-sheet">
+          <div class="handle"></div>
+          <h4 style="font-size:22px;line-height:28px;font-weight:600">Hindi (India)</h4>
+          <div class="st-group" style="background:var(--surface-container-high)">
+            <div class="st-row"><div class="txt"><div class="t">Transliteration on QWERTY</div><div class="s">Type "namaste", get नमस्ते</div></div><span style="color:var(--primary)">●</span></div>
+            <div class="st-row"><div class="txt"><div class="t">Devanagari</div><div class="s">हिंदी keyboard</div></div><span class="trail">○</span></div>
+          </div>
+          <button class="st-btn st-tonal full">Set as default</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p class="lab">Dialog · confirm</p>
+      <div class="st-dialog">
+        <h4>Remove Hindi (India)?</h4>
+        <p>You can add it again anytime from Keyboard languages.</p>
+        <div class="acts"><button class="st-btn st-text">Cancel</button><button class="st-btn st-danger-text">Remove</button></div>
+      </div>
+      <p class="lab" style="margin-top:20px">Snackbar · after an action</p>
+      <div class="st-snack">Language removed<b>Undo</b></div>
+    </div>
+  </div>
+</div>
+</div><h1>Sheet</h1>
+<p>Bottom sheets (<code>SmarTypeSheet</code>) for choosing and editing, dialogs (<code>SmarTypeDialog</code>) for confirming, and snackbars (<code>SmarTypeSnackbar</code>) for telling the user what just happened.</p>
+<h2>When to use which</h2>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Use</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pick from options, edit a few fields</td>
+<td>Bottom sheet</td>
+<td>Choose a layout for Hindi, Day and night schedule, theme details</td>
+</tr>
+<tr>
+<td>Confirm something that can't be undone</td>
+<td>Dialog</td>
+<td>Remove a language, delete a note, sign out</td>
+</tr>
+<tr>
+<td>Confirm something that can be undone</td>
+<td>Snackbar with Undo, no dialog</td>
+<td>Removed a style chip, deleted a draft</td>
+</tr>
+<tr>
+<td>Report the result of an action</td>
+<td>Snackbar</td>
+<td>"Copied", "Saved", "Language added"</td>
+</tr>
+<tr>
+<td>A fact that stays true</td>
+<td>Banner (see Card)</td>
+<td>"Sign in to use AI"</td>
+</tr>
+</tbody>
+</table>
+<h2>Bottom sheet</h2>
+<ul>
+<li>Fill <code>surface-container</code>, top corners <code>radius-xl</code>, drag handle, <code>elevation-2</code> in light, scrim at <code>scrim-opacity</code>.</li>
+<li>Title <code>title-large</code>; content uses List groups in <code>surface-container-high</code>; at most one button at the bottom (Tonal or Filled), full width.</li>
+<li>Swipe down, tap the scrim or press Back to close without changes. If there are unsaved edits, ask first.</li>
+</ul>
+<h2>Dialog</h2>
+<ul>
+<li>Fill <code>surface-container-high</code>, corners <code>radius-xl</code>, 24 dp padding, width 280 to 312 dp.</li>
+<li>Title <code>headline-small</code> as a question ("Remove Hindi (India)?"); body <code>body-medium</code> says what happens next.</li>
+<li>Actions: Text buttons, right-aligned, Cancel first, the confirming verb last. A destructive verb is red (<code>Danger</code> text style). Never "OK" or "Yes".</li>
+<li>Confirmations are always dialogs. Today removing a language uses a bottom sheet and other deletes use dialogs: make them all dialogs.</li>
+</ul>
+<h2>Snackbar</h2>
+<ul>
+<li>Fill <code>inverse-surface</code>, text <code>inverse-on-surface</code>, action in <code>inverse-primary</code>, corners <code>radius-md</code>, 16 dp above the bottom bar.</li>
+<li>One line, past tense, optional single action ("Undo", "View"). Shows for 4 seconds, 10 with an action.</li>
+<li>In the app, snackbars replace Android toasts. Toasts are only for messages from outside the app's screens (the keyboard service, the floating bubble), and even there prefer an inline message in the panel.</li>
+</ul>
+<h2>Replaces</h2>
+<p><code>SmarTypeSheet</code>, <code>SmarTypeSelectionBottomSheet</code>, the raw <code>ModalBottomSheet</code> in <code>FlorisCopyToClipboardActivity</code>, the 11 raw <code>AlertDialog</code> calls, <code>SmarTypeConfirmationDialog</code>, <code>FlorisConfirmDeleteDialog</code>, <code>FlorisUnsavedChangesDialog</code>, and most of the 93 toast calls in 32 files.</p>
+<h2>What the consumer provides</h2>
+<p>Sheet: <code>title</code>, <code>content</code>, optional primary action, <code>onDismiss</code>. Dialog: <code>title</code>, <code>message</code>, <code>confirmLabel</code>, <code>destructive</code>, <code>onConfirm</code>, <code>onCancel</code>. Snackbar: <code>message</code>, optional <code>actionLabel</code> and handler.</p></div></body></html>

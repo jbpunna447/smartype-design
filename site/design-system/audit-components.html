@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Audit Components · SmarType</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"><link rel="stylesheet" href="tokens.css"><link rel="stylesheet" href="bundle.css"><style>
+body{margin:0;background:var(--background);color:var(--on-surface);font:15px/1.6 var(--font-sans)}
+.wrap{max-width:980px;margin:0 auto;padding:28px 16px 70px}
+.wrap h1{font-size:34px;line-height:1.15;margin:8px 0 12px}.wrap h2{font-size:22px;margin:34px 0 8px}.wrap h3{font-size:17px}
+.wrap table{border-collapse:collapse;width:100%;font-size:14px;display:block;overflow-x:auto}
+.wrap th,.wrap td{border-bottom:1px solid var(--outline-variant);padding:8px 10px;text-align:left;vertical-align:top}
+.wrap code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.85em;background:var(--surface-container);padding:1px 5px;border-radius:4px}
+.wrap a{color:var(--primary)}
+.eyebrow{font:500 12px "JetBrains Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--primary)}
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:18px 0}
+.toc a{display:block;background:var(--surface-container-low);border-radius:14px;padding:12px 14px;text-decoration:none;color:var(--on-surface)}
+.toc a b{display:block}.toc a span{color:var(--on-surface-variant);font-size:13px}
+.pv{border:1px solid var(--outline-variant);border-radius:16px;padding:16px;margin:16px 0;background:var(--surface-container-low);overflow-x:auto}
+.swatch{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.swatch div{border:1px solid var(--outline-variant);border-radius:10px;overflow:hidden;font-size:12.5px}
+.swatch i{display:block;height:44px}.swatch p{margin:0;padding:6px 8px}
+.themes{display:flex;gap:6px;margin:10px 0}.themes button{font:inherit;border:1px solid var(--outline);background:transparent;color:var(--on-surface);border-radius:8px;padding:4px 10px;cursor:pointer}
+</style></head><body><style>
+.stx-nav{position:sticky;top:0;z-index:1000;display:flex;gap:2px;align-items:center;overflow-x:auto;
+  background:#0b1416;border-bottom:1px solid #22363a;padding:0 max(12px,env(safe-area-inset-left,0px));
+  font:500 13px/1 "Google Sans Flex","DM Sans",system-ui,sans-serif;scrollbar-width:none}
+.stx-nav::-webkit-scrollbar{display:none}
+.stx-nav a{color:#b5cacf;text-decoration:none;padding:13px 10px;white-space:nowrap;border-bottom:2px solid transparent}
+.stx-nav a:hover,.stx-nav a:focus-visible{color:#fff}
+.stx-nav a[aria-current=page]{color:#5fd3df;border-bottom-color:#5fd3df}
+.stx-nav .stx-brand{color:#fff;font-weight:700;padding-right:14px}
+.stx-note{max-width:1040px;margin:18px auto 0;padding:12px 16px;border-radius:12px;background:#fbf0d9;color:#4d3800;
+  font:14px/1.5 "Google Sans Flex","DM Sans",system-ui,sans-serif;box-sizing:border-box}
+.stx-note a{color:#4d3800;font-weight:700}
+.stx-notewrap{padding:0 16px}
+@media (prefers-color-scheme:dark){.stx-note{background:#352a10;color:#f6dfa6}.stx-note a{color:#f6dfa6}}
+</style><nav class="stx-nav" aria-label="Site"><a class="stx-brand" href="../index.html">SmarType UX</a><a href="../index.html">Hand-off</a><a href="../audit.html">Audit</a><a href="../fix-1b.html">1b Smartbar</a><a href="../fix-1.html">1 AI panel</a><a href="../fix-2.html">2 Languages</a><a href="../fix-4.html">4 Errors</a><a href="../fix-5.html">5 Setup</a><a href="../design-system/index.html" aria-current="page">Design system</a><a href="../review.html">Review</a><a href="../specs.html">Specs</a><a href="../brand.html">Brand</a><a href="../art.html">Art</a></nav><div class="wrap"><h1>Component audit</h1>
+<p>Cards, list rows, chips, sheets, dialogs, feedback and keyboard panels as they are in the code today (main @ c3d86d39c), and the steps to reach Components → Card, ListRow, Chip, Sheet and KeyboardPanel.</p>
+<h2>What's in the code</h2>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Today</th>
+<th>Uses</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cards</td>
+<td><code>FlorisInfoCard</code>, <code>FlorisErrorCard</code>, <code>FlorisWarningCard</code>, <code>FlorisSimpleCard</code> (<code>lib/compose/FlorisCards.kt</code>) and <code>SmarTypeSurfaceCard</code> (<code>lib/compose/SmarTypeAppSurface.kt</code>), plus 8 raw <code>Card</code> calls</td>
+<td>20, 19, 5, 5, 24, 8</td>
+</tr>
+<tr>
+<td>Rows</td>
+<td><code>SettingsListItem</code> (Material <code>ListItem</code>), JetPref <code>Preference</code> / <code>SwitchPreference</code> / <code>ListPreference</code>, <code>SmarTypeSettingsGroup</code>, <code>SmarTypeSectionHeader</code></td>
+<td>50 ListItem, 158 / 57 / 36 prefs, 5, 21</td>
+</tr>
+<tr>
+<td>Chips</td>
+<td><code>FlorisChip</code> (12 dp), <code>SmarTypeStatusChip</code> (full pill), Material <code>FilterChip</code> (8 dp), <code>SuggestionChip</code>, <code>InputChip</code>, AI panel chips (999 dp)</td>
+<td>21, 13, 5, 1, 1</td>
+</tr>
+<tr>
+<td>Sheets</td>
+<td><code>SmarTypeSheet</code>, <code>SmarTypeSelectionBottomSheet</code>, raw <code>ModalBottomSheet</code></td>
+<td>22, 3</td>
+</tr>
+<tr>
+<td>Dialogs</td>
+<td>raw <code>AlertDialog</code>, <code>SmarTypeConfirmationDialog</code>, <code>FlorisConfirmDeleteDialog</code>, <code>FlorisUnsavedChangesDialog</code></td>
+<td>11, 8, 3, 1</td>
+</tr>
+<tr>
+<td>Feedback</td>
+<td>Android toasts (<code>Toast.makeText</code>, <code>showShortToast</code>, <code>showLongToast</code>); no snackbars</td>
+<td>93 calls in 32 files</td>
+</tr>
+<tr>
+<td>Keyboard panels</td>
+<td><code>KeyboardPanelHeader</code>, <code>KeyboardPanelCard</code>, <code>KeyboardPanelButton</code>, <code>KeyboardPanelActionRow</code> (<code>ime/ui/KeyboardPanel.kt</code>)</td>
+<td>all panels</td>
+</tr>
+<tr>
+<td>Corner literals</td>
+<td><code>RoundedCornerShape</code> with 3, 4, 5, 6, 10 and 999 dp outside the token scale</td>
+<td>16 places</td>
+</tr>
+</tbody>
+</table>
+<h2>Problems</h2>
+<ol>
+<li><strong>Two card families</strong> with different paddings and colours (<code>FlorisCards</code> and <code>SmarTypeSurfaceCard</code>) on neighbouring screens.</li>
+<li><strong>Home and Settings list rows differently.</strong> Home shows each row as its own card with gaps; Settings uses one grouped card with dividers.</li>
+<li><strong>Rows without summaries next to rows with them</strong> ("Keyboard", "Smartbar", "Typing", "Gestures" have none; review finding S2).</li>
+<li><strong>Four chip shapes:</strong> 8, 12, full pill and 999 dp, sometimes on the same screen (Writing styles and the AI panel).</li>
+<li><strong>Status shown as chips that look tappable</strong> (<code>SmarTypeStatusChip</code> pills for "Free plan", "Keyboard ready").</li>
+<li><strong>Confirmations are inconsistent:</strong> removing a language uses a bottom sheet, deleting a note uses a dialog, signing out has no confirmation style of its own.</li>
+<li><strong>93 toasts.</strong> They disappear, can't be undone, appear on top of other apps, and include the misleading "Sign in before restoring or purchasing premium" (review O4, V2).</li>
+<li><strong>Keyboard panel header</strong> puts the only way back (a ↵ icon) at the top left, where it looks like Enter (review A10). The AI panel repeats the user's text in a quote box (A11).</li>
+<li><strong>Corner sizes outside the scale</strong> (3, 4, 5, 6, 10, 999 dp) in Writing styles, tips, the plan card bar, the AI overlay and the theme editor.</li>
+</ol>
+<h2>Changes, in order</h2>
+<ol>
+<li>Add <code>SmarTypeCard</code> and <code>SmarTypeBanner</code>; make the <code>FlorisCards</code> functions and <code>SmarTypeSurfaceCard</code> call them.</li>
+<li>Restyle <code>SmarTypeSettingsGroup</code> and <code>SmarTypeSectionHeader</code> to the ListRow spec; render JetPref rows and <code>SettingsListItem</code> through <code>SmarTypeListRow</code>. Add summaries to the four bare Typing rows.</li>
+<li>Move Home's list to one grouped List group.</li>
+<li>Add <code>SmarTypeChip</code> and <code>SmarTypeBadge</code>; swap <code>SmarTypeStatusChip</code> to a badge, then <code>FlorisChip</code>, <code>FilterChip</code> and the AI panel chips to chips.</li>
+<li>Add <code>SmarTypeDialog</code>; route every confirmation through it, including removing a language.</li>
+<li>Add a snackbar host to the app scaffold; replace in-app toasts with snackbars or banners, starting with the auth and subscription messages.</li>
+<li>Rework <code>KeyboardPanelHeader</code> and <code>KeyboardPanelActionRow</code> into the KeyboardPanel frame: ABC in the dock, scope line instead of the source quote, Back returns to the keys.</li>
+<li>Replace corner literals with shape tokens (<code>radius-xs</code> for the small ones, <code>radius-sm</code> for chips).</li>
+</ol>
+<p>Steps 1 to 6 are presentation only. Step 7 touches keyboard navigation (Back handling in <code>KeyboardPanelBackStack</code>), so it needs a device test. Nothing here changes how text is replaced in other apps.</p></div></body></html>

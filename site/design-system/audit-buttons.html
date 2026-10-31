@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Audit Buttons · SmarType</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"><link rel="stylesheet" href="tokens.css"><link rel="stylesheet" href="bundle.css"><style>
+body{margin:0;background:var(--background);color:var(--on-surface);font:15px/1.6 var(--font-sans)}
+.wrap{max-width:980px;margin:0 auto;padding:28px 16px 70px}
+.wrap h1{font-size:34px;line-height:1.15;margin:8px 0 12px}.wrap h2{font-size:22px;margin:34px 0 8px}.wrap h3{font-size:17px}
+.wrap table{border-collapse:collapse;width:100%;font-size:14px;display:block;overflow-x:auto}
+.wrap th,.wrap td{border-bottom:1px solid var(--outline-variant);padding:8px 10px;text-align:left;vertical-align:top}
+.wrap code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.85em;background:var(--surface-container);padding:1px 5px;border-radius:4px}
+.wrap a{color:var(--primary)}
+.eyebrow{font:500 12px "JetBrains Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--primary)}
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:18px 0}
+.toc a{display:block;background:var(--surface-container-low);border-radius:14px;padding:12px 14px;text-decoration:none;color:var(--on-surface)}
+.toc a b{display:block}.toc a span{color:var(--on-surface-variant);font-size:13px}
+.pv{border:1px solid var(--outline-variant);border-radius:16px;padding:16px;margin:16px 0;background:var(--surface-container-low);overflow-x:auto}
+.swatch{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.swatch div{border:1px solid var(--outline-variant);border-radius:10px;overflow:hidden;font-size:12.5px}
+.swatch i{display:block;height:44px}.swatch p{margin:0;padding:6px 8px}
+.themes{display:flex;gap:6px;margin:10px 0}.themes button{font:inherit;border:1px solid var(--outline);background:transparent;color:var(--on-surface);border-radius:8px;padding:4px 10px;cursor:pointer}
+</style></head><body><style>
+.stx-nav{position:sticky;top:0;z-index:1000;display:flex;gap:2px;align-items:center;overflow-x:auto;
+  background:#0b1416;border-bottom:1px solid #22363a;padding:0 max(12px,env(safe-area-inset-left,0px));
+  font:500 13px/1 "Google Sans Flex","DM Sans",system-ui,sans-serif;scrollbar-width:none}
+.stx-nav::-webkit-scrollbar{display:none}
+.stx-nav a{color:#b5cacf;text-decoration:none;padding:13px 10px;white-space:nowrap;border-bottom:2px solid transparent}
+.stx-nav a:hover,.stx-nav a:focus-visible{color:#fff}
+.stx-nav a[aria-current=page]{color:#5fd3df;border-bottom-color:#5fd3df}
+.stx-nav .stx-brand{color:#fff;font-weight:700;padding-right:14px}
+.stx-note{max-width:1040px;margin:18px auto 0;padding:12px 16px;border-radius:12px;background:#fbf0d9;color:#4d3800;
+  font:14px/1.5 "Google Sans Flex","DM Sans",system-ui,sans-serif;box-sizing:border-box}
+.stx-note a{color:#4d3800;font-weight:700}
+.stx-notewrap{padding:0 16px}
+@media (prefers-color-scheme:dark){.stx-note{background:#352a10;color:#f6dfa6}.stx-note a{color:#f6dfa6}}
+</style><nav class="stx-nav" aria-label="Site"><a class="stx-brand" href="../index.html">SmarType UX</a><a href="../index.html">Hand-off</a><a href="../audit.html">Audit</a><a href="../fix-1b.html">1b Smartbar</a><a href="../fix-1.html">1 AI panel</a><a href="../fix-2.html">2 Languages</a><a href="../fix-4.html">4 Errors</a><a href="../fix-5.html">5 Setup</a><a href="../design-system/index.html" aria-current="page">Design system</a><a href="../review.html">Review</a><a href="../specs.html">Specs</a><a href="../brand.html">Brand</a><a href="../art.html">Art</a></nav><div class="wrap"><h1>Button audit</h1>
+<p>The app's buttons as they are in the code today (main @ c3d86d39c), and what changes to reach the single <code>SmarTypeButton</code> set in Components → Button.</p>
+<h2>What's in the code</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>File</th>
+<th>Uses</th>
+<th>Style today</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FlorisButton</code></td>
+<td><code>lib/compose/FlorisButtons.kt</code></td>
+<td>13</td>
+<td>Filled primary, 48 dp min, 12 dp corners</td>
+</tr>
+<tr>
+<td><code>FlorisPrimaryButton</code></td>
+<td><code>lib/compose/FlorisButtons.kt</code></td>
+<td>3 (previews only)</td>
+<td>Filled primary, 56 dp, 14 dp corners</td>
+</tr>
+<tr>
+<td><code>FlorisSecondaryButton</code></td>
+<td><code>lib/compose/FlorisButtons.kt</code></td>
+<td>2 (previews only)</td>
+<td>Surface fill, 56 dp, 14 dp corners</td>
+</tr>
+<tr>
+<td><code>FlorisOutlinedButton</code></td>
+<td><code>lib/compose/FlorisButtons.kt</code></td>
+<td>15</td>
+<td>Outlined, 48 dp, 12 dp corners</td>
+</tr>
+<tr>
+<td><code>FlorisTextButton</code></td>
+<td><code>lib/compose/FlorisButtons.kt</code></td>
+<td>13</td>
+<td>Text, 48 dp, 12 dp corners</td>
+</tr>
+<tr>
+<td><code>FlorisIconButton</code></td>
+<td><code>lib/compose/FlorisButtons.kt</code></td>
+<td>25</td>
+<td>Icon button</td>
+</tr>
+<tr>
+<td><code>FlorisGoogleSignInButton</code>, <code>FlorisSkipButton</code></td>
+<td><code>lib/compose/FlorisButtons.kt</code></td>
+<td>4, 3</td>
+<td>Sign-in and skip</td>
+</tr>
+<tr>
+<td><code>GradientButton</code> + <code>Compact…</code>, <code>Circular…</code></td>
+<td><code>lib/compose/GradientButton.kt</code></td>
+<td>2 in screens</td>
+<td>AI gradient, 56 or 48 dp, 14 or 12 dp corners</td>
+</tr>
+<tr>
+<td><code>SmarTypeAiActionButton</code></td>
+<td><code>app/settings/ai/SmarTypeAiScreen.kt</code></td>
+<td>2</td>
+<td>Gradient, or raw <code>OutlinedButton</code></td>
+</tr>
+<tr>
+<td><code>KeyboardPanelButton</code></td>
+<td><code>ime/ui/KeyboardPanel.kt</code></td>
+<td>18</td>
+<td>Keyboard-theme colours, 14 dp corners; styles PRIMARY (gradient, the default), SECONDARY, TONAL, TEXT</td>
+</tr>
+<tr>
+<td><code>PrimaryButton</code>, <code>SecondaryButton</code> (panel scope)</td>
+<td><code>ime/ui/KeyboardPanel.kt</code></td>
+<td>4, 4</td>
+<td>Wrappers over <code>KeyboardPanelButton</code></td>
+</tr>
+<tr>
+<td>Raw Material <code>Button</code>, <code>OutlinedButton</code>, <code>TextButton</code>, <code>FilledTonalButton</code></td>
+<td>22 files</td>
+<td>9, 8, 21, 2</td>
+<td>Material defaults: full-pill shape, 40 dp height</td>
+</tr>
+</tbody>
+</table>
+<h2>Problems</h2>
+<ol>
+<li><strong>The AI gradient on a non-AI action.</strong> "Add keyboard language" (<code>KeyboardLanguagesScreen.kt</code>) is a <code>GradientButton</code>.</li>
+<li><strong>The gradient is the keyboard panel's default.</strong> <code>KeyboardPanelButton</code> defaults to <code>PRIMARY</code>, so any call without a style becomes a gradient: Translate's "Close" and "Return to keyboard" both look like the main AI action.</li>
+<li><strong>Raw Material buttons skip the shared ones</strong> in Quick Notes, themes, the subtype editor, sheets and dialogs. They get Material's pill shape and 40 dp height, so they don't match the 14 dp, 48 dp buttons beside them.</li>
+<li><strong>Two heights for the same job.</strong> Bottom actions are 56 dp in onboarding and setup but 48 dp on the SmarType AI screen; the languages screen grows with text.</li>
+<li><strong>Two corner sizes.</strong> 12 dp (<code>FlorisButton</code>, outlined, text) and 14 dp (primary, gradient, panels) sit on the same screens.</li>
+<li><strong>Unused variants.</strong> <code>FlorisPrimaryButton</code> and <code>FlorisSecondaryButton</code> exist but only previews use them.</li>
+<li><strong>Destructive styling is ad hoc.</strong> Account's "Sign out" is a large outlined red button; dialogs use plain text buttons for "Remove".</li>
+<li><strong>Side-by-side pairs.</strong> Onboarding puts "Previous" and "Next" at 50/50 width, so the main action is half as wide as on every other screen.</li>
+</ol>
+<h2>Changes, in order</h2>
+<ol>
+<li>Add <code>SmarTypeButton(variant, size)</code> in <code>lib/compose/</code> with the six variants. Keep the old functions as thin wrappers that call it, so nothing breaks while screens move over.</li>
+<li>Change <code>KeyboardPanelButton</code>'s default style to <code>SECONDARY</code>; pass <code>PRIMARY</code> explicitly only for Rewrite, Translate and Insert.</li>
+<li>Switch "Add keyboard language" to <code>Filled</code>.</li>
+<li>Replace raw Material buttons screen by screen (22 files), starting with Quick Notes and the theme screens.</li>
+<li>Make every bottom-of-screen action Large (56 dp); everything else Medium (48 dp).</li>
+<li>Use 14 dp corners for every button.</li>
+<li>Account "Sign out": a <code>Danger</code> text-style row at the bottom of the list, with a confirmation dialog.</li>
+<li>Onboarding: full-width "Next"; "Back" becomes the system back gesture plus a small text button at the top.</li>
+<li>Remove the unused <code>FlorisPrimaryButton</code> and <code>FlorisSecondaryButton</code> once nothing calls them.</li>
+</ol>
+<p>These are presentation changes; no behaviour, route or test tag changes. Screens that touch sign-in or purchases (<code>AuthScreen</code>, <code>SubscriptionScreen</code>) only change the button's look, not what it does.</p></div></body></html>

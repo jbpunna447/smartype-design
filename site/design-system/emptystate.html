@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EmptyState · SmarType</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"><link rel="stylesheet" href="tokens.css"><link rel="stylesheet" href="bundle.css"><style>
+body{margin:0;background:var(--background);color:var(--on-surface);font:15px/1.6 var(--font-sans)}
+.wrap{max-width:980px;margin:0 auto;padding:28px 16px 70px}
+.wrap h1{font-size:34px;line-height:1.15;margin:8px 0 12px}.wrap h2{font-size:22px;margin:34px 0 8px}.wrap h3{font-size:17px}
+.wrap table{border-collapse:collapse;width:100%;font-size:14px;display:block;overflow-x:auto}
+.wrap th,.wrap td{border-bottom:1px solid var(--outline-variant);padding:8px 10px;text-align:left;vertical-align:top}
+.wrap code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.85em;background:var(--surface-container);padding:1px 5px;border-radius:4px}
+.wrap a{color:var(--primary)}
+.eyebrow{font:500 12px "JetBrains Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--primary)}
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:18px 0}
+.toc a{display:block;background:var(--surface-container-low);border-radius:14px;padding:12px 14px;text-decoration:none;color:var(--on-surface)}
+.toc a b{display:block}.toc a span{color:var(--on-surface-variant);font-size:13px}
+.pv{border:1px solid var(--outline-variant);border-radius:16px;padding:16px;margin:16px 0;background:var(--surface-container-low);overflow-x:auto}
+.swatch{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.swatch div{border:1px solid var(--outline-variant);border-radius:10px;overflow:hidden;font-size:12.5px}
+.swatch i{display:block;height:44px}.swatch p{margin:0;padding:6px 8px}
+.themes{display:flex;gap:6px;margin:10px 0}.themes button{font:inherit;border:1px solid var(--outline);background:transparent;color:var(--on-surface);border-radius:8px;padding:4px 10px;cursor:pointer}
+</style></head><body><style>
+.stx-nav{position:sticky;top:0;z-index:1000;display:flex;gap:2px;align-items:center;overflow-x:auto;
+  background:#0b1416;border-bottom:1px solid #22363a;padding:0 max(12px,env(safe-area-inset-left,0px));
+  font:500 13px/1 "Google Sans Flex","DM Sans",system-ui,sans-serif;scrollbar-width:none}
+.stx-nav::-webkit-scrollbar{display:none}
+.stx-nav a{color:#b5cacf;text-decoration:none;padding:13px 10px;white-space:nowrap;border-bottom:2px solid transparent}
+.stx-nav a:hover,.stx-nav a:focus-visible{color:#fff}
+.stx-nav a[aria-current=page]{color:#5fd3df;border-bottom-color:#5fd3df}
+.stx-nav .stx-brand{color:#fff;font-weight:700;padding-right:14px}
+.stx-note{max-width:1040px;margin:18px auto 0;padding:12px 16px;border-radius:12px;background:#fbf0d9;color:#4d3800;
+  font:14px/1.5 "Google Sans Flex","DM Sans",system-ui,sans-serif;box-sizing:border-box}
+.stx-note a{color:#4d3800;font-weight:700}
+.stx-notewrap{padding:0 16px}
+@media (prefers-color-scheme:dark){.stx-note{background:#352a10;color:#f6dfa6}.stx-note a{color:#f6dfa6}}
+</style><nav class="stx-nav" aria-label="Site"><a class="stx-brand" href="../index.html">SmarType UX</a><a href="../index.html">Hand-off</a><a href="../audit.html">Audit</a><a href="../fix-1b.html">1b Smartbar</a><a href="../fix-1.html">1 AI panel</a><a href="../fix-2.html">2 Languages</a><a href="../fix-4.html">4 Errors</a><a href="../fix-5.html">5 Setup</a><a href="../design-system/index.html" aria-current="page">Design system</a><a href="../review.html">Review</a><a href="../specs.html">Specs</a><a href="../brand.html">Brand</a><a href="../art.html">Art</a></nav><div class="wrap"><div class="eyebrow">Component</div><div class="themes" role="group" aria-label="Theme"><button data-t="dark">Dark</button><button data-t="light">Light</button><button data-t="amoled">AMOLED</button></div>
+<script>document.querySelectorAll('.themes button').forEach(b=>b.onclick=()=>document.documentElement.dataset.theme=b.dataset.t)</script><div class="pv"><!-- @dsCard group="Feedback" height=420 subtitle="Layout shown with a stand-in for the 3D art" -->
+<style>
+  .es{width:320px;box-sizing:border-box;background:var(--background);border:1px solid var(--outline-variant);border-radius:24px;padding:40px 24px 32px;display:grid;justify-items:center;text-align:center;gap:0}
+  .es .art{width:160px;height:160px;border-radius:var(--radius-xl);background:radial-gradient(circle at 50% 45%,var(--surface-container-high),var(--background) 70%);display:grid;place-items:center;position:relative}
+  .es .key{width:62px;height:58px;border-radius:14px;background:var(--surface-container-highest);box-shadow:inset 0 -6px 0 var(--surface-container-low),0 10px 18px rgba(0,0,0,.25)}
+  .es .sheet{position:absolute;width:44px;height:58px;border-radius:6px;background:color-mix(in srgb,var(--on-surface) 14%,transparent);border:1px solid color-mix(in srgb,var(--primary) 60%,transparent);transform:rotate(-10deg) translate(-38px,-6px)}
+  .es h4{margin:16px 0 0;font-size:24px;line-height:32px;font-weight:500;color:var(--on-surface)}
+  .es p{margin:8px 0 20px;font-size:14px;line-height:20px;letter-spacing:.25px;color:var(--on-surface-variant);max-width:240px}
+</style>
+<div class="st-demo">
+  <div class="st-cols">
+    <div class="es">
+      <div class="art" aria-hidden="true"><i class="sheet"></i><i class="key"></i></div>
+      <h4>No saved notes yet</h4>
+      <p>Write something in a draft and save it to keep it here.</p>
+      <button class="st-btn st-tonal">New draft</button>
+    </div>
+  </div>
+</div>
+</div><h1>EmptyState</h1>
+<p>What a screen shows when it has nothing yet (<code>SmarTypeEmptyState</code>): a small 3D illustration, a title, one line of help and one action.</p>
+<h2>Anatomy</h2>
+<ul>
+<li>Illustration: 160 dp square from the Illustrations set (<code>art_empty_*</code>), decorative, no content description, on the teal glow described in Illustrations (45% light, 15% dark, 20% AMOLED).</li>
+<li>Title: <code>headline-small</code> in <code>on-surface</code>, 16 dp below the art. Says what's missing in plain words: "No saved notes yet".</li>
+<li>Message: <code>body-medium</code> in <code>on-surface-variant</code>, one or two lines, says how to get started.</li>
+<li>Action (optional): one <code>Tonal</code> button, Medium, that starts the thing ("Add a language", "New draft").</li>
+<li>Centred horizontally and vertically in the empty area, <code>space-8</code> padding around.</li>
+<li>When the screen already has a bottom action ("Add keyboard language"), the empty state has no button of its own: one action per screen.</li>
+<li>Hide the screen's intro or helper text while the list is empty. The empty state is the only content.</li>
+</ul>
+<h2>Rules</h2>
+<ul>
+<li>Use an empty state only when a list is truly empty, not while it loads. While loading, keep the layout and show a progress indicator.</li>
+<li>Search with no results: art <code>art_empty_search</code>, title "No languages found", the query in the message, no action (the user is already typing).</li>
+<li>Never show an empty state that contradicts the screen: if the keyboard is typing in English, the languages list isn't empty (review finding L1).</li>
+<li>Inside the keyboard (Clipboard, Emoji history) use an icon and one line instead; no 3D art in the keyboard.</li>
+</ul>
+<h2>Replaces</h2>
+<p>The current <code>SmarTypeEmptyState</code> layout, the Quick Notes "Saved notes" empty card and the Writing styles "No custom styles created yet" card.</p>
+<h2>What the consumer provides</h2>
+<p><code>art</code> (one of the <code>art_empty_*</code> drawables), <code>title</code>, <code>message</code>, optional <code>actionLabel</code> and <code>onAction</code>.</p></div></body></html>

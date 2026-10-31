@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Card · SmarType</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"><link rel="stylesheet" href="tokens.css"><link rel="stylesheet" href="bundle.css"><style>
+body{margin:0;background:var(--background);color:var(--on-surface);font:15px/1.6 var(--font-sans)}
+.wrap{max-width:980px;margin:0 auto;padding:28px 16px 70px}
+.wrap h1{font-size:34px;line-height:1.15;margin:8px 0 12px}.wrap h2{font-size:22px;margin:34px 0 8px}.wrap h3{font-size:17px}
+.wrap table{border-collapse:collapse;width:100%;font-size:14px;display:block;overflow-x:auto}
+.wrap th,.wrap td{border-bottom:1px solid var(--outline-variant);padding:8px 10px;text-align:left;vertical-align:top}
+.wrap code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.85em;background:var(--surface-container);padding:1px 5px;border-radius:4px}
+.wrap a{color:var(--primary)}
+.eyebrow{font:500 12px "JetBrains Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--primary)}
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:18px 0}
+.toc a{display:block;background:var(--surface-container-low);border-radius:14px;padding:12px 14px;text-decoration:none;color:var(--on-surface)}
+.toc a b{display:block}.toc a span{color:var(--on-surface-variant);font-size:13px}
+.pv{border:1px solid var(--outline-variant);border-radius:16px;padding:16px;margin:16px 0;background:var(--surface-container-low);overflow-x:auto}
+.swatch{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.swatch div{border:1px solid var(--outline-variant);border-radius:10px;overflow:hidden;font-size:12.5px}
+.swatch i{display:block;height:44px}.swatch p{margin:0;padding:6px 8px}
+.themes{display:flex;gap:6px;margin:10px 0}.themes button{font:inherit;border:1px solid var(--outline);background:transparent;color:var(--on-surface);border-radius:8px;padding:4px 10px;cursor:pointer}
+</style></head><body><style>
+.stx-nav{position:sticky;top:0;z-index:1000;display:flex;gap:2px;align-items:center;overflow-x:auto;
+  background:#0b1416;border-bottom:1px solid #22363a;padding:0 max(12px,env(safe-area-inset-left,0px));
+  font:500 13px/1 "Google Sans Flex","DM Sans",system-ui,sans-serif;scrollbar-width:none}
+.stx-nav::-webkit-scrollbar{display:none}
+.stx-nav a{color:#b5cacf;text-decoration:none;padding:13px 10px;white-space:nowrap;border-bottom:2px solid transparent}
+.stx-nav a:hover,.stx-nav a:focus-visible{color:#fff}
+.stx-nav a[aria-current=page]{color:#5fd3df;border-bottom-color:#5fd3df}
+.stx-nav .stx-brand{color:#fff;font-weight:700;padding-right:14px}
+.stx-note{max-width:1040px;margin:18px auto 0;padding:12px 16px;border-radius:12px;background:#fbf0d9;color:#4d3800;
+  font:14px/1.5 "Google Sans Flex","DM Sans",system-ui,sans-serif;box-sizing:border-box}
+.stx-note a{color:#4d3800;font-weight:700}
+.stx-notewrap{padding:0 16px}
+@media (prefers-color-scheme:dark){.stx-note{background:#352a10;color:#f6dfa6}.stx-note a{color:#f6dfa6}}
+</style><nav class="stx-nav" aria-label="Site"><a class="stx-brand" href="../index.html">SmarType UX</a><a href="../index.html">Hand-off</a><a href="../audit.html">Audit</a><a href="../fix-1b.html">1b Smartbar</a><a href="../fix-1.html">1 AI panel</a><a href="../fix-2.html">2 Languages</a><a href="../fix-4.html">4 Errors</a><a href="../fix-5.html">5 Setup</a><a href="../design-system/index.html" aria-current="page">Design system</a><a href="../review.html">Review</a><a href="../specs.html">Specs</a><a href="../brand.html">Brand</a><a href="../art.html">Art</a></nav><div class="wrap"><div class="eyebrow">Component</div><div class="themes" role="group" aria-label="Theme"><button data-t="dark">Dark</button><button data-t="light">Light</button><button data-t="amoled">AMOLED</button></div>
+<script>document.querySelectorAll('.themes button').forEach(b=>b.onclick=()=>document.documentElement.dataset.theme=b.dataset.t)</script><div class="pv"><!-- @dsCard group="Containment" height=420 subtitle="Card, hero card and banners" -->
+<div class="st-demo">
+  <div class="st-cols">
+    <div style="width:320px;display:grid;gap:12px">
+      <p class="lab">Card</p>
+      <div class="st-card"><h4>Writing styles</h4><p>4 pinned · 23 available</p></div>
+      <div class="st-card hero">
+        <div style="display:flex;justify-content:space-between;align-items:center"><h4>Premium</h4><span class="st-badge success">Active</span></div>
+        <p>Unlimited rewrites and translations. Renews 12 Nov.</p>
+        <div><button class="st-btn st-tonal size-s">Manage in Google Play</button></div>
+      </div>
+    </div>
+    <div style="width:320px;display:grid;gap:12px">
+      <p class="lab">Banner</p>
+      <div class="st-banner info"><span class="ic">ⓘ</span><div><b>Sign in to use AI</b>Typing works without an account.</div><span class="act">Sign in</span></div>
+      <div class="st-banner success"><span class="ic">✓</span><div><b>SmarType is on</b>Now make it your keyboard.</div></div>
+      <div class="st-banner error"><span class="ic">!</span><div><b>AI can't run on this device right now</b>Your text wasn't sent.</div><span class="act">Try again</span></div>
+    </div>
+  </div>
+</div>
+</div><h1>Card</h1>
+<p>A flat container for one piece of content (<code>SmarTypeCard</code>), plus a <code>SmarTypeBanner</code> for a short status message with an optional action.</p>
+<h2>Card</h2>
+<ul>
+<li>Fill <code>surface-container-low</code>, corners <code>radius-lg</code>, padding <code>space-4</code>, no border, no shadow (<code>elevation-0</code>).</li>
+<li><code>Raised</code> (fill <code>surface-container-high</code>) only for a card that sits inside another surface, such as a sheet.</li>
+<li><code>Hero</code> (fill <code>surface-container</code>, 12 dp internal gap) for the one summary card at the top of a screen: the Home plan card, the SmarType AI status.</li>
+<li>Title <code>title-medium</code>, body <code>body-medium</code> in <code>on-surface-variant</code>. Actions inside a card are <code>Small</code> buttons, at most one <code>Tonal</code> plus one <code>Text</code>.</li>
+<li>A whole card can be tappable; then it has a pressed state layer and no separate button.</li>
+<li>Cards stack with a <code>space-3</code> gap. Settings lists don't use one card per row: use a List group.</li>
+</ul>
+<h2>Banner</h2>
+<ul>
+<li>For status the user should notice but not act on immediately: "Sign in to use AI", "SmarType is on", "AI can't run on this device right now".</li>
+<li><code>Info</code>: <code>primary-container</code>. <code>Success</code>: <code>secondary-container</code>. <code>Error</code>: <code>error-container</code>. Corners <code>radius-md</code>, padding 12 by 16 dp.</li>
+<li>Leading icon, bold first line (the fact), regular second line (what it means), optional text action on the right.</li>
+<li>One banner per screen, at the top of the content. It replaces toasts for anything that stays true.</li>
+</ul>
+<h2>Replaces</h2>
+<p><code>FlorisInfoCard</code>, <code>FlorisErrorCard</code>, <code>FlorisWarningCard</code>, <code>FlorisSimpleCard</code>, <code>SmarTypeSurfaceCard</code> and the 8 raw <code>Card</code> calls (Quick Notes, setup step cards).</p>
+<h2>What the consumer provides</h2>
+<p>Card: <code>content</code>, optional <code>onClick</code>, <code>variant</code> (default, raised, hero). Banner: <code>kind</code> (info, success, error), <code>title</code>, optional <code>message</code>, optional <code>action</code> label and handler.</p></div></body></html>

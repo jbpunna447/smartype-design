@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KeyboardPanel · SmarType</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"><link rel="stylesheet" href="tokens.css"><link rel="stylesheet" href="bundle.css"><style>
+body{margin:0;background:var(--background);color:var(--on-surface);font:15px/1.6 var(--font-sans)}
+.wrap{max-width:980px;margin:0 auto;padding:28px 16px 70px}
+.wrap h1{font-size:34px;line-height:1.15;margin:8px 0 12px}.wrap h2{font-size:22px;margin:34px 0 8px}.wrap h3{font-size:17px}
+.wrap table{border-collapse:collapse;width:100%;font-size:14px;display:block;overflow-x:auto}
+.wrap th,.wrap td{border-bottom:1px solid var(--outline-variant);padding:8px 10px;text-align:left;vertical-align:top}
+.wrap code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.85em;background:var(--surface-container);padding:1px 5px;border-radius:4px}
+.wrap a{color:var(--primary)}
+.eyebrow{font:500 12px "JetBrains Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--primary)}
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:18px 0}
+.toc a{display:block;background:var(--surface-container-low);border-radius:14px;padding:12px 14px;text-decoration:none;color:var(--on-surface)}
+.toc a b{display:block}.toc a span{color:var(--on-surface-variant);font-size:13px}
+.pv{border:1px solid var(--outline-variant);border-radius:16px;padding:16px;margin:16px 0;background:var(--surface-container-low);overflow-x:auto}
+.swatch{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.swatch div{border:1px solid var(--outline-variant);border-radius:10px;overflow:hidden;font-size:12.5px}
+.swatch i{display:block;height:44px}.swatch p{margin:0;padding:6px 8px}
+.themes{display:flex;gap:6px;margin:10px 0}.themes button{font:inherit;border:1px solid var(--outline);background:transparent;color:var(--on-surface);border-radius:8px;padding:4px 10px;cursor:pointer}
+</style></head><body><style>
+.stx-nav{position:sticky;top:0;z-index:1000;display:flex;gap:2px;align-items:center;overflow-x:auto;
+  background:#0b1416;border-bottom:1px solid #22363a;padding:0 max(12px,env(safe-area-inset-left,0px));
+  font:500 13px/1 "Google Sans Flex","DM Sans",system-ui,sans-serif;scrollbar-width:none}
+.stx-nav::-webkit-scrollbar{display:none}
+.stx-nav a{color:#b5cacf;text-decoration:none;padding:13px 10px;white-space:nowrap;border-bottom:2px solid transparent}
+.stx-nav a:hover,.stx-nav a:focus-visible{color:#fff}
+.stx-nav a[aria-current=page]{color:#5fd3df;border-bottom-color:#5fd3df}
+.stx-nav .stx-brand{color:#fff;font-weight:700;padding-right:14px}
+.stx-note{max-width:1040px;margin:18px auto 0;padding:12px 16px;border-radius:12px;background:#fbf0d9;color:#4d3800;
+  font:14px/1.5 "Google Sans Flex","DM Sans",system-ui,sans-serif;box-sizing:border-box}
+.stx-note a{color:#4d3800;font-weight:700}
+.stx-notewrap{padding:0 16px}
+@media (prefers-color-scheme:dark){.stx-note{background:#352a10;color:#f6dfa6}.stx-note a{color:#f6dfa6}}
+</style><nav class="stx-nav" aria-label="Site"><a class="stx-brand" href="../index.html">SmarType UX</a><a href="../index.html">Hand-off</a><a href="../audit.html">Audit</a><a href="../fix-1b.html">1b Smartbar</a><a href="../fix-1.html">1 AI panel</a><a href="../fix-2.html">2 Languages</a><a href="../fix-4.html">4 Errors</a><a href="../fix-5.html">5 Setup</a><a href="../design-system/index.html" aria-current="page">Design system</a><a href="../review.html">Review</a><a href="../specs.html">Specs</a><a href="../brand.html">Brand</a><a href="../art.html">Art</a></nav><div class="wrap"><div class="eyebrow">Component</div><div class="stx-notewrap"><div class="stx-note"><b>Updated after Fix 1b.</b> The panel header is now ‹ and the panel name (no keyboard-icon toggle, no ABC key), the smartbar stays visible above the panel, and the dock holds content actions only. The preview below still shows the earlier frame. Full list: <a href="../audit.html">audit, section 4</a>.</div></div><div class="themes" role="group" aria-label="Theme"><button data-t="dark">Dark</button><button data-t="light">Light</button><button data-t="amoled">AMOLED</button></div>
+<script>document.querySelectorAll('.themes button').forEach(b=>b.onclick=()=>document.documentElement.dataset.theme=b.dataset.t)</script><div class="pv"><!-- @dsCard group="Keyboard" height=520 subtitle="Panel frame: header, scope, body, docked actions with ABC" -->
+<div class="st-demo">
+  <div class="st-cols">
+    <div>
+      <p class="lab">AI panel · result</p>
+      <div class="st-kb">
+        <div class="bar"><button class="st-icon tonal" aria-label="Back to keyboard" style="width:36px;height:36px;border-radius:50%"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><g fill="currentColor"><rect x="5.5" y="8.5" width="2" height="2" rx=".5"/><rect x="9" y="8.5" width="2" height="2" rx=".5"/><rect x="12.5" y="8.5" width="2" height="2" rx=".5"/><rect x="16" y="8.5" width="2" height="2" rx=".5"/><rect x="5.5" y="12" width="2" height="2" rx=".5"/><rect x="16" y="12" width="2" height="2" rx=".5"/><rect x="9" y="12" width="5.5" height="2" rx=".5"/><rect x="8" y="15.2" width="8" height="1.6" rx=".8"/></g></svg></button><span class="ttl">SmarType AI</span><span class="st-badge info">Premium</span><button class="st-icon" aria-label="Translate">文</button></div>
+        <div class="body">
+          <div class="chips"><button class="st-chip ai selected">✓ Professional</button><button class="st-chip">🙏 Polite</button><button class="st-chip">😎 Casual</button></div>
+          
+          <div class="res">I'll see you at the office tomorrow.</div>
+        </div>
+        <div class="dock"><button class="st-btn st-tonal">Copy</button><button class="st-btn st-ai">Replace</button></div>
+      </div>
+    </div>
+    <div>
+      <p class="lab">AI panel · unavailable</p>
+      <div class="st-kb">
+        <div class="bar"><button class="st-icon tonal" aria-label="Back to keyboard" style="width:36px;height:36px;border-radius:50%"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><g fill="currentColor"><rect x="5.5" y="8.5" width="2" height="2" rx=".5"/><rect x="9" y="8.5" width="2" height="2" rx=".5"/><rect x="12.5" y="8.5" width="2" height="2" rx=".5"/><rect x="16" y="8.5" width="2" height="2" rx=".5"/><rect x="5.5" y="12" width="2" height="2" rx=".5"/><rect x="16" y="12" width="2" height="2" rx=".5"/><rect x="9" y="12" width="5.5" height="2" rx=".5"/><rect x="8" y="15.2" width="8" height="1.6" rx=".8"/></g></svg></button><span class="ttl">SmarType AI</span><span class="st-badge neutral">Unavailable</span></div>
+        <div class="body">
+          <div class="st-banner error"><span class="ic">!</span><div><b>AI can't run on this device right now</b>Your text wasn't sent. Typing still works.</div></div>
+        </div>
+        <div class="dock"><button class="st-btn st-text">Try again</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div><h1>KeyboardPanel</h1>
+<p>The frame every app-owned panel inside the keyboard uses (AI, Translate, Clipboard, Notes, Voice, More actions), so they open, read and close the same way.</p>
+<h2>Anatomy</h2>
+<ol>
+<li><strong>Header, 48 dp:</strong> on the left, the toolbar button that opened the panel turns into a <strong>keyboard icon</strong> in the same position (✦ becomes the keyboard icon for AI); tapping it returns to the keys. Then the title in <code>title-small</code>, an optional status badge, and at most one icon action on the right (Translate, Settings).</li>
+<li><strong>Selection hint (AI and Translate, only when text is selected):</strong> <code>label-small</code> in secondary text: "Selected text only". With no selection nothing shows; the whole message is the obvious default. This replaces the quote box that repeated the user's text.</li>
+<li><strong>Body:</strong> one vertical scroll region with 12 dp padding: chips, the result, or a list.</li>
+<li><strong>Dock, pinned at the bottom:</strong> only actions on the panel's content, at most two (Copy and Replace, or Try again). Navigation never sits here. The main action uses the AI style only when it applies an AI result (Replace, Insert).</li>
+</ol>
+<h2>Behaviour</h2>
+<ul>
+<li>
+<p>The AI panel runs as soon as it opens: tapping ✦ is the action, there is no Rewrite button. One request returns every pinned style; results stay in memory for that text, so switching chips is instant. An empty field sends nothing.</p>
+</li>
+<li>
+<p>The keyboard icon (where the opening button was) and system Back both return to the letter keys. Back never hides the whole keyboard from a panel.</p>
+</li>
+<li>The panel keeps its height when content changes (loading, result, error) so the keys below don't jump.</li>
+<li>Loading: the result area shows a skeleton; the main action shows a spinner.</li>
+<li>Unavailable or error: one banner explaining what happened and what still works. No action that can't work is shown.</li>
+<li>After Replace or Insert, the panel closes and the suggestion row shows "Replaced · Undo" for 6 seconds.</li>
+</ul>
+<h2>Colours and shape</h2>
+<ul>
+<li>Colours come from the active keyboard theme through <code>KeyboardPanelColors</code> (background, surface, surfaceRaised, border, secondaryText, accent, accentStart/End, onAccent, error), as the code does today. The preview above uses app colours to stand in for a theme.</li>
+<li>Type, spacing, corners and states come from this system: panel corners <code>radius-lg</code> (<code>PanelShape</code>, 16 dp), actions <code>radius-md</code> (<code>ActionShape</code>, 14 dp), chips <code>radius-sm</code>. No 999 dp pills.</li>
+<li>Inline elements only: no popups, dialogs or dropdown windows from the keyboard.</li>
+</ul>
+<h2>Replaces</h2>
+<p><code>KeyboardPanelHeader</code> (the ↵ back icon becomes the keyboard-icon toggle), <code>KeyboardPanelActionRow</code>, <code>KeyboardPanelButton</code> defaults (gradient becomes opt-in), the AI panel's source preview box, and Translate's gradient Close button.</p>
+<h2>What the consumer provides</h2>
+<p><code>title</code>, optional <code>badge</code>, optional header <code>action</code>, optional selection hint, <code>content</code>, and up to two dock actions with their style. The keyboard-icon toggle is always added by the frame.</p></div></body></html>

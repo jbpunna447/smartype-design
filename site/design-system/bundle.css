@@ -1,0 +1,94 @@
+/* SmarType buttons: static renditions of the proposed SmarTypeButton for previews. */
+.st-btn{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 24px;border:0;border-radius:var(--radius-md);font-family:var(--font-sans);font-size:14px;line-height:20px;font-weight:500;letter-spacing:.1px;cursor:pointer;position:relative;overflow:hidden;white-space:nowrap}
+.st-btn::after{content:"";position:absolute;inset:0;background:currentColor;opacity:0;pointer-events:none}
+.st-btn.is-pressed::after{opacity:var(--state-pressed)}
+.st-btn.is-focus{outline:2px solid var(--primary);outline-offset:2px}
+.st-btn.size-l{min-height:56px;font-size:16px;line-height:24px}
+.st-btn.size-s{min-height:40px;padding:0 16px}
+.st-btn.full{width:100%}
+.st-btn .ic{font-size:18px;line-height:1}
+.st-filled{background:var(--primary);color:var(--on-primary)}
+.st-ai{background:linear-gradient(90deg,var(--ai-gradient-start),var(--ai-gradient-end));color:var(--on-ai-gradient)}
+.st-tonal{background:var(--primary-container);color:var(--on-primary-container)}
+.st-outlined{background:transparent;color:var(--primary);box-shadow:inset 0 0 0 1px var(--outline)}
+.st-text{background:transparent;color:var(--primary);padding:0 12px}
+.st-danger{background:var(--error);color:var(--on-error)}
+.st-danger-text{background:transparent;color:var(--error);padding:0 12px}
+.st-btn:disabled,.st-btn.is-disabled{background:var(--on-surface);color:var(--on-surface);box-shadow:none;cursor:default}
+.st-btn:disabled,.st-btn.is-disabled{background:color-mix(in srgb,var(--on-surface) 12%,transparent);color:color-mix(in srgb,var(--on-surface) 38%,transparent)}
+.st-btn.st-text:disabled,.st-btn.st-text.is-disabled{background:transparent}
+.st-btn .spin{width:18px;height:18px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent}
+.st-icon{box-sizing:border-box;width:48px;height:48px;display:inline-grid;place-items:center;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--on-surface-variant);font-size:20px}
+.st-icon.tonal{background:var(--primary-container);color:var(--on-primary-container)}
+.st-icon.selected{color:var(--primary)}
+
+/* Shared preview scaffolding */
+.st-demo{margin:0;background:var(--background);color:var(--on-surface);font-family:var(--font-sans);padding:20px;display:grid;gap:20px}
+.st-demo .lab{font-size:12px;line-height:16px;font-weight:500;letter-spacing:.1px;color:var(--on-surface-variant);margin:0 0 8px;text-transform:uppercase}
+.st-cols{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.st-phone{width:320px;box-sizing:border-box;background:var(--background);border:1px solid var(--outline-variant);border-radius:24px;padding:16px;display:grid;gap:12px}
+
+/* Card */
+.st-card{box-sizing:border-box;background:var(--surface-container-low);color:var(--on-surface);border-radius:var(--radius-lg);padding:16px;display:grid;gap:8px}
+.st-card.raised{background:var(--surface-container-high)}
+.st-card.hero{background:var(--surface-container);gap:12px}
+.st-card h4{margin:0;font-size:16px;line-height:24px;font-weight:500}
+.st-card p{margin:0;font-size:14px;line-height:20px;letter-spacing:.25px;color:var(--on-surface-variant)}
+.st-banner{box-sizing:border-box;border-radius:var(--radius-md);padding:12px 16px;display:flex;gap:12px;align-items:flex-start;font-size:14px;line-height:20px}
+.st-banner b{display:block;font-weight:500}
+.st-banner .ic{font-size:18px;line-height:20px}
+.st-banner.info{background:var(--primary-container);color:var(--on-primary-container)}
+.st-banner.success{background:var(--secondary-container);color:var(--on-secondary-container)}
+.st-banner.error{background:var(--error-container);color:var(--on-error-container)}
+.st-banner .act{margin-left:auto;font-weight:500;white-space:nowrap}
+
+/* List row */
+.st-group{background:var(--surface-container-low);border-radius:var(--radius-lg);overflow:hidden}
+.st-section{font-size:14px;line-height:20px;font-weight:600;letter-spacing:.1px;color:var(--primary);margin:8px 4px 8px}
+.st-row{box-sizing:border-box;min-height:56px;padding:12px 16px;display:flex;align-items:center;gap:16px}
+.st-row+.st-row{border-top:1px solid var(--outline-variant)}
+.st-row .lead{width:40px;height:40px;flex:0 0 40px;border-radius:var(--radius-sm);background:var(--primary-container);color:var(--on-primary-container);display:grid;place-items:center;font-size:18px}
+.st-row .txt{flex:1;min-width:0}
+.st-row .t{font-size:16px;line-height:24px;font-weight:500}
+.st-row .s{font-size:14px;line-height:20px;letter-spacing:.25px;color:var(--on-surface-variant)}
+.st-row .trail{color:var(--on-surface-variant);font-size:18px}
+.st-row.disabled .t,.st-row.disabled .s{opacity:var(--disabled-content)}
+.st-switch{width:52px;height:32px;flex:0 0 52px;border-radius:16px;background:var(--surface-variant);box-shadow:inset 0 0 0 2px var(--outline);position:relative}
+.st-switch::after{content:"";position:absolute;width:16px;height:16px;border-radius:50%;background:var(--outline);top:8px;left:8px}
+.st-switch.on{background:var(--primary);box-shadow:none}
+.st-switch.on::after{width:24px;height:24px;top:4px;left:24px;background:var(--on-primary)}
+
+/* Chip */
+.st-chip{box-sizing:border-box;display:inline-flex;align-items:center;gap:8px;min-height:32px;padding:0 12px;border-radius:var(--radius-sm);font-family:var(--font-sans);font-size:13px;line-height:18px;font-weight:500;letter-spacing:.1px;background:transparent;color:var(--on-surface-variant);box-shadow:inset 0 0 0 1px var(--outline);border:0}
+.st-chip.selected{background:var(--primary-container);color:var(--on-primary-container);box-shadow:none}
+.st-chip.ai.selected{background:linear-gradient(90deg,var(--ai-gradient-start),var(--ai-gradient-end));color:var(--on-ai-gradient)}
+.st-chip.disabled{opacity:var(--disabled-content)}
+.st-badge{display:inline-flex;align-items:center;gap:4px;min-height:24px;padding:0 8px;border-radius:var(--radius-xs);font-size:12px;line-height:16px;font-weight:500;letter-spacing:.1px}
+.st-badge.success{background:var(--secondary-container);color:var(--on-secondary-container)}
+.st-badge.neutral{background:var(--tertiary-container);color:var(--on-tertiary-container)}
+.st-badge.info{background:var(--primary-container);color:var(--on-primary-container)}
+.st-badge.error{background:var(--error-container);color:var(--on-error-container)}
+
+/* Sheet and dialog */
+.st-scrim{background:rgba(0,0,0,.32);border-radius:24px;padding-top:120px;overflow:hidden;width:320px}
+.st-sheet{background:var(--surface-container);border-radius:var(--radius-xl) var(--radius-xl) 0 0;padding:8px 16px 20px;display:grid;gap:12px}
+.st-sheet .handle{width:32px;height:4px;border-radius:2px;background:var(--on-surface-variant);opacity:.4;margin:4px auto 4px}
+.st-sheet h4,.st-dialog h4{margin:0;font-size:24px;line-height:32px;font-weight:500}
+.st-sheet p,.st-dialog p{margin:0;font-size:14px;line-height:20px;letter-spacing:.25px;color:var(--on-surface-variant)}
+.st-dialog{box-sizing:border-box;width:300px;background:var(--surface-container-high);border-radius:var(--radius-xl);padding:24px;display:grid;gap:16px}
+.st-dialog .acts{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.st-snack{box-sizing:border-box;background:var(--inverse-surface);color:var(--inverse-on-surface);border-radius:var(--radius-md);min-height:48px;padding:6px 8px 6px 16px;display:flex;align-items:center;gap:8px;font-size:14px;line-height:20px;width:288px}
+.st-snack b{margin-left:auto;color:var(--inverse-primary);font-weight:500;padding:8px}
+
+/* Keyboard panel (colours stand in for the keyboard theme) */
+.st-kb{width:360px;box-sizing:border-box;background:var(--surface-container);border-radius:16px 16px 0 0;font-family:var(--font-sans);color:var(--on-surface)}
+.st-kb .bar{display:flex;align-items:center;gap:8px;height:48px;padding:0 8px;border-bottom:1px solid var(--outline-variant)}
+.st-kb .bar .ttl{font-size:14px;line-height:20px;font-weight:600;letter-spacing:.1px;flex:1}
+.st-kb .bar .st-badge{margin-right:4px}
+.st-kb .body{padding:12px;display:grid;gap:10px;min-height:120px}
+.st-kb .scope{font-size:12px;line-height:16px;color:var(--on-surface-variant)}
+.st-kb .res{background:var(--surface-container-high);border-radius:var(--radius-md);padding:12px;font-size:16px;line-height:24px}
+.st-kb .chips{display:flex;gap:8px;overflow:hidden}
+.st-kb .dock{display:flex;gap:8px;padding:8px 12px 12px}
+.st-kb .dock .st-btn{flex:1}
+.st-kb .abc{flex:0 0 auto !important;min-width:72px}

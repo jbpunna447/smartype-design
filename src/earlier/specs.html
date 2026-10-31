@@ -1,0 +1,434 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>SmarType Write and Voice Specs</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Fraunces:opsz,wght@9..144,600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a two-part product spec — sticky table of contents on wide screens, one long reading column, phone-fragment sketches beside the flows they describe. */
+:root{
+  --bg:#f3f7f7; --surface:#ffffff; --ink:#132a2e; --muted:#566b6f; --line:#d5e2e3;
+  --accent:#0d6f75; --accent-soft:#dff0f0; --warn:#8a5a00; --warn-bg:#fbf0d9; --risk:#b3261e; --risk-bg:#fbe7e5;
+  --f-display:"Fraunces",Georgia,serif; --f-body:"DM Sans",system-ui,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1a1c; --surface:#162427; --ink:#e3eeee; --muted:#9db2b4; --line:#26393c;
+  --accent:#5cc8cc; --accent-soft:#183a3c; --warn:#f2c46b; --warn-bg:#352a10; --risk:#ffb4ab; --risk-bg:#3d1714; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1a1c; --surface:#162427; --ink:#e3eeee; --muted:#9db2b4; --line:#26393c;
+  --accent:#5cc8cc; --accent-soft:#183a3c; --warn:#f2c46b; --warn-bg:#352a10; --risk:#ffb4ab; --risk-bg:#3d1714; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15.5px;line-height:1.6}
+.wrap{max-width:1120px;margin:0 auto;padding-block:40px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;grid-template-columns:220px minmax(0,1fr);gap:40px}
+nav.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 24px);align-self:start;font-size:13.5px}
+nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:3px 0}
+nav.toc a:hover,nav.toc a:focus-visible{color:var(--accent)}
+nav.toc b{display:block;margin:14px 0 4px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
+main{min-width:0}
+h1,h2,h3,h4{text-wrap:balance}
+h1{font-family:var(--f-display);font-weight:600;font-size:clamp(30px,5vw,42px);line-height:1.1;margin:6px 0 12px}
+h2{font-family:var(--f-display);font-weight:600;font-size:30px;margin:56px 0 6px;padding-top:24px;border-top:2px solid var(--ink)}
+h3{font-size:19px;margin:34px 0 8px}
+h4{font-size:15.5px;margin:18px 0 6px}
+p,li{max-width:72ch}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.lede{color:var(--muted);font-size:17px;margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:16px;font-family:var(--f-mono);font-size:12.5px;color:var(--muted)}
+code{font-family:var(--f-mono);font-size:.86em;background:var(--accent-soft);padding:1px 5px;border-radius:4px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:14px 0}
+.risk{background:var(--risk-bg);border-radius:12px;padding:12px 16px;margin:14px 0}
+.risk b{color:var(--risk)}
+.note{background:var(--warn-bg);border-radius:12px;padding:12px 16px;margin:14px 0}
+.tbl{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+.flow{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:22px;align-items:start}
+ol.steps{padding-left:20px;display:grid;gap:6px}
+ul.ac{list-style:none;padding:0;display:grid;gap:6px}
+ul.ac li{padding-left:28px;position:relative}
+ul.ac li::before{content:"✓";position:absolute;left:4px;color:var(--accent);font-weight:700}
+.id{font-family:var(--f-mono);font-size:12px;color:var(--muted);margin-right:6px}
+.phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.phase{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.phase h4{margin:0 0 6px}
+.phase ul{margin:0;padding-left:18px;font-size:14px}
+/* phone fragments stay in the app's light palette */
+.ph{background:#f4f9f9;color:#132a2e;border:1px solid #cfdfe0;border-radius:16px;padding:10px;font-size:12px;line-height:1.4}
+.ph .c{background:#fff;border-radius:10px;padding:9px}
+.ph .t{font-weight:700;font-size:13px}
+.ph .m{color:#566b6f}
+.ph .chip{display:inline-block;border-radius:999px;padding:3px 9px;background:#dfe9ea;margin:3px 3px 0 0}
+.ph .chip.on{background:#0d6f75;color:#fff}
+.ph .btn{display:block;text-align:center;border-radius:10px;padding:8px;font-weight:700;margin-top:8px}
+.ph .pri{background:#0d6f75;color:#fff} .ph .sec{background:#dfe9ea;color:#132a2e}
+.ph .row{display:flex;gap:6px;align-items:center;justify-content:space-between}
+.ph .wave{height:26px;border-radius:8px;background:repeating-linear-gradient(90deg,#0d6f75 0 3px,transparent 3px 7px);opacity:.55;margin:6px 0}
+.ph .key{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;margin-top:6px}
+.ph .key i{display:block;height:14px;background:#fff;border-radius:3px}
+.cap{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);margin:0 0 4px}
+@media (max-width:860px){.wrap{grid-template-columns:1fr}nav.toc{position:static}.flow{grid-template-columns:1fr}}
+a{color:var(--accent)}
+</style>
+
+<div class="wrap">
+<nav class="toc" aria-label="Contents">
+  <b>Write</b>
+  <a href="#w-why">Why</a><a href="#w-goals">Goals and scope</a><a href="#w-entry">Entry points</a><a href="#w-screens">Screens and flows</a><a href="#w-ai">AI and voice in Write</a><a href="#w-data">Data and migration</a><a href="#w-edge">Edge cases</a><a href="#w-ac">Acceptance criteria</a><a href="#w-phase">Phases</a>
+  <b>Voice mode</b>
+  <a href="#v-why">Why</a><a href="#v-goals">Goals and scope</a><a href="#v-flow">Keyboard flow</a><a href="#v-states">States</a><a href="#v-pause">Pauses and stopping</a><a href="#v-clean">Clean-up and styles</a><a href="#v-eng">Engine and architecture</a><a href="#v-priv">Privacy, quota, permission</a><a href="#v-edge">Edge cases</a><a href="#v-ac">Acceptance criteria</a><a href="#v-phase">Phases</a>
+  <b>Both</b>
+  <a href="#review">Owner review</a><a href="#metrics">Measuring success</a>
+</nav>
+
+<main>
+  <div class="eyebrow">Product specs · draft for owner review</div>
+  <h1>Write and Voice mode</h1>
+  <p class="lede">Two features that came out of the end-to-end UX review: one place to draft, polish and send text, and SmarType's own dictation that turns speech into finished text in one step.</p>
+  <div class="meta"><span>25 Oct 2026</span><span>Based on SmarType 0.12.0 (main @ c3d86d39c)</span><span>Related: UX review findings N1–N3, D1, D2, A9–A11</span></div>
+
+  <!-- ===================== WRITE ===================== -->
+  <h2 id="w-why">Write</h2>
+  <div class="eyebrow">Notes and playground in one place</div>
+
+  <h3>Why</h3>
+  <p>People already use SmarType to draft text they then paste elsewhere: an email, a reply, a post. Today that job is split across Quick Notes, the scratchpad, the floating bubble and the "Try out your setup" boxes in Settings. The review found five names for one feature, a "Saved" label before anything is saved, Save emptying the editor, and no Copy, Share or AI in notes (N1–N3).</p>
+  <p><b>Write</b> replaces all of these with one editor and one list of drafts.</p>
+
+  <h3 id="w-goals">Goals and scope</h3>
+  <div class="tbl"><table>
+    <tr><th>Goals</th><th>Not in this version</th></tr>
+    <tr><td>
+      <ul>
+        <li>One name everywhere: <b>Write</b> for the editor, <b>Drafts</b> for the list.</li>
+        <li>Draft, rewrite, translate, dictate, then copy or share, without leaving the screen.</li>
+        <li>Never lose text: autosave, honest status, undo after every AI change.</li>
+        <li>Reach it from Home, the keyboard, the floating bubble and Android's Share menu.</li>
+        <li>Keep every existing Quick Note.</li>
+      </ul></td><td>
+      <ul>
+        <li>Cloud sync of drafts between phones (needs a separate privacy decision).</li>
+        <li>Rich text, images or attachments.</li>
+        <li>Sending directly through email or chat apps (we use Android Share).</li>
+        <li>Folders, tags or sharing drafts with other people.</li>
+      </ul></td></tr>
+  </table></div>
+
+  <h3 id="w-entry">Entry points</h3>
+  <div class="tbl"><table>
+    <tr><th>From</th><th>What happens</th><th>Replaces</th></tr>
+    <tr><td>Home: a <b>Write</b> card at the top</td><td>Opens the most recent draft if edited in the last 24 h, otherwise a new blank draft.</td><td>"Open scratchpad" in Quick Notes settings</td></tr>
+    <tr><td>Keyboard toolbar: Notes icon</td><td>Opens the Drafts panel inside the keyboard (insert a draft into the current app) with "Open in Write" at the top.</td><td>The Clipboard / Quick Notes chooser (K3)</td></tr>
+    <tr><td>Floating bubble</td><td>Opens Write over the current app. "Copy and close" returns to that app with the text on the clipboard.</td><td><code>QuickNoteActivity</code> editor</td></tr>
+    <tr><td>Android Share menu (text)</td><td>"SmarType Write" appears as a share target. Shared text opens as a new draft.</td><td>New</td></tr>
+    <tr><td>Launcher long-press</td><td>App shortcut "New draft".</td><td>New</td></tr>
+    <tr><td>Settings "Try out your setup" boxes</td><td>Stay as small test fields but get a "Open in Write" link.</td><td>Keeps them for testing themes and styles</td></tr>
+  </table></div>
+
+  <h3 id="w-screens">Screens and flows</h3>
+
+  <h4>1. The Write editor</h4>
+  <div class="flow">
+    <div>
+      <ul>
+        <li><b>Top bar:</b> back, the draft's title (first line, or "Untitled draft"), status, overflow (Duplicate, Delete, Drafts).</li>
+        <li><b>Template chips</b> on an empty draft only: Blank, Email, Reply, Message, Post. A template inserts a short scaffold (for Email: "Hi [name]," / blank line / "Thanks,") with the first placeholder selected.</li>
+        <li><b>Editor:</b> full height, SmarType keyboard, normal selection handles.</li>
+        <li><b>Status line</b> under the editor: "Saving…", "Saved 11:31", or "Couldn't save · Try again". Word and character count on the right.</li>
+        <li><b>Action bar</b> above the keyboard: <b>Rewrite</b>, <b>Translate</b>, <b>Dictate</b>, <b>Copy</b>, <b>Share</b>. When the keyboard is hidden it sits at the bottom of the screen.</li>
+      </ul>
+    </div>
+    <div>
+      <p class="cap">EDITOR</p>
+      <div class="ph">
+        <div class="row"><b>← Reply to client</b><span class="m">⋮</span></div>
+        <div class="c" style="margin-top:6px;min-height:92px">Hi Priya,<br><br>Quick update on the delivery: it's moving to Wednesday because of a supplier delay…</div>
+        <div class="row m" style="margin-top:4px"><span>Saved 11:31</span><span>42 words</span></div>
+        <div style="margin-top:4px"><span class="chip">✦ Rewrite</span><span class="chip">Translate</span><span class="chip">🎙 Dictate</span><span class="chip">Copy</span><span class="chip">Share</span></div>
+        <div class="key"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+    </div>
+  </div>
+
+  <h4>2. Saving</h4>
+  <ol class="steps">
+    <li>Every edit schedules a save 800 ms after the last keystroke. Leaving the screen, switching drafts, Copy, Share and any AI action save immediately first (same rule as today's <code>flushForSwitch</code>).</li>
+    <li>The status says "Saving…" while a write is pending and "Saved hh:mm" when the stored text equals the editor text.</li>
+    <li>There is no Save button. A blank draft that the user leaves is discarded, not listed.</li>
+    <li>If a write fails, the status turns into "Couldn't save · Try again" and the text stays in the editor.</li>
+  </ol>
+
+  <h4>3. Copy, Share, and return to the app</h4>
+  <ul>
+    <li><b>Copy:</b> copies the whole draft, or the selection if there is one. Toast "Copied". The clipboard entry is marked sensitive (<code>ClipDescription.EXTRA_IS_SENSITIVE</code>) so Android doesn't show a preview.</li>
+    <li><b>Share:</b> Android share sheet with the plain text.</li>
+    <li><b>Opened from the bubble or the keyboard:</b> the Copy button becomes <b>Copy and close</b>. It copies, saves and closes Write, so the user lands back in the app they came from and can paste.</li>
+  </ul>
+
+  <h4>4. Drafts list</h4>
+  <div class="flow">
+    <div>
+      <ul>
+        <li>Newest first. Each row: title (first line), second line as a preview, relative time ("11:31", "Yesterday", "12 Oct").</li>
+        <li>Search appears at 6 or more drafts (today's rule).</li>
+        <li>Swipe left to delete, with "Deleted · Undo" for 5 seconds.</li>
+        <li>"New draft" button at the top.</li>
+        <li>Empty state: "Your drafts will show up here. Start one from Home or the keyboard."</li>
+      </ul>
+    </div>
+    <div>
+      <p class="cap">DRAFTS</p>
+      <div class="ph">
+        <div class="row"><b>Drafts</b><span class="chip on">+ New</span></div>
+        <div class="c" style="margin-top:6px"><b>Reply to client</b><div class="m">Quick update on the delivery…</div><div class="m">11:31</div></div>
+        <div class="c" style="margin-top:6px"><b>Weekend plan</b><div class="m">Are we still on for Sunday…</div><div class="m">Yesterday</div></div>
+      </div>
+    </div>
+  </div>
+
+  <h4>5. Keyboard Drafts panel</h4>
+  <ul>
+    <li>Opened from the Notes icon on the toolbar. Shows the 10 most recent drafts.</li>
+    <li>Tap a draft to <b>insert</b> it at the cursor in the current app (commit at the cursor only; never replace existing text).</li>
+    <li>"Open in Write" opens the full editor with the current draft.</li>
+    <li>Back returns to the letter keys (review finding A9).</li>
+  </ul>
+
+  <h3 id="w-ai">AI and voice in Write</h3>
+  <ul>
+    <li><b>Rewrite</b> and <b>Translate</b> open the same AI sheet the keyboard uses, but as a bottom sheet in the app. Scope is the selection if there is one, otherwise the whole draft. The scope shows as a chip ("Whole draft · 42 words").</li>
+    <li>Results use the existing tasks (<code>AiTask.Rewrite</code>, translate) through <code>AiEngine</code>, with the same quota, App Check and BYOK rules. No new backend work for v1.</li>
+    <li><b>Replace</b> changes only the scoped range and pushes an undo step. A bar shows "Replaced with Professional · Undo" for 6 seconds. Undo is also in the editor's undo history.</li>
+    <li>Long drafts: the AI sheet warns above 2,000 words ("Long text may take longer") and the server's limits apply.</li>
+    <li><b>Dictate</b> opens Voice mode (below) with its output going into the draft at the cursor.</li>
+  </ul>
+
+  <h3 id="w-data">Data and migration</h3>
+  <ul>
+    <li>Drafts stay <b>on the phone only</b>, in the existing <code>QuickNotesDatabase</code> (Room). No Firestore, no backup to the server in v1.</li>
+    <li>Schema: add <code>updatedAt</code> (if missing), <code>templateId</code> (nullable) and <code>origin</code> (home, keyboard, bubble, share) to the note table. One Room migration; no data is rewritten.</li>
+    <li>Migration on first launch: today's scratch draft becomes the newest draft if it isn't blank. Every saved note becomes a draft with the same text and time. Nothing is deleted.</li>
+    <li>Android Auto Backup: keep the database excluded unless the owner decides otherwise (drafts can be private).</li>
+    <li>Rename strings: Quick Notes → Write, scratchpad / Scratch draft / Saved note → draft. Keep the old route and deep link <code>ui://smartype/settings/quick-notes</code> working as an alias.</li>
+  </ul>
+
+  <h3 id="w-edge">Edge cases</h3>
+  <div class="tbl"><table>
+    <tr><th>Case</th><th>Expected</th></tr>
+    <tr><td>Process killed while typing</td><td>Reopen shows the last saved text; at most the last 800 ms is lost. The active draft ID is restored, never the text from saved instance state (today's invariant).</td></tr>
+    <tr><td>Draft deleted in another window (bubble and app both open)</td><td>"This draft was deleted" with "New draft" and "Back to Drafts".</td></tr>
+    <tr><td>AI result arrives after the user edited the text</td><td>Replace is refused with "Your text changed. Rewrite again?" (same as <code>SOURCE_CHANGED</code> today).</td></tr>
+    <tr><td>Offline</td><td>Editing, Copy, Share, Drafts and Dictate (on-device) work. Rewrite and Translate show "You're offline. Your text wasn't sent."</td></tr>
+    <tr><td>Very long text (over 50,000 characters)</td><td>Editing works; AI and Dictate are disabled with a short reason.</td></tr>
+    <tr><td>Incognito mode on</td><td>Write still saves locally (the user opened it on purpose), but Rewrite and Translate follow the same incognito rule as the keyboard.</td></tr>
+    <tr><td>Shared text from another app is huge</td><td>Truncate at 50,000 characters with a notice.</td></tr>
+    <tr><td>Floating bubble turned off</td><td>Write still works from Home, keyboard and Share.</td></tr>
+  </table></div>
+
+  <h3 id="w-ac">Acceptance criteria</h3>
+  <ul class="ac">
+    <li><span class="id">W1</span>The words "Quick Note", "scratchpad", "Scratch draft" and "Saved note" no longer appear in the UI; "Write" and "Drafts" are used everywhere.</li>
+    <li><span class="id">W2</span>After an update, every existing saved note and a non-blank scratch draft appear in Drafts with their text unchanged.</li>
+    <li><span class="id">W3</span>Typing then leaving the screen within 1 second keeps all text; the status never says "Saved" while a write is pending.</li>
+    <li><span class="id">W4</span>Rewrite, Translate and Replace work on the selection or the whole draft, and Undo restores the exact previous text.</li>
+    <li><span class="id">W5</span>Copy and close from the bubble returns to the previous app with the text on the clipboard.</li>
+    <li><span class="id">W6</span>Sharing text from Chrome to "SmarType Write" opens it as a new draft.</li>
+    <li><span class="id">W7</span>Inserting a draft from the keyboard panel adds text at the cursor and changes nothing else in the field.</li>
+    <li><span class="id">W8</span>No log, analytics event or crash report contains draft text, titles or search terms.</li>
+    <li><span class="id">W9</span>Works at font scale 1.5, in dark mode and in landscape; TalkBack reads every action.</li>
+  </ul>
+
+  <h3 id="w-phase">Phases</h3>
+  <div class="phases">
+    <div class="phase"><h4>v1: Write</h4><ul><li>Editor, autosave, status</li><li>Drafts list and migration</li><li>Copy, Share, Copy and close</li><li>Rewrite and Translate with Undo</li><li>Home card and bubble</li></ul></div>
+    <div class="phase"><h4>v1.1</h4><ul><li>Templates</li><li>Keyboard Drafts panel with insert</li><li>Share target and app shortcut</li><li>Dictate (when Voice v1 ships)</li></ul></div>
+    <div class="phase"><h4>Later, needs a decision</h4><ul><li>Encrypted sync of drafts across phones</li><li>User's own templates</li></ul></div>
+  </div>
+  <p style="color:var(--muted);font-size:14px">Code to read first: <code>docs/flows/floating-quick-notes.md</code>, <code>app/quicknotes/*</code> (editor, switch coordinator, Room database), <code>ime/quicknotes/QuickNotesInputLayout.kt</code>, <code>app/settings/HomeScreen.kt</code>, <code>app/Routes.kt</code>, <code>docs/flows/ai-rewrite.md</code>.</p>
+
+  <!-- ===================== VOICE ===================== -->
+  <h2 id="v-why">Voice mode</h2>
+  <div class="eyebrow">Speak, and get finished text</div>
+
+  <h3>Why</h3>
+  <p>Today the mic key calls <code>switchToVoiceInputMethod()</code> in <code>FlorisImeService.kt</code>, which hands the user to whatever voice keyboard is installed, usually Google voice typing. In the review:</p>
+  <ul>
+    <li>SmarType's toolbar, styles and AI disappear while dictating (D1).</li>
+    <li>It gave up after about 3 seconds of silence: "Didn't catch that" (D1).</li>
+    <li>A 60-word dictation came back as one run-on sentence with no punctuation and about 6 misheard phrases, including SmarType's own "AI rewrite" as "aiv ride" (D2).</li>
+    <li>Getting clean text takes four steps: dictate, come back, open AI, rewrite.</li>
+  </ul>
+  <p><b>Voice mode</b> keeps the user inside SmarType: speak with pauses, see the words live, get cleaned-up text (optionally in a writing style), insert.</p>
+
+  <h3 id="v-goals">Goals and scope</h3>
+  <div class="tbl"><table>
+    <tr><th>Goals</th><th>Not in this version</th></tr>
+    <tr><td><ul>
+      <li>Dictation inside the SmarType keyboard; no switch to another keyboard.</li>
+      <li>Natural pauses don't end the dictation.</li>
+      <li>One tap from speech to clean text: punctuation, sentences, fillers removed, self-corrections applied.</li>
+      <li>Optional writing style in the same step (Professional, Casual…).</li>
+      <li>Hindi + English mixed speech in v1 (via the recogniser's language support).</li>
+      <li>Audio never leaves the phone in v1.</li>
+    </ul></td><td><ul>
+      <li>Always-on listening or a wake word.</li>
+      <li>Voice control of other apps.</li>
+      <li>Saving audio recordings.</li>
+      <li>Server-side speech recognition (possible later, needs a decision).</li>
+      <li>Speaker identification or meeting transcription.</li>
+    </ul></td></tr>
+  </table></div>
+
+  <h3 id="v-flow">Keyboard flow</h3>
+  <div class="flow">
+    <div>
+      <ol class="steps">
+        <li>User taps the <b>mic</b> on the toolbar (or long-presses space, configurable). The letter keys are replaced by the Voice panel; the text field stays visible above.</li>
+        <li><b>First use only:</b> a short explainer ("SmarType listens only while this panel is open. Audio stays on your phone.") and the Android microphone permission (see <a href="#v-priv">permission</a>).</li>
+        <li>Panel shows <b>Listening</b>: live transcript, a level meter, a timer, the language chip (from the active keyboard language) and the output chip (Exact, Cleaned, or a style).</li>
+        <li>The user speaks, pauses, speaks again. The transcript keeps growing; a pause shows "Paused · still listening".</li>
+        <li>User taps <b>Done</b> (or stays silent past the stop timeout). The panel shows <b>Tidying up…</b> while the clean-up runs.</li>
+        <li><b>Review:</b> the cleaned text, with "Show original" to compare. Buttons: <b>Insert</b> (primary), <b>Keep talking</b>, <b>Discard</b>. Output chips can be changed here and re-run the clean-up without speaking again.</li>
+        <li><b>Insert</b> commits the text at the cursor and returns to the letter keys. The suggestion row shows "Inserted · Undo" for 6 seconds.</li>
+      </ol>
+      <p>Back, or the <b>ABC</b> key, at any point returns to the letter keys. If something has been transcribed, Back asks inline: "Insert what you said?" with Insert and Discard.</p>
+    </div>
+    <div>
+      <p class="cap">LISTENING</p>
+      <div class="ph">
+        <div class="c">Hi, can we move the</div>
+        <div class="c" style="margin-top:6px;background:#dff0f0"><div class="row m"><span>● Listening · 0:14</span><span class="chip">English</span></div><div>so um tell him the meeting is on tuesday no wednesday at three</div><div class="wave"></div><div class="m">Paused · still listening</div></div>
+        <div style="margin-top:4px"><span class="chip">Exact</span><span class="chip on">Cleaned</span><span class="chip">Professional</span><span class="chip">Casual</span></div>
+        <div class="row" style="margin-top:6px"><span class="btn sec" style="flex:1;margin:0">ABC</span><span class="btn pri" style="flex:2;margin:0">Done</span></div>
+      </div>
+      <p class="cap" style="margin-top:14px">REVIEW</p>
+      <div class="ph">
+        <div class="c" style="background:#dff0f0"><div class="m">Cleaned · Show original</div><b>Tell him the meeting is on Wednesday at 3.</b></div>
+        <div class="row" style="margin-top:6px"><span class="btn pri" style="flex:2;margin:0">Insert</span><span class="btn sec" style="flex:1;margin:0">Keep talking</span></div>
+        <div class="m" style="text-align:center;margin-top:6px">Discard</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note"><b>Why the live words stay in the panel, not in the text field.</b> Writing partial results into the other app's field means repeatedly replacing text we don't fully control, which is one of this repo's risky areas (editor text changes). Keeping the transcript in the panel and committing once on Insert means the app's text is touched exactly once, at the cursor. An optional "Type as I speak" setting can come later.</div>
+
+  <h3 id="v-states">States</h3>
+  <div class="tbl"><table>
+    <tr><th>State</th><th>Shown</th><th>Leaves to</th></tr>
+    <tr><td>Needs permission</td><td>Explainer + "Allow microphone"</td><td>Listening, or back to keys if denied</td></tr>
+    <tr><td>Starting</td><td>"Getting ready…" (under 1 s normally)</td><td>Listening, Error</td></tr>
+    <tr><td>Listening</td><td>Live transcript, meter, timer</td><td>Paused, Processing, Cancelled</td></tr>
+    <tr><td>Paused (silence)</td><td>"Paused · still listening", countdown in the last 3 s before auto-stop</td><td>Listening (speech resumes), Processing (timeout or Done)</td></tr>
+    <tr><td>Processing</td><td>"Tidying up…" over the transcript</td><td>Review, Review with Exact text (clean-up failed)</td></tr>
+    <tr><td>Review</td><td>Result, Show original, output chips</td><td>Inserted, Listening (Keep talking), Cancelled</td></tr>
+    <tr><td>Error</td><td>One plain message and one action (see edge cases)</td><td>Listening (Try again), keys</td></tr>
+  </table></div>
+
+  <h3 id="v-pause">Pauses and stopping</h3>
+  <ul>
+    <li>A silence shorter than the <b>stop timeout</b> is a pause, not the end. Default timeout: <b>8 seconds</b>; setting: 4, 8, 15 seconds or "Only when I tap Done".</li>
+    <li>Android's recogniser ends a session on silence by itself. Voice mode restarts it immediately and <b>stitches the segments</b> into one transcript, so the user never sees the gap.</li>
+    <li>Each segment's final result replaces its own partial text; earlier segments are not re-recognised.</li>
+    <li>Hard limit: 5 minutes per dictation, with a notice at 4:30.</li>
+    <li>Leaving the field, switching apps, an incoming call or the screen turning off stops listening and goes to Review with what was captured.</li>
+  </ul>
+
+  <h3 id="v-clean">Clean-up and styles</h3>
+  <div class="tbl"><table>
+    <tr><th>Output</th><th>What it does</th><th>Needs network / quota</th></tr>
+    <tr><td><b>Exact</b></td><td>The recogniser's text with light local fixes: capital at the start, a full stop at the end, spoken commands applied.</td><td>No</td></tr>
+    <tr><td><b>Cleaned</b> (default)</td><td>Punctuation and sentences, filler words removed (um, uh, like), self-corrections applied ("Tuesday, no, Wednesday" → "Wednesday"), likely mishearings fixed from context, numbers and times formatted. Keeps the user's words and tone otherwise.</td><td>Yes, 1 managed request</td></tr>
+    <tr><td><b>A writing style</b></td><td>Cleaned, then rewritten in the chosen style in the same request. Uses the user's pinned styles.</td><td>Yes, 1 managed request</td></tr>
+  </table></div>
+  <ul>
+    <li><b>Spoken commands</b> (local, no AI): "new line", "new paragraph", "full stop / period", "comma", "question mark", "delete that" (removes the last segment). Shown as a small hint on first use.</li>
+    <li>If clean-up fails or the user is offline, Review shows the Exact text with "Couldn't tidy up · Try again", and Insert still works.</li>
+    <li>A custom vocabulary list (names, product words like "SmarType") is sent with the clean-up request to fix terms like "aiv ride".</li>
+  </ul>
+
+  <h3 id="v-eng">Engine and architecture</h3>
+  <h4>Speech recognition</h4>
+  <div class="tbl"><table>
+    <tr><th>Option</th><th>Pros</th><th>Cons</th><th>Use</th></tr>
+    <tr><td><code>SpeechRecognizer.createOnDeviceSpeechRecognizer()</code> (Android 12+)</td><td>Free, private, already on most phones, Hindi and English support, live partial results</td><td>Ends on silence (needs restarts), accuracy similar to what we saw in D2, availability varies by phone</td><td><b>v1 default</b></td></tr>
+    <tr><td><code>SpeechRecognizer</code> with <code>EXTRA_PREFER_OFFLINE</code> (Android 8–11)</td><td>Works on older phones</td><td>May send audio to Google if no offline pack is installed</td><td>v1 fallback, with a clear notice</td></tr>
+    <tr><td>On-device Whisper (whisper.cpp, small or base model)</td><td>Handles pauses and Hinglish better, no dependency on Google's recogniser</td><td>40–150 MB download, CPU and battery cost, slower on older phones</td><td>v2, as an optional download</td></tr>
+    <tr><td>Server recognition through Functions</td><td>Best accuracy</td><td>Audio leaves the phone, cost per minute, new privacy terms</td><td>Not planned; needs an owner decision</td></tr>
+  </table></div>
+
+  <h4>Components</h4>
+  <ul>
+    <li><code>VoiceSession</code> (new, <code>ime/voice/</code>): owns the recogniser, restarts across silences, stitches segments, exposes a state flow matching the table above. Lives in the keyboard service scope, like <code>AiRewriteSession</code>, so a closed panel doesn't drop a request in flight.</li>
+    <li><code>Recognizer</code> interface with an Android implementation now and a Whisper one later, so the UI doesn't change.</li>
+    <li><code>VoiceInputLayout</code> (new panel, like the AI panel): uses the keyboard theme colours (<code>rememberKeyboardPanelColors()</code>), one scroll region, inline only (no popups in the IME).</li>
+    <li>Clean-up: a new managed task <code>AiTask.CleanDictation(text, language, styleId?, vocabulary)</code>, mapped in <code>:usage:firebase</code> and handled by <code>generateAiText</code> with a new prompt in <code>functions/src/prompts.ts</code>. BYOK users go to their own provider as with rewrite.</li>
+    <li>Insert: <code>commitText</code> at the cursor through <code>EditorInstance</code>. Undo removes exactly the inserted range if the field hasn't changed since.</li>
+    <li><code>KeyCode.VOICE_INPUT</code> opens the new panel. The old hand-off becomes a setting: "Use another voice keyboard" (off by default) for users who prefer Google's.</li>
+  </ul>
+
+  <h3 id="v-priv">Privacy, quota and permission</h3>
+  <ul>
+    <li><b>Audio:</b> never stored, never sent by SmarType in v1. Recognition runs on the phone.</li>
+    <li><b>Text:</b> sent only for Cleaned or a style, only after the user taps Done, same as tapping Rewrite today. No logging of transcript or result.</li>
+    <li><b>Private fields:</b> the mic is disabled in password fields and when the app requests no personalised learning; incognito follows the same rule as the AI panel (<code>aiPrivacyBlockReason()</code>).</li>
+    <li><b>Quota:</b> one clean-up = one managed request, the same count as a rewrite. Free users see the remaining count on the output chip. Exact never uses quota.</li>
+    <li><b>Permission:</b> add <code>RECORD_AUDIO</code>. A keyboard can't show the Android permission dialog itself, so the panel opens a small SmarType activity that asks, then returns to the keyboard. If denied twice, the panel links to app settings.</li>
+    <li><b>Mic indicator:</b> Android's green mic dot shows while listening; the panel also shows "● Listening" so it's never ambiguous.</li>
+    <li><b>Play policy:</b> update the Data safety form (audio processed on device, not collected) and the privacy policy.</li>
+  </ul>
+
+  <h3 id="v-edge">Edge cases</h3>
+  <div class="tbl"><table>
+    <tr><th>Case</th><th>Expected</th></tr>
+    <tr><td>No on-device recogniser for the language</td><td>"Voice isn't available for Hindi on this phone yet." with "Use English" and "Get language" (opens the system download page).</td></tr>
+    <tr><td>Microphone used by another app (call, recorder)</td><td>"The microphone is busy. Try again after your call."</td></tr>
+    <tr><td>Nothing recognised</td><td>Stay in Listening with "Didn't hear anything yet"; after the stop timeout, back to keys with no insert.</td></tr>
+    <tr><td>Text field changed while dictating</td><td>Insert goes at the current cursor; nothing else changes.</td></tr>
+    <tr><td>Field loses focus or the app closes</td><td>Stop, keep the transcript for 2 minutes; reopening the keyboard in a field offers "Insert your last dictation?"</td></tr>
+    <tr><td>Clean-up changes meaning (e.g. drops a name)</td><td>"Show original" is always one tap away; Exact is always selectable.</td></tr>
+    <tr><td>Bluetooth headset</td><td>Uses the active audio input; no special handling in v1.</td></tr>
+    <tr><td>Quota exhausted</td><td>Cleaned and styles show "No AI left today"; Exact still works.</td></tr>
+  </table></div>
+
+  <h3 id="v-ac">Acceptance criteria</h3>
+  <ul class="ac">
+    <li><span class="id">V1</span>Tapping the mic never switches to another keyboard (unless the user turned that setting on).</li>
+    <li><span class="id">V2</span>A dictation with three pauses of 3–5 seconds produces one transcript with all parts, in order.</li>
+    <li><span class="id">V3</span>"So um the delivery is on Tuesday, no sorry, Wednesday at three" becomes "The delivery is on Wednesday at 3." with Cleaned.</li>
+    <li><span class="id">V4</span>On a sample of 20 owner dictations, Cleaned output needs fewer manual edits than Google voice typing for at least 80% of them.</li>
+    <li><span class="id">V5</span>Insert adds text only at the cursor; Undo removes exactly that text.</li>
+    <li><span class="id">V6</span>Offline, Exact works and Insert is available.</li>
+    <li><span class="id">V7</span>The mic is disabled in password fields.</li>
+    <li><span class="id">V8</span>No audio file is written, and no log, analytics event or crash report contains transcript or result text.</li>
+    <li><span class="id">V9</span>Back or ABC from any state returns to the letter keys; it never hides the keyboard.</li>
+    <li><span class="id">V10</span>Works with TalkBack: state changes are announced ("Listening", "Paused", "Ready to insert").</li>
+  </ul>
+
+  <h3 id="v-phase">Phases</h3>
+  <div class="phases">
+    <div class="phase"><h4>v0: quick fixes</h4><ul><li>Make sure every exit from Google voice typing returns to SmarType</li><li>Label the mic key</li><li>Replace the hard-coded English toast ("Failed to find voice IME…") with a translated string</li></ul></div>
+    <div class="phase"><h4>v1: Voice mode</h4><ul><li>In-keyboard panel</li><li>Android on-device recogniser with pause stitching</li><li>Exact and Cleaned</li><li>Spoken commands</li><li>Insert with Undo</li></ul></div>
+    <div class="phase"><h4>v1.1</h4><ul><li>Writing styles in one step</li><li>Custom vocabulary</li><li>Dictate inside Write</li></ul></div>
+    <div class="phase"><h4>v2</h4><ul><li>Optional Whisper model download</li><li>Better Hinglish (Latin or Devanagari output choice)</li><li>"Type as I speak" option</li></ul></div>
+  </div>
+
+  <!-- ===================== BOTH ===================== -->
+  <h2 id="review">Owner review needed</h2>
+  <p>Under <code>AGENTS.md</code>, plans that touch these areas need the owner's plan review before any code:</p>
+  <div class="risk"><b>Typed-text privacy.</b> Voice adds a microphone permission and a new path for user text to the server (clean-up). Write stores more user text on the phone. Both must keep text out of logs, analytics and crash reports.</div>
+  <div class="risk"><b>Firebase backend and managed AI quota.</b> <code>AiTask.CleanDictation</code> needs a new prompt and task in <code>functions/</code>, quota rules and emulator tests.</div>
+  <div class="risk"><b>Editor text changes.</b> Voice Insert and Undo, and Write's keyboard insert, change text in other apps. Insert must touch only the cursor position; Undo only the inserted range.</div>
+  <div class="note"><b>Decisions for the owner:</b> (1) Is "Write" the right name? (2) Should Cleaned be the default, given it uses one AI request each time? (3) Free users: how many voice clean-ups per day, or share the rewrite quota? (4) Keep the "Use another voice keyboard" option, or remove the Google hand-off entirely? (5) Drafts on the phone only, or plan encrypted sync?</div>
+
+  <h2 id="metrics">Measuring success</h2>
+  <div class="tbl"><table>
+    <tr><th>Metric</th><th>Feature</th><th>Target after 30 days</th></tr>
+    <tr><td>Share of weekly active users who open Write</td><td>Write</td><td>20%</td></tr>
+    <tr><td>Drafts that end in Copy or Share</td><td>Write</td><td>60%</td></tr>
+    <tr><td>Dictations that end in Insert (not Discard)</td><td>Voice</td><td>75%</td></tr>
+    <tr><td>Inserted dictations followed by a manual edit within 10 s</td><td>Voice</td><td>Under 25%</td></tr>
+    <tr><td>Share of dictations using Cleaned or a style</td><td>Voice</td><td>Tracked, no target</td></tr>
+  </table></div>
+  <p style="color:var(--muted);font-size:14px">Events carry counts, durations and the chosen output only (for example <code>voice_insert {output: cleaned, seconds: 14, segments: 3}</code>). Never text, audio, draft titles or language of the content.</p>
+</main>
+</div>
+
+</body></html>

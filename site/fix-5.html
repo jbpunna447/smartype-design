@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Fix 5 Setup Flow</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Same shell as Fix 1: summary, phones (dark row, light row cloned by script), then behaviour tables. */
+:root{--bg:#eef3f4;--surface:#fff;--ink:#10282e;--muted:#4c6066;--line:#d4e3e6;--accent:#0b727b;--soft:#d2eef2;--f:"Google Sans Flex","DM Sans",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#071012;--surface:#122024;--ink:#ddebee;--muted:#b5cacf;--line:#2f4347;--accent:#5fd3df;--soft:#0f4f57;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#071012;--surface:#122024;--ink:#ddebee;--muted:#b5cacf;--line:#2f4347;--accent:#5fd3df;--soft:#0f4f57;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:15px;line-height:1.55;margin:0}
+.wrap{max-width:1240px;margin:0 auto;padding-block:36px 70px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:clamp(28px,4vw,38px);font-weight:700;margin:6px 0 10px;text-wrap:balance}
+h2{font-size:22px;margin:40px 0 10px;text-wrap:balance}
+p{max-width:72ch}
+.lede{color:var(--muted);font-size:16.5px;margin:0}
+.probs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:18px}
+.probs div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:14px}
+.probs b{display:block}
+.id{font-family:var(--mono);font-size:11.5px;color:var(--accent)}
+.lab{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:24px 0 0;font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:28px 20px;padding:14px 2px 20px}
+figure{margin:0;flex:0 0 auto;width:270px}
+figcaption{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.4}
+figcaption b{color:var(--ink);display:block}
+/* phone */
+.phone{width:270px;height:585px;border-radius:34px;background:#05080a;padding:8px;box-shadow:0 14px 32px rgba(0,0,0,.22);box-sizing:border-box}
+.scr{height:100%;border-radius:27px;overflow:hidden;display:flex;flex-direction:column;font-size:12px;line-height:1.4}
+.dark .scr{--app:#0b1416;--appin:#ddebee;--appvar:#b5cacf;--field:#16262a;--kb:#141c1e;--key:#2a3437;--keyin:#e6eef0;--pan:#141c1e;--raised:#1f2a2d;--line:#2a3a3d;--sec:#a9bcc1;--acc:#5fd3df;--tonal:#0f4f57;--ontonal:#c9f1f5;--rec:#ff6b6b;--snack:#ddebee;--onsnack:#22343a;--snackact:#0b727b}
+.light .scr{--app:#f5fafb;--appin:#10282e;--appvar:#4c6066;--field:#e2f1f4;--kb:#e7ecef;--key:#ffffff;--keyin:#1d2a2e;--pan:#e7ecef;--raised:#ffffff;--line:#d3dde2;--sec:#4c6066;--acc:#0b727b;--tonal:#d2eef2;--ontonal:#0b3b41;--rec:#d93838;--snack:#253d43;--onsnack:#e9f3f5;--snackact:#5fd3df}
+.app{flex:1;background:var(--app);color:var(--appin);padding:6px 14px 10px;display:flex;flex-direction:column;min-height:0}
+.sb{display:flex;justify-content:space-between;font-size:10px;color:var(--appvar);padding:2px 0 8px}
+.chat{font-size:13px;font-weight:600;margin-bottom:auto}
+.msg{align-self:flex-start;background:var(--field);border-radius:14px 14px 14px 4px;padding:8px 10px;max-width:80%;margin-top:8px}
+.field{background:var(--field);border-radius:18px;padding:9px 12px;margin-top:10px;min-height:18px}
+.field .ph{color:var(--appvar)}
+.caret{display:inline-block;width:1.5px;height:13px;background:var(--acc);vertical-align:-2px;margin-left:1px}
+svg.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block}
+/* keyboard area */
+.kb{background:var(--kb);color:var(--keyin);flex:0 0 auto}
+.smart{display:flex;align-items:center;gap:2px;height:40px;padding:0 6px}
+.sp{flex:1}
+.ic{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:var(--sec);flex:0 0 auto}
+.ic.g{background:linear-gradient(135deg,#22b8cf,#2fc6a5);color:#06323a;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 2px 8px rgba(34,184,207,.28)}
+.ic.act{box-shadow:0 0 0 2px var(--kb),0 0 0 4px var(--acc)}
+.ic.on{background:var(--tonal);color:var(--ontonal)}
+.sugg{display:flex;align-items:center;height:30px;margin:0 6px;border-top:1px solid var(--line);font-size:12px}
+.sugg span{flex:1;text-align:center;border-left:1px solid var(--line)}
+.sugg span:first-child{border:0}
+.sugg span.b{font-weight:700}
+.keys{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;padding:4px 6px 8px}
+.keys i{height:30px;border-radius:6px;background:var(--key);box-shadow:0 1px 0 rgba(0,0,0,.18)}
+.keys i.w2{grid-column:span 2}.keys i.w6{grid-column:span 6}
+/* voice */
+.voice{display:flex;align-items:center;gap:6px;height:40px;padding:0 6px}
+.rec{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px}
+.rec i{width:8px;height:8px;border-radius:50%;background:var(--rec);box-shadow:0 0 0 3px color-mix(in srgb,var(--rec) 25%,transparent)}
+.wave{flex:1;display:flex;align-items:center;gap:2px;height:22px}
+.wave b{flex:1;border-radius:2px;background:var(--acc);opacity:.85}
+.lang{font-size:11px;font-weight:600;border-radius:9px;padding:4px 7px;box-shadow:inset 0 0 0 1px var(--line);color:var(--sec);white-space:nowrap}
+.shim{flex:1;height:22px;border-radius:11px;background:linear-gradient(90deg,var(--raised),var(--tonal),var(--raised));display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:600;color:var(--ontonal)}
+.snack{display:flex;justify-content:space-between;align-items:center;margin:0 6px 4px;background:var(--snack);color:var(--onsnack);border-radius:10px;padding:6px 10px;font-size:11.5px}
+.snack b{color:var(--snackact)}
+/* panels */
+.panel{background:var(--pan);color:var(--keyin);flex:0 0 268px;display:flex;flex-direction:column;min-height:0}
+.hd{display:flex;align-items:center;gap:8px;height:42px;padding:0 6px;border-bottom:1px solid var(--line)}
+.kbt{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--raised);color:var(--keyin);box-shadow:inset 0 0 0 1.5px var(--acc);flex:0 0 auto}
+.tabs{display:flex;background:var(--raised);border-radius:16px;padding:2px;gap:2px}
+.tabs span{width:34px;height:26px;display:grid;place-items:center;border-radius:13px;color:var(--sec)}
+.tabs span.on{background:linear-gradient(135deg,#22b8cf,#2fc6a5);color:#06323a}
+.tabs+.tt{font-size:12px}
+.tt{flex:1;font-weight:600;font-size:12.5px}
+.bd{font-size:10px;font-weight:600;border-radius:6px;padding:2px 7px;background:var(--tonal);color:var(--ontonal);white-space:nowrap}
+.body{flex:1;padding:10px 12px;display:flex;flex-direction:column;gap:8px;min-height:0;overflow:hidden}
+.chips{display:flex;gap:6px;overflow:hidden;flex:0 0 auto}
+.chip{flex:0 0 auto;border-radius:10px;padding:6px 10px;font-size:11.5px;font-weight:500;box-shadow:inset 0 0 0 1px var(--line);color:var(--sec)}
+.chip.on{background:linear-gradient(90deg,#22b8cf,#2fc6a5);color:#08323b;box-shadow:none}
+.chip.add{color:var(--acc)}
+.res{background:var(--raised);border-radius:12px;padding:10px 11px;font-size:13px;line-height:1.45}
+.res .mt{font-size:10.5px;color:var(--sec);margin-bottom:4px;display:flex;justify-content:space-between}
+.dock{display:flex;gap:6px;padding:6px 10px 10px;flex:0 0 auto}
+.b{flex:1;text-align:center;border-radius:12px;padding:10px 0;font-weight:600;font-size:12.5px}
+.b.ton{background:var(--tonal);color:var(--ontonal)}
+.b.ai{background:linear-gradient(90deg,#22b8cf,#2fc6a5);color:#08323b}
+.b.q{background:var(--raised);color:var(--keyin)}
+.list{display:flex;flex-direction:column;gap:6px;overflow:hidden}
+.it{background:var(--raised);border-radius:10px;padding:8px 10px;font-size:12px}
+.it small{display:block;color:var(--sec);font-size:10.5px}
+.it.pin{box-shadow:inset 3px 0 0 var(--acc)}
+.new{display:flex;align-items:center;gap:8px;border-radius:10px;padding:9px 10px;font-weight:600;font-size:12.5px;color:var(--acc);box-shadow:inset 0 0 0 1.5px var(--acc)}
+.sec{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--sec);font-weight:600}
+.ed{flex:1;background:var(--raised);border-radius:12px;padding:10px 11px;font-size:12.5px;line-height:1.5;min-height:0;overflow:hidden}
+.ed .t{font-weight:600;margin-bottom:4px}
+.edbar{display:flex;align-items:center;gap:4px;flex:0 0 auto}
+.saved{font-size:10.5px;color:var(--sec);flex:1}
+/* spec */
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+code{font-family:var(--mono);font-size:.85em;background:var(--soft);padding:1px 5px;border-radius:4px}
+ul.ac{list-style:none;padding:0;display:grid;gap:6px}
+ul.ac li{padding-left:26px;position:relative}
+ul.ac li::before{content:"✓";position:absolute;left:4px;color:var(--accent);font-weight:700}
+.strips{display:grid;gap:14px}
+.strip{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.strip .dark{border-radius:12px;overflow:hidden;background:#141c1e}
+.strip .scr{height:auto;border-radius:12px}
+.strip span{font-size:13px;color:var(--muted)}
+</style>
+
+</head><body><style>
+.stx-nav{position:sticky;top:0;z-index:1000;display:flex;gap:2px;align-items:center;overflow-x:auto;
+  background:#0b1416;border-bottom:1px solid #22363a;padding:0 max(12px,env(safe-area-inset-left,0px));
+  font:500 13px/1 "Google Sans Flex","DM Sans",system-ui,sans-serif;scrollbar-width:none}
+.stx-nav::-webkit-scrollbar{display:none}
+.stx-nav a{color:#b5cacf;text-decoration:none;padding:13px 10px;white-space:nowrap;border-bottom:2px solid transparent}
+.stx-nav a:hover,.stx-nav a:focus-visible{color:#fff}
+.stx-nav a[aria-current=page]{color:#5fd3df;border-bottom-color:#5fd3df}
+.stx-nav .stx-brand{color:#fff;font-weight:700;padding-right:14px}
+.stx-note{max-width:1040px;margin:18px auto 0;padding:12px 16px;border-radius:12px;background:#fbf0d9;color:#4d3800;
+  font:14px/1.5 "Google Sans Flex","DM Sans",system-ui,sans-serif;box-sizing:border-box}
+.stx-note a{color:#4d3800;font-weight:700}
+.stx-notewrap{padding:0 16px}
+@media (prefers-color-scheme:dark){.stx-note{background:#352a10;color:#f6dfa6}.stx-note a{color:#f6dfa6}}
+</style><nav class="stx-nav" aria-label="Site"><a class="stx-brand" href="index.html">SmarType UX</a><a href="index.html">Hand-off</a><a href="audit.html">Audit</a><a href="fix-1b.html">1b Smartbar</a><a href="fix-1.html">1 AI panel</a><a href="fix-2.html">2 Languages</a><a href="fix-4.html">4 Errors</a><a href="fix-5.html" aria-current="page">5 Setup</a><a href="design-system/index.html">Design system</a><a href="review.html">Review</a><a href="specs.html">Specs</a><a href="brand.html">Brand</a><a href="art.html">Art</a></nav><svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <symbol id="spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 1.8 1.8.7-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7z"/></symbol>
+ <symbol id="tr" viewBox="0 0 24 24"><path d="M4 5h9M8.5 3v2M6 5c1 3.5 3.5 6 7 7.5M11 5c-1 3.5-3.5 6-7 7.5"/><path d="M13 21l4-9 4 9M14.5 18h5"/></symbol>
+ <symbol id="clip" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h4"/></symbol>
+ <symbol id="note" viewBox="0 0 24 24"><path d="M5 4h10l4 4v12H5z"/><path d="M15 4v4h4M8 12h8M8 16h5"/></symbol>
+ <symbol id="emo" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 14.5c1 1.5 2.2 2 3.5 2s2.5-.5 3.5-2M9 10h.01M15 10h.01"/></symbol>
+ <symbol id="more" viewBox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01" stroke-width="3"/></symbol>
+ <symbol id="mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0013 0M12 17.5V21"/></symbol>
+ <symbol id="kbd" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h.01M10 10h.01M13 10h.01M16 10h.01M8 14h8"/></symbol>
+ <symbol id="trash" viewBox="0 0 24 24"><path d="M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13"/></symbol>
+ <symbol id="send" viewBox="0 0 24 24"><path d="M5 12l14-7-5 15-2.5-6z"/></symbol>
+ <symbol id="plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+ <symbol id="pin" viewBox="0 0 24 24"><path d="M9 4h6l-1 5 3 3H7l3-3zM12 12v8"/></symbol>
+ <symbol id="fmt" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></symbol>
+ <symbol id="back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+</svg><style>
+.phone .scr{background:var(--app);color:var(--appin)}
+.bk{width:30px;height:30px;display:grid;place-items:center;flex:0 0 auto}
+.ob{flex:1;display:flex;flex-direction:column;padding:6px 18px 18px;min-height:0}
+.skip{align-self:flex-end;font-size:12px;font-weight:600;color:var(--acc);padding:4px 0}
+.art{width:150px;height:150px;object-fit:contain;align-self:center;margin:10px 0 6px}
+.ob h4{font-size:19px;line-height:1.25;margin:6px 0 6px;font-weight:700}
+.ob p{font-size:12px;color:var(--appvar);margin:0;line-height:1.5}
+.dots{display:flex;gap:5px;justify-content:center;margin:auto 0 12px}
+.dots i{width:6px;height:6px;border-radius:3px;background:var(--line)}
+.dots i.on{width:18px;background:var(--acc)}
+.cta{border-radius:24px;padding:12px;text-align:center;font-weight:700;font-size:13px;background:var(--acc);color:var(--kb)}
+.cta.gg{background:var(--appin);color:var(--app);display:flex;gap:8px;justify-content:center;align-items:center}
+.link{text-align:center;font-size:12px;color:var(--acc);font-weight:600;padding:10px 0 0}
+.pv{display:flex;gap:10px;align-items:flex-start;margin:10px 0;font-size:12.5px}
+.pv .ico{width:30px;height:30px;border-radius:10px;background:var(--tonal);color:var(--ontonal);display:grid;place-items:center;flex:0 0 auto}
+.pv small{display:block;color:var(--appvar);font-size:11px}
+.stepper{display:flex;gap:4px;margin:4px 0 10px}
+.stepper i{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.stepper i.on{background:var(--acc)}
+.sc{background:var(--field);border-radius:16px;padding:12px;margin-bottom:8px;font-size:12px}
+.sc.dim{opacity:.55}
+.sc .h{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:13px;margin-bottom:4px}
+.sc p{font-size:11.5px}
+.chipst{font-size:10px;font-weight:700;border-radius:8px;padding:3px 8px;background:var(--raised);color:var(--sec)}
+.chipst.ok{background:#1d6b3a;color:#e2f3e8}
+.sc .cta{margin-top:10px;padding:9px;font-size:12px}
+.tryf{background:var(--field);border-radius:16px;padding:10px 12px;font-size:13px;margin:8px 0}
+.hintb{font-size:11.5px;background:var(--tonal);color:var(--ontonal);border-radius:12px;padding:8px 10px}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13.5px;margin:6px 0 4px}
+.flow span{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+.flow span.new{border-color:var(--accent);color:var(--accent);font-weight:600}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+</style><div class="wrap">
+  <div class="eyebrow">UX fix pack · Fix 5 of 5</div>
+  <h1>Setup: a working keyboard first, sign-in when it's worth it</h1>
+  <p class="lede">Today a new user reads four generic pages, a legal paragraph, then has to decide on sign-in before SmarType even types. The new order gets the keyboard working in under a minute, lets people try it, and asks for sign-in when they reach for AI.</p>
+  <h2>The order</h2>
+  <div class="box">
+   <div class="flow"><b style="width:52px">Today</b><span>Intro 1</span>›<span>Intro 2</span>›<span>Intro 3</span>›<span>Intro 4</span>›<span>Privacy</span>›<span>Sign in</span>›<span>Enable</span>›<span>Choose</span>›<span>Notifications</span></div>
+   <div class="flow"><b style="width:52px">New</b><span class="new">Welcome</span>›<span class="new">Privacy</span>›<span>Enable</span>›<span>Choose</span>›<span class="new">Try it</span>›<span class="new">Sign in (skippable)</span>›<span class="new">Done</span></div>
+  </div>
+  <div class="probs">
+    <div><span class="id">O1 · Medium</span><b>Four generic intro pages</b>Now two, each with a real promise; "Page 2 of 4" text removed.</div>
+    <div><span class="id">O2 · Medium</span><b>Legal paragraph</b>Now three short lines with a link to the full policy.</div>
+    <div><span class="id">O3 · High</span><b>Sign-in before the keyboard works</b>Moved after Try it, and led by the benefit.</div>
+    <div><span class="id">O5 · Medium</span><b>Fake switch, repeated text</b>Status chip; the button sits in the active card.</div>
+    <div><span class="id">Buttons</span><b>50/50 Previous and Next</b>One full-width primary button; Skip is a text link; Back is the system gesture.</div>
+  </div>
+  <h2>Every screen</h2>
+  <p class="lab">Dark</p><div class="row" id="dark"><figure><div class="phone dark"><div class="scr"><div class="sb" style="padding:8px 14px 4px;font-size:10px;color:var(--appvar);display:flex;justify-content:space-between"><span>9:41</span><span>●●▮</span></div><div class="ob"><div class="skip">Skip</div><img class="art" src="data:image/webp;base64,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" alt=""><h4>Type, fix and translate in one keyboard</h4><p>Smart suggestions, a clean keyboard, and AI that fixes your message in one tap.</p><div class="dots"><i class="on"></i><i></i></div><div class="cta">Next</div></div></div></div><figcaption><b>1 · Welcome</b>One real promise, with the art. A single full-width Next; Skip sits at the top right. Two pages instead of four (O1).</figcaption></figure><figure><div class="phone dark"><div class="scr"><div class="sb" style="padding:8px 14px 4px;font-size:10px;color:var(--appvar);display:flex;justify-content:space-between"><span>9:41</span><span>●●▮</span></div><div class="ob"><div class="skip">Skip</div><h4 style="margin-top:20px">Private by default</h4><div class="pv"><div class="ico"><svg class="i"><use href="#kbd"/></svg></div><div>Typing stays on your phone<small>Suggestions are learned on the device.</small></div></div><div class="pv"><div class="ico"><svg class="i"><use href="#spark"/></svg></div><div>AI only sees what you send<small>Only when you tap Rewrite, Translate or Format.</small></div></div><div class="pv"><div class="ico"><svg class="i"><use href="#mic"/></svg></div><div>Password fields stay private<small>No AI, no voice and nothing learned in password fields.</small></div></div><div class="link" style="text-align:left;padding-top:4px">Read the privacy policy</div><div class="dots"><i></i><i class="on"></i></div><div class="cta">Set up keyboard</div></div></div></div><figcaption><b>2 · Privacy</b>Three short lines instead of a legal paragraph (O2). The button says what happens next.</figcaption></figure><figure><div class="phone dark"><div class="scr"><div class="sb" style="padding:8px 14px 4px;font-size:10px;color:var(--appvar);display:flex;justify-content:space-between"><span>9:41</span><span>●●▮</span></div><div class="ob"><div class="stepper"><i class="on"></i><i></i><i></i></div><h4>Turn on SmarType</h4><p style="margin-bottom:10px">Two quick steps in Android settings.</p><div class="sc"><div class="h">1 · Allow SmarType<span class="chipst">Not on yet</span></div><p>Android asks you to allow a new keyboard once.</p><div class="cta">Open settings</div></div><div class="sc dim"><div class="h">2 · Choose SmarType<span class="chipst">Next</span></div><p>Pick it as the keyboard you type with.</p></div></div></div></div><figcaption><b>3 · Step 1</b>A status chip instead of a fake switch, the button inside the active card, and no repeated header text (O5).</figcaption></figure><figure><div class="phone dark"><div class="scr"><div class="sb" style="padding:8px 14px 4px;font-size:10px;color:var(--appvar);display:flex;justify-content:space-between"><span>9:41</span><span>●●▮</span></div><div class="ob"><div class="stepper"><i class="on"></i><i class="on"></i><i></i></div><h4>Turn on SmarType</h4><p style="margin-bottom:10px">Two quick steps in Android settings.</p><div class="sc dim"><div class="h">1 · Allow SmarType<span class="chipst ok">On ✓</span></div></div><div class="sc"><div class="h">2 · Choose SmarType<span class="chipst">Not yet</span></div><p>Pick it as the keyboard you type with.</p><div class="cta">Choose keyboard</div></div></div></div></div><figcaption><b>4 · Step 2</b>Step 1 collapses to a done chip; the next card is active. Returning from Android settings lands here automatically.</figcaption></figure><figure><div class="phone dark"><div class="scr"><div class="sb" style="padding:8px 14px 4px;font-size:10px;color:var(--appvar);display:flex;justify-content:space-between"><span>9:41</span><span>●●▮</span></div><div class="ob" style="padding-bottom:0"><div class="stepper"><i class="on"></i><i class="on"></i><i class="on"></i></div><h4>Try it</h4><p>Type anything, or fix this one:</p><div class="tryf">im running late for the meet sorry<span class="caret"></span></div><div class="hintb">Tap ✦ above the keys to fix it</div><div style="margin-top:auto;text-align:right;font-size:12px;font-weight:600;color:var(--acc);padding:6px 0">Done</div></div><div class="kb"><div class="smart"><div class="ic g act"><svg class="i"><use href="#spark"/></svg></div><div class="ic g"><svg class="i"><use href="#tr"/></svg></div><div class="ic g"><svg class="i"><use href="#fmt"/></svg></div><div class="ic"><svg class="i"><use href="#clip"/></svg></div><div class="ic"><svg class="i"><use href="#note"/></svg></div><div class="ic"><svg class="i"><use href="#more"/></svg></div><div class="sp"></div><div class="ic g"><svg class="i"><use href="#mic"/></svg></div></div><div class="keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="w2"></i><i class="w6"></i><i class="w2"></i></div></div></div></div><figcaption><b>5 · Try it</b>SmarType is now the keyboard, so the first try is real. One nudge towards ✦. Typing works without signing in.</figcaption></figure><figure><div class="phone dark"><div class="scr"><div class="sb" style="padding:8px 14px 4px;font-size:10px;color:var(--appvar);display:flex;justify-content:space-between"><span>9:41</span><span>●●▮</span></div><div class="ob"><div class="skip">Not now</div><img class="art" src="data:image/webp;base64,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" alt=""><h4>Try AI for free</h4><p>Sign in to get free AI tries for rewrite, translate and format, and to keep Premium on all your phones.</p><div style="margin-top:auto"></div><div class="cta gg"><b style="color:#4285f4">G</b> Continue with Google</div><div class="link" style="color:var(--appvar);font-weight:400">Typing works without an account.</div></div></div></div><figcaption><b>6 · Sign in</b>Shown when ✦ is tapped while signed out, or after Try it. It leads with the benefit; no Firebase or "profile features" (O3). The number of free tries comes from the server (<code>AI_FREE_TRIAL_LIMIT</code>); it's a one-time trial, so don't promise a monthly amount.</figcaption></figure><figure><div class="phone dark"><div class="scr"><div class="sb" style="padding:8px 14px 4px;font-size:10px;color:var(--appvar);display:flex;justify-content:space-between"><span>9:41</span><span>●●▮</span></div><div class="ob"><h4 style="margin-top:30px">You're all set</h4><p>Signed in as priya…@gmail.com</p><div style="margin-top:auto"></div><div class="cta">Go to SmarType</div></div></div></div><figcaption><b>7 · Done</b>Confirms the account (O4). No notification request in setup (see Behaviour).</figcaption></figure></div>
+  <p class="lab">Light</p><div class="row" id="light"></div>
+  <h2>Behaviour</h2>
+  <div class="tbl"><table>
+   <tr><th>Event</th><th>New behaviour</th></tr>
+   <tr><td>Skip on Welcome or Privacy</td><td>Jumps to Enable. The privacy link stays in Settings → About.</td></tr>
+   <tr><td>Return from Android settings</td><td>The setup screen checks again and moves the active card on; no extra tap.</td></tr>
+   <tr><td>Keyboard already enabled and chosen</td><td>Steps 3–4 are skipped; the user lands on Try it.</td></tr>
+   <tr><td>Tap ✦ on Try it while signed out</td><td>Opens the Sign in screen. After signing in, returns to Try it with the rewrite already running.</td></tr>
+   <tr><td>"Not now" on Sign in</td><td>Goes to Done. Typing, suggestions, voice and BYOK work. ✦ shows the Sign in screen again later.</td></tr>
+   <tr><td>Sign-in fails or is cancelled</td><td>Stays on Sign in with "Couldn't sign in" and Try again (Fix 4).</td></tr>
+   <tr><td>Notifications</td><td>Not asked during setup. Today's setup step asks for <i>crash-report</i> notifications, which users don't need to decide on day one. Ask for notifications only when the user turns on the floating notes bubble, which uses one.</td></tr>
+   <tr><td>App opened again mid-setup</td><td>Resumes at the first step that isn't done.</td></tr>
+  </table></div>
+  <h2>Acceptance criteria</h2>
+  <ul class="ac">
+   <li>A new user can enable and choose SmarType without seeing a sign-in screen.</li>
+   <li>Onboarding has at most two intro pages and no "Page X of Y" text.</li>
+   <li>No onboarding screen mentions Firebase, Firestore or "account-backed features".</li>
+   <li>Each screen has one full-width primary button; secondary actions are text links.</li>
+   <li>Setup cards show status chips, not switches; the action button is inside the active card.</li>
+   <li>Returning from Android settings advances setup without a tap.</li>
+   <li>Skipping sign-in leaves a working keyboard; signing in later from ✦ works the same way.</li>
+   <li>After signing in, the user sees "Signed in as …" and never a "Sign in" message.</li>
+  </ul>
+  <h2>Code pointers</h2>
+  <div class="tbl"><table>
+   <tr><th>Area</th><th>Where</th></tr>
+   <tr><td>Start route and the order of onboarding, sign-in and setup</td><td><code>app/AppStartRoute.kt</code>, <code>Routes.resolveAppStartDestination</code></td></tr>
+   <tr><td>Intro pages</td><td><code>app/onboarding/OnboardingScreen.kt</code></td></tr>
+   <tr><td>Setup steps and notifications</td><td><code>app/setup/SetupScreen.kt</code>, <code>SetupState.kt</code>, <code>NotificationPermissionState.kt</code></td></tr>
+   <tr><td>Sign-in gate for AI</td><td><code>Routes.resolveAuthGatedDestination</code></td></tr>
+   <tr><td>Art</td><td><code>design-handoff/02-illustrations/android/</code> (art_onb_suggestions, art_signin)</td></tr>
+   <tr><td>Risky area</td><td>Moving sign-in changes the auth flow (AGENTS.md: auth and account identity). It needs your plan review.</td></tr>
+  </table></div>
+</div>
+<script>
+const l=document.getElementById('dark').cloneNode(true);
+l.querySelectorAll('.phone.dark').forEach(p=>{p.classList.remove('dark');p.classList.add('light')});
+document.getElementById('light').replaceWith(Object.assign(l,{id:'light'}));
+</script></body></html>
