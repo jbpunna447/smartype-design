@@ -132,7 +132,8 @@
 .s-ovhead .t { flex: 1 1 auto; min-width: 0; font: 500 16px/24px var(--font-sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .s-ovhead small { display: block; font: 400 12px/16px var(--font-sans); color: var(--on-surface-variant); }
 .s-ovtext { flex: 1 1 auto; min-height: 0; padding: 16px; font: 400 16px/24px var(--font-sans); overflow: hidden; }
-.s-ovtools { height: 56px; flex: 0 0 56px; display: flex; align-items: center; padding: 0 4px; border-top: 1px solid var(--outline-variant); }
+.s-ovtools { height: 56px; flex: 0 0 56px; display: flex; align-items: center; padding: 0 4px 0 16px; border-top: 1px solid var(--outline-variant); }
+.s-wc { font: 400 12px/16px var(--font-sans); color: var(--on-surface-variant); }
 .s-ins { height: 40px; border-radius: 14px; padding: 0 20px; display: grid; place-items: center; font: 500 14px/20px var(--font-sans); background: linear-gradient(90deg, var(--ai-gradient-start), var(--ai-gradient-end)); color: var(--on-ai-gradient); margin-right: 8px; }
 
 /* popup list over the keys (long-press on the globe key) */

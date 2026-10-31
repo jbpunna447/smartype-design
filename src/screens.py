@@ -83,9 +83,9 @@ _ovhead = (f'<div class="s-ovhead"{ann("Overlay header", "Height 56 dp; title ti
            f'<div class="t">Leave request to Arjun<small>Saved 11:31</small></div>'
            f'<div class="s-btn" style="color:var(--on-surface-variant)"{ann("More", "Copy, Share, Delete, All notes", None, "more_vert")}>{ic("more_vert")}</div>'
            f'<div class="s-btn" style="color:var(--on-surface-variant)"{ann("Close", "Saves and closes; back to the app", None, "close")}>{ic("close")}</div></div>')
-_ovtools = (f'<div class="s-ovtools"{ann("Note tools", "Height 56 dp; AI action buttons (36 dp circles, 20 dp icons) + Insert", "surface-container-high")}>' +
-            "".join(f'<div class="s-btn ai"><div class="c">{ic(n, size=20)}</div></div>' for n in ("spark", "translate", "format_list_bulleted", "mic")) +
-            f'<div class="s-sp"></div><div class="s-ins"{ann("Insert", "Height 40 dp; radius 14 dp; puts the note into the app at the cursor", "ai-gradient; on-ai-gradient")}>Insert</div></div>')
+_ovtools = (f'<div class="s-ovtools"{ann("Note footer", "Height 56 dp; word count 12 sp; Insert on the right. AI and voice come from the smartbar below", "surface-container-high")}>'
+            '<span class="s-wc">24 words</span><div class="s-sp"></div>'
+            f'<div class="s-ins"{ann("Insert", "Height 40 dp; radius 14 dp; puts the note into the app at the cursor", "ai-gradient; on-ai-gradient")}>Insert</div></div>')
 S["nt-editor"] = device(
     '<div class="s-host" style="position:relative">'
     '<div class="s-hbar"><span class="s-av">M</span>Mail</div><div class="s-msgs"></div><div class="s-field"><span class="ph">Compose email</span></div>'

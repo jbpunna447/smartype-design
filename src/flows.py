@@ -215,7 +215,7 @@ FLOWS = [
         ],
         "new": [("scr", "fm-open", "Runs the last-used format straight away"), ("scr", "fm-short", "Summarise explains why it's unavailable")],
         "done": [
-            "Format is reachable in one tap from the smartbar and from the note overlay.",
+            "Format is reachable in one tap from the smartbar, including while a note is open.",
             "Going between Format, Rewrite and Translate (‹, then the button) keeps the text and reuses results already fetched.",
             "Summarise on text under 100 characters shows the reason and sends nothing.",
             "Replace and Undo behave exactly as in Rewrite.",
@@ -292,22 +292,23 @@ FLOWS = [
     {
         "slug": "notes", "title": "Notes", "kind": "change", "status": "ready",
         "risky": ["editor", "privacy"], "ids": ["N1", "N2", "N3"],
-        "summary": "A note opens as an overlay on top of the app, with AI, voice and Insert; the keyboard stays as it is.",
+        "summary": "A note opens as an overlay on top of the app; the keyboard stays as it is, and its smartbar works on the note.",
         "problem": [
             "Quick Notes has five names for one feature (N1), says \"Saved\" while you're still typing and empties the editor when you tap Save (N2), and notes can't be copied, shared or improved with AI (N3).",
         ],
         "compare": [
             ("Open Notes", [("img", "N1-2.jpg", "Scratch draft and notes, two names")], [("scr", "nt-list", "New note, then notes, most recent first")]),
-            ("Write", [("img", "N2-1.jpg", "\"Saved\" while typing; Save empties the editor")], [("scr", "nt-editor", "Floats over the app; the keyboard below stays normal. Autosaves; Rewrite, Translate, Format and Mic on the note; Insert")]),
+            ("Write", [("img", "N2-1.jpg", "\"Saved\" while typing; Save empties the editor")], [("scr", "nt-editor", "Floats over the app; the keyboard below stays normal. Autosaves; the smartbar's Rewrite, Translate, Format and Mic work on the note; only Insert and a word count sit in the overlay")]),
         ],
         "changes": [
             ("Name", "Quick Note, scratchpad, Scratch draft, Saved note…", "Notes everywhere; \"New note\""),
             ("Tap Notes", "Chooser with Clipboard", "The list: New note on top, then notes with a one-line preview"),
             ("Where the note opens", "Floating Quick Note over the app", "Kept: an overlay on top of the app the user is in, so they can focus on writing. The keyboard keeps its normal height and types into the note"),
             ("Saving", "\"Saved\" before it is; Save empties the editor", "Autosave; \"Saving…\" then \"Saved 11:31\""),
-            ("AI and voice", "None", "Rewrite, Translate, Format and Mic work on the note, with Undo"),
+            ("AI and voice", "None", "The smartbar's Rewrite, Translate, Format and Mic work on the note. Their panels open in place of the keys; Replace changes the note, with Undo; the overlay stays open"),
             ("Insert", "—", "Puts the note into the app at the cursor; the note stays saved"),
-            ("⋯", "—", "Copy, Share, Delete"),
+            ("Overlay footer", "—", "Word count and Insert only; no repeated AI buttons"),
+            ("⋯", "—", "Copy, Share, Delete, All notes"),
             ("Close (×)", "—", "Saves and closes the overlay; back to the app. An empty new note isn't kept"),
             ("Floating bubble", "Opens Quick Note", "Keeps working and opens the same overlay"),
         ],
