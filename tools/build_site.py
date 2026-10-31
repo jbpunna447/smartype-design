@@ -20,6 +20,7 @@ OUT = os.path.join(ROOT, "site")
 sys.path.insert(0, SRC)
 
 import components  # noqa: E402
+from edges import EDGES  # noqa: E402
 from flows import BUILD_ORDER, FLOWS, RISK, RULES  # noqa: E402
 from screens import S  # noqa: E402
 
@@ -146,6 +147,9 @@ def flow_page(i, f):
     if f.get("copy"):
         parts.append('<h2>Wording</h2><div class="tbl"><table><thead><tr><th>Where</th><th>Text</th></tr></thead><tbody>' +
                      "".join(f"<tr><td>{E(a)}</td><td>{E(b)}</td></tr>" for a, b in f["copy"]) + "</tbody></table></div>")
+    if EDGES.get(f["slug"]):
+        parts.append('<h2>Edge cases</h2><div class="tbl"><table><thead><tr><th>Case</th><th>What happens</th></tr></thead><tbody>' +
+                     "".join(f"<tr><td>{E(a)}</td><td>{E(b)}</td></tr>" for a, b in EDGES[f["slug"]]) + "</tbody></table></div>")
     parts.append('<h2>Done when</h2><ul class="check">' + "".join(f"<li>{E(x)}</li>" for x in f["done"]) + "</ul>")
     dev = '<details class="dev"><summary>For developers</summary>'
     if f["decisions"]:
@@ -183,7 +187,7 @@ def review_findings():
     return out
 
 
-BACKLOG = ["A8", "K5", "A7", "S2", "S1", "AS3", "AS1", "V1", "K1", "K4", "P2", "P3", "H3", "H2", "T1", "K2", "A6", "V3", "V4", "AS2", "D2"]
+BACKLOG = ["A8", "K1", "K4"]
 
 
 def backlog_page():
@@ -197,8 +201,7 @@ def backlog_page():
         rows.append(f'<div class="bl">{shot}<div><div class="tags">{tag("id", fid)}{tag("later", r["sev"])}</div>'
                     f'<h3 style="margin-top:10px">{E(r["title"])}</h3><p><b>What happens.</b> {E(r["what"])}</p>'
                     f'<p><b>Direction.</b> {E(r["fix"])}</p></div></div>')
-    body = ('<h1>Backlog</h1><p class="lede">Problems from the UX review that aren\'t designed yet. Each one has today\'s screen, what goes wrong, and a direction. '
-            'Nothing here is ready to build.</p>' + "".join(rows))
+    body = ('<h1>Backlog</h1><p class="lede">What\'s left from the UX review: each needs a check on a device or a small design. Every other finding is covered by a flow.</p>' + "".join(rows))
     return page("backlog.html", "Backlog · SmarType", body, current="backlog.html")
 
 
@@ -224,7 +227,7 @@ def home_page():
         f'<h2>Open decisions</h2><div class="tbl"><table><thead><tr><th>Flow</th><th>Decision</th><th>Recommendation</th></tr></thead><tbody>{dec}</tbody></table></div>'
         '<h2>Rules for every change</h2><ul class="check">' + "".join(f"<li>{E(r)}</li>" for r in RULES) + "</ul>"
         '<h2>Also here</h2><div class="grid">'
-        '<a class="card" href="backlog.html"><b>Backlog</b><span class="s">21 problems from the review that aren\'t designed yet.</span></a>'
+        f'<a class="card" href="backlog.html"><b>Backlog</b><span class="s">{len(BACKLOG)} problems from the review that still need a check or a design.</span></a>'
         '<a class="card" href="design-system/index.html"><b>Design system</b><span class="s">Principles, components and tokens.</span></a>'
         '<a class="card" href="design-system/icons.html"><b>Icons</b><span class="s">Material Symbols Rounded: which icon goes where, and the files.</span></a>'
         '<a class="card" href="downloads.html"><b>Downloads</b><span class="s">App icon, illustrations and icon files.</span></a></div>')

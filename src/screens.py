@@ -180,3 +180,32 @@ S["su-signin"] = device('<div class="s-onb"><div class="s-skip">Not now</div>' +
                         '<div style="text-align:center;font:400 14px/20px var(--font-sans);color:var(--on-surface-variant);padding:12px 0 16px">Typing works without an account.</div></div>', app=True)
 S["su-done"] = device('<div class="s-onb"><h3 style="margin-top:48px">You\'re all set</h3><p class="l">Signed in as priya…@gmail.com</p><div style="margin-top:auto"></div>' +
                       abtn("Go to SmarType", "fill", "l") + '<div style="height:16px"></div></div>', app=True)
+
+# ---------- settings, Home and Writing styles (app) ----------
+S["st-settings"] = device(appbar("Settings") + '<div class="s-scroll">' +
+    f'<div class="s-search"{ann("Settings search", "Height 56 dp; radius 28 dp", "surface-container-high", "search")}>{ic("search")}Search settings</div>' +
+    '<div class="s-sech">Typing and input</div>' + group(
+        lrow("Keyboard", "Height, number row, key sounds", ic("chevron_right"), annotate=("Row with summary", "Min height 72 dp; every row in a group has a summary", "on-surface; on-surface-variant", "chevron_right")),
+        lrow("Smartbar", "Buttons and suggestions", ic("chevron_right")),
+        lrow("Typing", "Autocorrect, suggestions, capitalisation", ic("chevron_right")),
+        lrow("Gestures", "Swipe typing, cursor control", ic("chevron_right"))) +
+    '<div style="height:12px"></div>' + banner("info", "Tip", "The smartbar now keeps the same buttons. Change what's in ⋯ in Smartbar.", act="Got it").replace('class="s-banner info"', 'class="s-banner info"' + ann("Inline tip", "Banner under the group it describes; never floats over rows", "primary-container")) +
+    '<div class="s-sech">Look and feel</div>' + group(lrow("Themes", "Keyboard colours and key shapes", ic("chevron_right")), lrow("App look", "Light, dark, AMOLED", ic("chevron_right")), annotate=False) + "</div>", app=True)
+_pin = lambda n, s: lrow(n, s, ic("drag_indicator"))
+S["st-styles"] = device(appbar("Writing styles") + '<div class="s-scroll">' +
+    '<div class="s-help">On your keyboard: up to 4, in this order. Drag to reorder.</div>' +
+    '<div class="s-sech">On your keyboard · 4 of 4</div>' + group(
+        lrow("Polite", "Pinned", ic("drag_indicator"), annotate=("Pinned style", "Drag handle; the first pinned style shows first", "on-surface-variant", "drag_indicator")),
+        _pin("Professional", "Pinned"), _pin("Casual", "Pinned"), _pin("Shorter", "Pinned")) +
+    '<div class="s-sech">Everyday</div>' + group(
+        lrow("Social", None, ic("keep"), one=True, annotate=("Unpinned style", "Tap the pin to put it on the keyboard", "on-surface-variant", "keep")),
+        lrow("Emojify", None, ic("keep"), one=True), lrow("Neutral", None, ic("keep"), one=True), annotate=False) +
+    '<div class="s-sech">Your styles</div>' + abtn("Add style", "ton", "m", icon="add", full=True, annotate=("Add style", "Tonal, medium, 48 dp", "primary-container; on-primary-container", "add")).replace("margin: 16px 16px 0", "") + "</div>", app=True)
+S["st-home"] = device(appbar("SmarType", back=False) + '<div class="s-scroll">' +
+    f'<div class="s-card"{ann("Plan card", "Hero card: plan, renewal date and one action", "surface-container")}><h5>Premium</h5><p>Renews 12 Nov · ₹999 a year</p>'
+    '<div style="font:500 14px/20px var(--font-sans);color:var(--primary);margin-top:12px">Manage in Google Play</div></div>' +
+    f'<div class="s-tryf" style="margin:0 16px 12px"{ann("Try field", "Min height 56 dp; radius 16 dp; opens the keyboard", "surface-container-high")}><span style="color:var(--on-surface-variant)">Try your keyboard</span></div>' +
+    group(lrow("Themes", "SmarType Night", ic("chevron_right")), lrow("Writing styles", "4 on your keyboard", ic("chevron_right")),
+          lrow("Languages", "English, हिन्दी", ic("chevron_right")), lrow("Settings", None, ic("chevron_right"), one=True)) +
+    '<div class="s-sech">Help</div>' + group(lrow("Guides", None, ic("chevron_right"), one=True), lrow("Contact support", None, ic("chevron_right"), one=True),
+          lrow("Share SmarType", None, ic("chevron_right"), one=True), annotate=False) + "</div>", app=True)

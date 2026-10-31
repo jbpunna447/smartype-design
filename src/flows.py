@@ -432,6 +432,50 @@ FLOWS = [
         ],
         "decisions": [],
     },
+    {
+        "slug": "settings", "title": "Settings, Home and Writing styles", "kind": "change", "status": "ready",
+        "risky": [], "ids": ["S1", "S2", "H2", "H3", "AS1", "AS2", "AS3", "T1", "V1", "V4"],
+        "summary": "Settings you can scan and search, a Home that leads with what people do, and styles that explain the 4-pin limit.",
+        "problem": [
+            "A first-visit tip floats over two settings rows so they can't be read or tapped (S1). The Typing rows have no summaries and there's no settings search (S2).",
+            "Home mixes main tasks with support links and lists AI Settings twice (H3); the Premium card has no renewal date or Manage link (H2). The AI page says Premium twice and nothing else (AS2), and a \"Personal providers\" card says \"Coming soon\" next to a line about keys that don't exist yet (AS1). Writing styles shows 23 chips at once and never explains the 4-pin limit (AS3). Theme cards hide their names behind a menu button (T1); the keyboard stays light in dark mode (V1); Account and Writing styles have small copy issues (V4).",
+        ],
+        "compare": [
+            ("Settings", [("img", "S1-1.jpg", "A tip covers two rows; rows without summaries")], [("scr", "st-settings", "Search, a summary on every row, the tip inline under its group")]),
+            ("Writing styles", [("img", "AS3-1.jpg", "23 chips; the 4-pin limit isn't explained")], [("scr", "st-styles", "The 4 pinned styles first, with drag handles; the rest grouped with a pin")]),
+            ("Home", [("img", "H2-1.jpg", "Every row a card; AI Settings twice; no plan details")], [("scr", "st-home", "Plan card with renewal and Manage; a try field; grouped rows; help at the bottom")]),
+        ],
+        "changes": [
+            ("Help tips (S1)", "Float over the next rows", "Inline banner under the group they describe, with Got it"),
+            ("Row summaries (S2)", "Missing on Keyboard, Smartbar, Typing, Gestures", "Every row has one line: what's inside"),
+            ("Settings search (S2)", "None", "A search field at the top of Settings"),
+            ("Home (H3)", "Each row its own card; support mixed in; AI Settings twice", "Plan card, Try your keyboard, then one group (Themes, Writing styles, Languages, Settings); Help group at the bottom"),
+            ("Premium card (H2)", "\"Premium\" only", "Renewal date, price and Manage in Google Play"),
+            ("SmarType AI page (AS2)", "Premium twice", "One block with the plan, renewal and Manage; free users see tries left"),
+            ("Personal providers (AS1)", "\"Coming soon\" card with a contradicting line", "Hidden until it ships"),
+            ("Writing styles (AS3)", "23 chips; limit unexplained", "\"On your keyboard: up to 4\" with drag handles; the rest grouped (Everyday, Work, Fun) with a pin; Add style button"),
+            ("Theme cards (T1)", "Menu button covers the preview; names cut off", "⋮ moves into the label row; names can take two lines; Create theme is a button in the top bar"),
+            ("Dark mode (V1)", "Keyboard stays light", "Day & night follows the system by default"),
+            ("Copy (V4)", "\"Tap Add style to start\" with no button; loud Sign out", "Add style button present; \"Signed in with Google\"; Sign out is a quiet row at the end that asks first"),
+        ],
+        "done": [
+            "No tip ever covers another control.",
+            "Every row in a settings group has a summary; search finds every setting by name and by summary.",
+            "Home lists each destination once; support links sit in a Help group at the bottom.",
+            "Premium users see the renewal date and Manage in Google Play on Home and on the AI page.",
+            "Personal providers doesn't appear until it works.",
+            "Writing styles explains the 4-pin limit and can't pin a fifth.",
+            "In dark mode the keyboard follows the system theme by default.",
+        ],
+        "code": [
+            ("Home", "app/settings/HomeScreen.kt; docs/flows/home.md"),
+            ("Tips", "docs/flows/help-tips.md"),
+            ("Writing styles", "app/settings/ai/WritingStylesScreen.kt, WritingStylesPinned.kt (AI_PINNED_STYLES_LIMIT)"),
+            ("AI page and personal providers", "app/settings/ai/AiSettingsHubScreen.kt (PersonalProvidersCard)"),
+            ("Theme cards", "app/settings/theme/ThemeGalleryCard.kt"),
+        ],
+        "decisions": [],
+    },
 ]
 
 BUILD_ORDER = [
@@ -439,6 +483,7 @@ BUILD_ORDER = [
     ("languages", "Save English as a real language, and the 🌐 behaviour. Self-contained; fixes two High findings."),
     ("keyboard-bar", "Then the panels: AI rewrite, Translate, Format, Clipboard, Notes, Voice."),
     ("setup", "After the error work, because it uses \"Couldn't sign in\"."),
+    ("settings", "Any time: screens in the app only, no keyboard or backend changes."),
 ]
 
 RULES = [
@@ -449,4 +494,5 @@ RULES = [
     "No internal words on screen (token, catalog, Firebase, Firestore, subtype, managed AI).",
     "No log, analytics event or crash report carries typed text, suggestions, clipboard, notes, audio or AI text.",
     "Check each change at 360 and 412 dp, at font scale 1.5, and in light, dark and AMOLED.",
+    "Works with TalkBack: every control has a spoken label, and keyboard panels can be reached and read (A8).",
 ]

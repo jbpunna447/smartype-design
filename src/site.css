@@ -42,9 +42,9 @@ p { max-width: 74ch; }
 .flowline.new span { border-color: var(--primary); }
 .step { border-top: 1px solid var(--outline-variant); padding: 28px 0 8px; }
 .cmp { display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr); gap: 24px 40px; align-items: start; }
-.col h4 { margin: 0 0 12px; font: 700 12px/1 var(--font-sans); letter-spacing: .1em; text-transform: uppercase; }
-.col.today h4 { color: var(--error); }
-.col.new h4 { color: var(--primary); }
+.col > h4 { margin: 0 0 12px; font: 700 12px/1 var(--font-sans); letter-spacing: .1em; text-transform: uppercase; }
+.col.today > h4 { color: var(--error); }
+.col.new > h4 { color: var(--primary); }
 .shots { display: flex; flex-wrap: wrap; gap: 28px; }
 figure { margin: 0; }
 figure > figcaption { font-size: 13.5px; color: var(--on-surface-variant); margin-top: 14px; max-width: 360px; }

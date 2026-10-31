@@ -147,6 +147,7 @@
 .s-abar .s-btn { color: var(--on-surface); }
 .s-abar.nb { padding-left: 16px; }
 .s-scroll { flex: 1 1 auto; min-height: 0; overflow: hidden; display: flex; flex-direction: column; padding-bottom: 16px; position: relative; }
+.s-scroll > * { flex-shrink: 0; }
 .s-help { padding: 0 16px 16px; font: 400 14px/20px var(--font-sans); color: var(--on-surface-variant); }
 .s-sech { padding: 16px 16px 8px; font: 600 14px/20px var(--font-sans); color: var(--primary); }
 .s-group { margin: 0 16px; background: var(--surface-container-low); border-radius: 16px; overflow: hidden; }
