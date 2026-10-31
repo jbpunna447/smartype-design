@@ -123,6 +123,14 @@ def flow_page(i, f):
              '<div class="toolbar"><button type="button" class="mbtn" id="measure-toggle" aria-pressed="false">Show measurements</button>'
              '<span class="hint">New screens are drawn at real size: 1 px = 1 dp on a 360 × 800 dp phone. Open "Spec" under any screen for sizes, tokens and icons.</span></div>']
     parts.append('<section class="problem"><h2>The problem</h2>' + "".join(f"<p>{E(p)}</p>" for p in f["problem"]) + "</section>")
+    if f.get("research"):
+        r = f["research"]
+        parts.append('<h2>What people need</h2><div class="tbl"><table><thead><tr><th>Need</th><th>Why</th></tr></thead><tbody>' +
+                     "".join(f"<tr><td>{E(a)}</td><td>{E(b)}</td></tr>" for a, b in r["needs"]) + "</tbody></table></div>")
+        parts.append('<h2>What others do</h2><div class="tbl"><table><thead><tr><th>Product</th><th>How it works</th><th>What we take</th></tr></thead><tbody>' +
+                     "".join(f"<tr><td>{E(a)}</td><td>{E(b)}</td><td>{E(c)}</td></tr>" for a, b, c in r["others"]) + "</tbody></table></div>"
+                     '<p style="font-size:13.5px;color:var(--on-surface-variant)">Sources: ' +
+                     "; ".join(f'<a href="{E(u)}" rel="noopener">{E(t)}</a>' for t, u in r["sources"]) + "</p>")
     if f.get("order"):
         t, n = f["order"]
         parts.append('<div class="flowline"><b>Today</b>' + "".join(f"<span>{E(x)}</span>" for x in t) + "</div>"

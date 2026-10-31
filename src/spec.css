@@ -225,3 +225,57 @@
 .s-dev .s-m { position: absolute; z-index: 20; outline: 1px dashed #ff3d7f; outline-offset: -1px; background: #ff3d7f10; }
 .s-dev .s-m:hover { background: #ff3d7f30; z-index: 21; }
 .s-dev .s-m span { position: absolute; right: 0; top: 0; background: #ff3d7f; color: #fff; font: 600 9px/13px ui-monospace, monospace; padding: 0 3px; border-radius: 0 0 0 3px; white-space: nowrap; }
+
+/* Notes: writing with AI inside the overlay */
+.s-ovbody { flex: 1 1 auto; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 8px; padding: 12px 0 4px; }
+.s-ovbody > * { flex-shrink: 0; }
+.s-ph { padding: 0 16px; font: 400 16px/24px var(--font-sans); color: var(--on-surface-variant); }
+.s-ochips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 16px; }
+.s-ochips.one { flex-wrap: nowrap; overflow: hidden; }
+.s-achip { height: 32px; border-radius: 12px; padding: 0 12px; display: inline-flex; align-items: center; gap: 6px; font: 500 13px/18px var(--font-sans);
+  box-shadow: inset 0 0 0 1px var(--outline-variant); color: var(--on-surface-variant); white-space: nowrap; }
+.s-achip.ctx { background: var(--primary-container); color: var(--on-primary-container); box-shadow: none; max-width: 300px; overflow: hidden; text-overflow: ellipsis; }
+.s-aibox { flex: 0 0 44px; height: 44px; margin: 6px 12px; border-radius: 22px; background: var(--surface-container-highest); display: flex; align-items: center; gap: 8px;
+  padding: 0 4px 0 12px; font: 400 15px/20px var(--font-sans); color: var(--on-surface-variant); }
+.s-aibox.focus { box-shadow: inset 0 0 0 2px var(--primary); color: var(--on-surface); }
+.s-aibox .q { flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.s-aibox .spk { color: var(--primary); }
+.s-send { width: 36px; height: 36px; flex: 0 0 36px; border-radius: 18px; display: grid; place-items: center;
+  background: linear-gradient(135deg, var(--ai-gradient-start), var(--ai-gradient-end)); color: var(--on-ai-gradient); }
+.s-send.dis { background: var(--surface-container-high); color: var(--on-surface-variant); opacity: .55; }
+.s-you { align-self: flex-end; margin: 0 12px 0 48px; background: var(--primary-container); color: var(--on-primary-container); border-radius: 16px 16px 4px 16px;
+  padding: 8px 12px; font: 400 14px/20px var(--font-sans); }
+.s-draft { margin: 0 12px; border-radius: 16px; background: var(--surface-container); box-shadow: inset 0 0 0 1.5px var(--primary); padding: 12px; }
+.s-draft .m { display: flex; align-items: center; gap: 6px; font: 500 12px/16px var(--font-sans); color: var(--primary); margin-bottom: 6px; }
+.s-draft .m .nav { margin-left: auto; display: flex; gap: 2px; color: var(--on-surface-variant); align-items: center; }
+.s-draft .x { font: 400 15px/22px var(--font-sans); color: var(--on-surface); }
+.s-draft .acts { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
+.s-mini { height: 36px; border-radius: 12px; padding: 0 14px; display: inline-flex; align-items: center; font: 500 14px/20px var(--font-sans); }
+.s-mini.fill { background: var(--primary); color: var(--on-primary); }
+.s-mini.txt { color: var(--primary); padding: 0 8px; }
+.s-ovtext.sm { flex: 0 0 auto; padding: 0 16px; }
+
+/* Setup: picture of Android's settings (decorative, not interactive) */
+.s-sys { margin: 4px 0 4px; border-radius: 16px; background: var(--surface-container-highest); padding: 10px 0 6px; pointer-events: none; overflow: hidden; }
+.s-sys .bar { display: flex; align-items: center; gap: 10px; padding: 0 12px 8px; font: 500 14px/20px var(--font-sans); color: var(--on-surface); }
+.s-sys .row { display: flex; align-items: center; gap: 12px; padding: 8px 12px; font: 400 14px/20px var(--font-sans); color: var(--on-surface); }
+.s-sys .row .n { flex: 1 1 auto; }
+.s-sys .row.hi { background: color-mix(in srgb, var(--primary) 10%, transparent); }
+.s-tog { width: 36px; height: 20px; border-radius: 10px; background: var(--outline); position: relative; flex: 0 0 auto; }
+.s-tog::after { content: ""; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 7px; background: var(--surface-container-highest); }
+.s-tog.on { background: var(--primary); }
+.s-tog.on::after { left: 19px; background: var(--on-primary); }
+.s-tog.anim { animation: s-tog-bg 2.8s ease-in-out infinite; }
+.s-tog.anim::after { animation: s-tog-k 2.8s ease-in-out infinite; }
+@keyframes s-tog-bg { 0%, 35% { background: var(--outline); } 50%, 100% { background: var(--primary); } }
+@keyframes s-tog-k { 0%, 35% { left: 3px; background: var(--surface-container-highest); } 50%, 100% { left: 19px; background: var(--on-primary); } }
+.s-tap { position: absolute; width: 28px; height: 28px; border-radius: 14px; background: var(--primary); opacity: 0; animation: s-tap 2.8s ease-out infinite; }
+@keyframes s-tap { 0%, 30% { opacity: 0; transform: scale(.4); } 38% { opacity: .35; transform: scale(1); } 55%, 100% { opacity: 0; transform: scale(1.6); } }
+.s-rad { width: 18px; height: 18px; border-radius: 9px; box-shadow: inset 0 0 0 2px var(--on-surface-variant); flex: 0 0 auto; }
+.s-rad.anim { animation: s-rad 2.8s ease-in-out infinite; }
+@keyframes s-rad { 0%, 35% { box-shadow: inset 0 0 0 2px var(--on-surface-variant); } 50%, 100% { box-shadow: inset 0 0 0 2px var(--primary), inset 0 0 0 4px var(--surface-container-highest), inset 0 0 0 9px var(--primary); } }
+@media (prefers-reduced-motion: reduce) {
+  .s-tog.anim, .s-tog.anim::after, .s-tap, .s-rad.anim { animation: none; }
+  .s-tog.anim { background: var(--primary); } .s-tog.anim::after { left: 19px; background: var(--on-primary); }
+  .s-rad.anim { box-shadow: inset 0 0 0 2px var(--primary), inset 0 0 0 4px var(--surface-container-highest), inset 0 0 0 9px var(--primary); }
+}

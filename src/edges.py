@@ -2,6 +2,8 @@
 
 EDGES = {
     "setup": [
+        ("Android shows its warning that a keyboard can collect what you type", "Expected: the privacy screen before it explains what SmarType does; the step stays until the switch is on."),
+        ("Reduce motion is on", "The pictures show the end state (switch on, SmarType chosen) without moving."),
         ("The user backs out of Android's \"allow keyboard\" screen", "Step 1 stays \"Not on yet\" with its button; nothing is lost."),
         ("The user picks another keyboard in the picker", "Step 2 stays \"Not yet\" and says \"Pick SmarType in the list\"."),
         ("A work profile or device policy blocks other keyboards", "Step 1 says \"Your organisation doesn't allow other keyboards on this phone\"; no button."),
@@ -73,13 +75,17 @@ EDGES = {
     "notes": [
         ("No notes yet", "\"Your notes show up here\" with New note."),
         ("The \"display over other apps\" permission isn't granted", "First time: a short explanation and Allow. If refused, the note opens in the SmarType app instead."),
-        ("A very long note", "The overlay scrolls; Insert inserts all of it."),
+        ("Send with an empty Ask AI box", "Send is disabled."),
+        ("The user edits the note while a draft is coming", "The draft still arrives; Replace note asks \"Replace your latest text?\""),
+        ("AI can't help with the request", "The card says \"I can't help with that one. Try asking differently.\" No use is counted."),
+        ("Offline, out of tries or signed out", "Same banners as AI rewrite, inside the overlay; writing by hand still works."),
+        ("A very long note or copied message", "Over the server limit: \"This is too long for AI. Select part of it.\""),
+        ("Close the overlay with unused drafts", "The note is saved; the drafts are discarded (they were never part of the note)."),
+        ("Copied text is a password or other sensitive clip", "\"Use copied text\" isn't offered."),
         ("Insert into a password field", "Insert is disabled with \"Can't insert into a password field\"."),
-        ("The app cuts the text (length limit)", "Whatever the app accepts goes in; the note itself is unchanged."),
         ("Delete a note", "Snackbar \"Note deleted · Undo\" for 5 s."),
-        ("Same note open from the bubble and the keyboard", "Both show the same text; autosave keeps the last edit."),
         ("The process is killed while typing", "At most the last 800 ms of typing is lost."),
-        ("Rotate the phone", "The overlay keeps the text and the cursor."),
+        ("Rotate the phone", "The overlay keeps the text, the drafts and the cursor."),
     ],
     "languages": [
         ("Remove the default language", "The next language becomes the default."),
