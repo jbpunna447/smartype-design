@@ -79,15 +79,20 @@ _notes = [("Leave request to Arjun", "Hi Arjun, I'd like to take Friday off… �
 _nl = "".join(f'<div class="s-item"{ann("Note row", "Radius 12 dp; title 14 sp medium, preview 12 sp", "keyboard key surface") if i == 0 else ""}><div class="tx"><b>{esc(t)}</b><small>{esc(p)}</small></div></div>' for i, (t, p) in enumerate(_notes))
 S["nt-list"] = device(chat(title="Mail", msgs=(), placeholder="Compose email") + _kb(panel_html=panel(
     "Notes", f'<div class="s-b out" style="flex:0 0 48px"{ann("New note", "Height 48 dp; radius 14 dp; 1.5 dp border", "keyboard primary", "add")}>{ic("add", size=20)}New note</div><div class="s-list">{_nl}</div>')), ime=True)
-_edhead = (f'<div class="s-phead"{ann("Editor header", "Height 48 dp; status 12 sp", "keyboard background")}><div class="s-btn" style="color:var(--kb-on)">{ic("arrow_back")}</div>'
-           f'<div class="t">Leave request to Arjun</div><span class="meta">Saved 11:31</span><div class="s-btn" style="width:40px;flex-basis:40px"{ann("More", "Copy, Share, Delete", None, "more_vert")}>{ic("more_vert")}</div></div>')
-_edbar = (f'<div class="s-edbar"{ann("Note tools", "Height 48 dp; AI action buttons (36 dp circles, 20 dp icons) + Insert", "keyboard background")}>' +
-          "".join(f'<div class="s-btn ai"><div class="c">{ic(n, size=20)}</div></div>' for n in ("spark", "translate", "format_list_bulleted", "mic")) +
-          f'<div class="s-sp"></div><div class="s-ins"{ann("Insert", "Height 40 dp in a 48 dp row; radius 14 dp", "ai-gradient; on-ai-gradient")}>Insert</div></div>')
-S["nt-editor"] = device(chat(title="Mail", msgs=(), placeholder="Compose email", caret=False, field_ann=False) +
-                        f'<div class="s-editor"{ann("Note editor", "Opens over the keyboard; keys type into the note", "keyboard theme colours")}>{_edhead}'
-                        f'<div class="s-edtext"{ann("Note text", "Radius 12 dp; padding 12 dp; body-large 16/24 sp", "keyboard key surface")}>Hi Arjun,<br>I\'d like to take Friday off for a family function. I\'ve handed the report to Meena<span class="s-caret"></span></div>'
-                        f'{_edbar}{keys(annotate=False)}</div>', ime=True)
+_ovhead = (f'<div class="s-ovhead"{ann("Overlay header", "Height 56 dp; title title-medium 16 sp; status 12 sp", "surface-container-high; on-surface")}>'
+           f'<div class="t">Leave request to Arjun<small>Saved 11:31</small></div>'
+           f'<div class="s-btn" style="color:var(--on-surface-variant)"{ann("More", "Copy, Share, Delete, All notes", None, "more_vert")}>{ic("more_vert")}</div>'
+           f'<div class="s-btn" style="color:var(--on-surface-variant)"{ann("Close", "Saves and closes; back to the app", None, "close")}>{ic("close")}</div></div>')
+_ovtools = (f'<div class="s-ovtools"{ann("Note tools", "Height 56 dp; AI action buttons (36 dp circles, 20 dp icons) + Insert", "surface-container-high")}>' +
+            "".join(f'<div class="s-btn ai"><div class="c">{ic(n, size=20)}</div></div>' for n in ("spark", "translate", "format_list_bulleted", "mic")) +
+            f'<div class="s-sp"></div><div class="s-ins"{ann("Insert", "Height 40 dp; radius 14 dp; puts the note into the app at the cursor", "ai-gradient; on-ai-gradient")}>Insert</div></div>')
+S["nt-editor"] = device(
+    '<div class="s-host" style="position:relative">'
+    '<div class="s-hbar"><span class="s-av">M</span>Mail</div><div class="s-msgs"></div><div class="s-field"><span class="ph">Compose email</span></div>'
+    '<div class="s-ovscrim"></div>'
+    f'<div class="s-overlay"{ann("Note overlay", "Floats over the app, above the keyboard; 8 dp margins; radius 24 dp; elevation 2", "surface-container-high; on-surface")}>{_ovhead}'
+    f'<div class="s-ovtext"{ann("Note text", "Fills the overlay; padding 16 dp; body-large 16/24 sp", "on-surface")}>Hi Arjun,<br>I\'d like to take Friday off for a family function. I\'ve handed the report to Meena<span class="s-caret"></span></div>'
+    f'{_ovtools}</div></div>' + _kb(), ime=True)
 
 # ---------- languages (app) ----------
 _help = '<div class="s-help">The keyboard switches between these with the 🌐 key. The first one is the default.</div>'

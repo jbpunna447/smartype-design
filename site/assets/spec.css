@@ -124,10 +124,15 @@
 .s-vmsg { flex: 1 1 auto; font: 400 14px/20px var(--font-sans); color: var(--kb-on); padding: 0 8px; }
 .s-vmsg b { color: var(--kb-primary); font-weight: 500; margin-left: 8px; }
 
-/* note editor (opens over the keyboard) */
-.s-editor { flex: 0 0 auto; display: flex; flex-direction: column; background: var(--kb-bg); color: var(--kb-on); }
-.s-edtext { height: 196px; margin: 8px 12px; border-radius: 12px; background: var(--kb-key); padding: 12px; font: 400 16px/24px var(--font-sans); overflow: hidden; }
-.s-edbar { height: 48px; display: flex; align-items: center; padding: 0 4px 0 4px; }
+/* note overlay (floats over the app; the keyboard below stays normal) */
+.s-ovscrim { position: absolute; inset: 0; background: #000; opacity: .32; }
+.s-overlay { position: absolute; left: 8px; right: 8px; top: 8px; bottom: 8px; border-radius: 24px; background: var(--surface-container-high); color: var(--on-surface);
+  display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+.s-ovhead { height: 56px; flex: 0 0 56px; display: flex; align-items: center; padding: 0 4px 0 16px; border-bottom: 1px solid var(--outline-variant); }
+.s-ovhead .t { flex: 1 1 auto; min-width: 0; font: 500 16px/24px var(--font-sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.s-ovhead small { display: block; font: 400 12px/16px var(--font-sans); color: var(--on-surface-variant); }
+.s-ovtext { flex: 1 1 auto; min-height: 0; padding: 16px; font: 400 16px/24px var(--font-sans); overflow: hidden; }
+.s-ovtools { height: 56px; flex: 0 0 56px; display: flex; align-items: center; padding: 0 4px; border-top: 1px solid var(--outline-variant); }
 .s-ins { height: 40px; border-radius: 14px; padding: 0 20px; display: grid; place-items: center; font: 500 14px/20px var(--font-sans); background: linear-gradient(90deg, var(--ai-gradient-start), var(--ai-gradient-end)); color: var(--on-ai-gradient); margin-right: 8px; }
 
 /* popup list over the keys (long-press on the globe key) */
