@@ -73,7 +73,7 @@
 <li>Add <code>SmarTypeChip</code> and <code>SmarTypeBadge</code>; swap <code>SmarTypeStatusChip</code> to a badge, then <code>FlorisChip</code>, <code>FilterChip</code> and the AI panel chips to chips.</li>
 <li>Add <code>SmarTypeDialog</code>; route every confirmation through it, including removing a language.</li>
 <li>Add a snackbar host to the app scaffold; replace in-app toasts with snackbars or banners, starting with the auth and subscription messages.</li>
-<li>Rework <code>KeyboardPanelHeader</code> and <code>KeyboardPanelActionRow</code> into the KeyboardPanel frame: <code>arrow_back</code> and the panel name in the header, the smartbar visible above the panel, a selection hint instead of the source quote, Back returns to the keys.</li>
+<li>Rework <code>KeyboardPanelHeader</code> and <code>KeyboardPanelActionRow</code> into the KeyboardPanel frame: <code>arrow_back</code> and the panel name in the header, the panel replacing the smartbar and the keys, a selection hint instead of the source quote, Back returns to the keys.</li>
 <li>Replace corner literals with shape tokens (<code>radius-xs</code> for the small ones, <code>radius-sm</code> for chips).</li>
 </ol>
 <p>Steps 1 to 6 are presentation only. Step 7 touches keyboard navigation (Back handling in <code>KeyboardPanelBackStack</code>), so it needs a device test. Nothing here changes how text is replaced in other apps.</p></main></body></html>

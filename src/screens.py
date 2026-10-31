@@ -5,14 +5,11 @@ from components import (abtn, appbar, banner, chat, chips, device, dock, esc, gr
 TYPED = "im running late for the meet sorry"
 
 
-def _kb(active=None, panel_html=None, sugg=None, **kk):
-    rows = [smartbar(active=active)]
+def _kb(panel_html=None, sugg=None, **kk):
+    """The keyboard: smartbar, suggestion row and keys; an open panel replaces all three."""
     if panel_html:
-        rows.append(panel_html)
-    else:
-        rows.append(sugg if sugg is not None else suggestions())
-        rows.append(keys(**kk))
-    return ime(*rows)
+        return ime(panel_html)
+    return ime(smartbar(), sugg if sugg is not None else suggestions(), keys(**kk))
 
 
 S = {}
@@ -23,36 +20,36 @@ S["kb-empty"] = device(chat() + _kb(), ime=True)
 S["kb-wide"] = device(chat(text="See you at 4") + ime(smartbar(emoji=True), suggestions(["4", "4pm", "4:00"]), keys(utility="language", space="English · हिन्दी")), width=412, ime=True)
 
 # ---------- AI rewrite ----------
-S["ai-open"] = device(chat(text=TYPED) + _kb(active="Rewrite", panel_html=panel(
+S["ai-open"] = device(chat(text=TYPED) + _kb(panel_html=panel(
     "Rewrite",
     chips([("Fix grammar", "sel"), "Polite", "Professional", "Shorter"]) + result("Fix grammar", "I'm running late for the meeting, sorry.", "Show changes"),
     badge="4 left", dock=dock(("Copy", "q"), ("Replace", "ai")))), ime=True)
-S["ai-loading"] = device(chat(text=TYPED) + _kb(active="Rewrite", panel_html=panel(
+S["ai-loading"] = device(chat(text=TYPED) + _kb(panel_html=panel(
     "Rewrite", chips([("Fix grammar", "sel"), "Polite", "Professional", "Shorter"], annotate=False) + result("Writing your options…", "", skel=True),
     badge="4 left", dock=dock(("Copy", "q"), ("Replace", "ai"), annotate=False))), ime=True)
-S["ai-error"] = device(chat(text=TYPED) + _kb(active="Rewrite", panel_html=panel(
+S["ai-error"] = device(chat(text=TYPED) + _kb(panel_html=panel(
     "Rewrite", kbanner("err", "Couldn't rewrite this.", "Your text wasn't changed.", act="Try again"), badge="4 left")), ime=True)
-S["ai-empty"] = device(chat() + _kb(active="Rewrite", panel_html=panel(
+S["ai-empty"] = device(chat() + _kb(panel_html=panel(
     "Rewrite", kbanner("info", "Type something first.", "Then tap ✦ to see it in different styles.", icon="info"))), ime=True)
 S["ai-replaced"] = device(chat(text="I'm running late for the meeting, sorry.") + _kb(sugg=suggestions(snack=("Replaced with Fix grammar", "Undo"))), ime=True)
 
 # ---------- translate ----------
-S["tr-open"] = device(chat(text=TYPED) + _kb(active="Translate", panel_html=panel(
+S["tr-open"] = device(chat(text=TYPED) + _kb(panel_html=panel(
     "Translate", chips(["English", ("Hindi", "sel"), "Telugu", ("+ More", "more")]) + result("English → Hindi", "माफ़ करना, मुझे मीटिंग के लिए देर हो रही है।"),
     badge="4 left", dock=dock(("Copy", "q"), ("Replace", "ai")))), ime=True)
 _langs = "".join(
     f'<div class="s-item"{ann("Language row", "Radius 12 dp; tap translates; pin toggles a chip", "keyboard key surface", "keep") if i == 0 else ""}>'
     f'<div class="tx"><b>{n}</b><small>{s}</small></div>{ic("keep", fill=p, size=20)}</div>'
     for i, (n, s, p) in enumerate([("हिन्दी Hindi", "Pinned", True), ("తెలుగు Telugu", "Pinned", True), ("Español Spanish", "Recent", False)]))
-S["tr-more"] = device(chat(text=TYPED) + _kb(active="Translate", panel_html=panel(
+S["tr-more"] = device(chat(text=TYPED) + _kb(panel_html=panel(
     "All languages", f'<div class="s-item" style="background:var(--kb-bg-var)">{ic("search", size=20)}<div class="tx" style="color:var(--kb-on-var)">Search languages</div></div><div class="s-list">{_langs}</div>')), ime=True)
 
 # ---------- format ----------
-S["fm-open"] = device(chat(title="Mail", msgs=(), text="need: train tickets, hotel for 2 nights, cab from airport, dinner booking sat") + _kb(active="Format", panel_html=panel(
+S["fm-open"] = device(chat(title="Mail", msgs=(), text="need: train tickets, hotel for 2 nights, cab from airport, dinner booking sat") + _kb(panel_html=panel(
     "Format", chips([("Bullets", "sel"), "Numbered", "Table", "Summarise"]) +
     result("Bullets", "• Train tickets<br>• Hotel for 2 nights<br>• Cab from the airport<br>• Dinner on Saturday").replace('class="x"', 'class="x" style="font-size:14px;line-height:20px"'),
     badge="4 left", dock=dock(("Copy", "q"), ("Replace", "ai")))), ime=True)
-S["fm-short"] = device(chat(title="Mail", msgs=(), text="see you soon") + _kb(active="Format", panel_html=panel(
+S["fm-short"] = device(chat(title="Mail", msgs=(), text="see you soon") + _kb(panel_html=panel(
     "Format", chips(["Bullets", "Numbered", "Table", ("Summarise", "dis")], annotate=False) +
     kbanner("info", "Too short to summarise.", "Summarise needs at least 100 characters.", icon="info"), badge="4 left")), ime=True)
 
@@ -68,7 +65,7 @@ _clips = [("Office Wi-Fi: Lake-5G", "Pinned", True), ("https://maps.app/meet-poi
           ("Order #48213 confirmed for Friday", "1 h ago", False), ("Thanks, see you there!", "Yesterday", False)]
 _cl = "".join(f'<div class="s-item"{ann("Clip", "Radius 12 dp; padding 10 × 12 dp; tap pastes, long-press pins or deletes", "keyboard key surface", "keep (pinned)") if i == 0 else ""}><div class="tx"><b>{esc(t)}</b><small>{esc(m)}</small></div>{ic("keep", fill=True, size=20) if p else ""}</div>'
               for i, (t, m, p) in enumerate(_clips))
-S["cb-open"] = device(chat() + _kb(active="Clipboard", panel_html=panel(
+S["cb-open"] = device(chat() + _kb(panel_html=panel(
     "Clipboard", f'<div class="s-list">{_cl}</div>', action=f'<div class="s-btn" style="width:40px;flex-basis:40px">{ic("more_vert")}</div>')), ime=True)
 
 # ---------- notes ----------
@@ -76,7 +73,7 @@ _notes = [("Leave request to Arjun", "Hi Arjun, I'd like to take Friday off… �
           ("Reply to landlord", "Thanks for fixing the tap. About the… · Yesterday"),
           ("Trip packing list", "Charger, passport, the blue jacket… · Mon")]
 _nl = "".join(f'<div class="s-item"{ann("Note row", "Radius 12 dp; title 14 sp medium, preview 12 sp", "keyboard key surface") if i == 0 else ""}><div class="tx"><b>{esc(t)}</b><small>{esc(p)}</small></div></div>' for i, (t, p) in enumerate(_notes))
-S["nt-list"] = device(chat(title="Mail", msgs=(), placeholder="Compose email") + _kb(active="Notes", panel_html=panel(
+S["nt-list"] = device(chat(title="Mail", msgs=(), placeholder="Compose email") + _kb(panel_html=panel(
     "Notes", f'<div class="s-b out" style="flex:0 0 48px"{ann("New note", "Height 48 dp; radius 14 dp; 1.5 dp border", "keyboard primary", "add")}>{ic("add", size=20)}New note</div><div class="s-list">{_nl}</div>')), ime=True)
 _edhead = (f'<div class="s-phead"{ann("Editor header", "Height 48 dp; status 12 sp", "keyboard background")}><div class="s-btn" style="color:var(--kb-on)">{ic("arrow_back")}</div>'
            f'<div class="t">Leave request to Arjun</div><span class="meta">Saved 11:31</span><div class="s-btn" style="width:40px;flex-basis:40px"{ann("More", "Copy, Share, Delete", None, "more_vert")}>{ic("more_vert")}</div></div>')
@@ -131,7 +128,7 @@ S["er-home"] = device(appbar("SmarType", back=False) + '<div class="s-scroll">' 
 S["er-premium"] = device(appbar("Premium") + '<div class="s-scroll">' +
                          banner("warn", "Plans can't load on this phone", "Google Play couldn't confirm this device, so purchases are turned off. Trying again won't fix this.", act="What can I do?") +
                          '<div class="s-card"><h5>Monthly · ₹120</h5><p>Unavailable on this phone</p></div><div class="s-card"><h5>Yearly · ₹999</h5><p>Unavailable on this phone</p></div></div>', app=True)
-S["er-ai"] = device(chat(text="im running late") + _kb(active="Rewrite", panel_html=panel(
+S["er-ai"] = device(chat(text="im running late") + _kb(panel_html=panel(
     "Rewrite", kbanner("warn", "AI can't run on this phone right now", "Google Play couldn't confirm the device. Your text wasn't sent. Typing, suggestions and voice still work.")))
     , ime=True)
 S["er-signedin"] = device(appbar("SmarType", back=False) + '<div class="s-scroll">' +

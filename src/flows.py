@@ -85,7 +85,7 @@ FLOWS = [
             ("Undo messages", "Toasts", "\"Replaced · Undo\" and \"Inserted · Undo\" show in the suggestion row for 6 s"),
             ("⋯", "More actions grid", "Opens the More panel: themes, autocorrect, layouts, settings and the user's other quick actions, each with a text label"),
             ("Emoji", "Sometimes twice", "Only when there's room and the keyboard's emoji key has turned into 🌐 (two or more languages)"),
-            ("A panel is open", "The bar is covered", "The smartbar stays; the open panel's button gets a ring. Tapping another button switches panels"),
+            ("A panel is open", "The bar is covered", "The panel replaces the smartbar, suggestions and keys; its header (‹ and the panel name) takes the smartbar's place. ‹ or Back brings the keyboard and the smartbar back"),
             ("Narrow phones / large font", "—", "Emoji goes into ⋯ first, then Notes. ⋯ always sits next to the Mic"),
         ],
         "done": [
@@ -129,7 +129,7 @@ FLOWS = [
             ("Text changes after results came back", "—", "Stored results are dropped; Replace is refused if the field changed"),
             ("Request fails or times out (15 s)", "Silent close (A2)", "Error banner with Try again; a failed request doesn't count as a use"),
             ("Replace", "Panel closes; no Undo (A5)", "Replaces only the verified range; \"Replaced with {style} · Undo\" for 6 s; Undo restores the exact original if the field hasn't changed"),
-            ("‹ or system Back", "Back hides the keyboard (A9); ↵ icon (A10)", "Returns to the letter keys and drops the stored results"),
+            ("‹ or system Back", "Back hides the keyboard (A9); ↵ icon (A10)", "Brings back the keyboard and the smartbar. Results stay in memory until the text changes, so reopening costs no request"),
             ("Password field or incognito", "Panel explains", "No request, as today"),
             ("Chip state", "✅ on Grammar fix after use (A4)", "Selected = AI gradient; a style's emoji never changes to show state"),
         ],
@@ -144,9 +144,9 @@ FLOWS = [
         "done": [
             "Tapping ✦ with text sends exactly one request and shows the preselected style's result; there is no Rewrite button.",
             "Switching between style chips after results arrive sends no further requests.",
-            "Editing the text, ‹ or Back drops the stored results; nothing is written to disk.",
+            "Stored results are dropped when the text changes or the keyboard closes; nothing is written to disk.",
             "Every request ends in results or an error banner; the panel never closes by itself (20 tries on a slow network, airplane mode toggled mid-request).",
-            "‹ and system Back return to the letter keys from every state; the keyboard stays visible.",
+            "While a panel is open it replaces the smartbar and the keys; ‹ and system Back bring them back from every state, and the keyboard stays visible.",
             "Undo after Replace restores the original text exactly within 6 s, and does nothing if the user typed in between.",
             "Password fields and incognito send nothing.",
             "One ✦ tap counts as one use on the server; a failed request counts as none.",
@@ -163,16 +163,16 @@ FLOWS = [
         ],
         "decisions": [
             ("Tapping ✦ sends the text straight away", "Yes: it's an explicit tap. Blocked in password fields and incognito, as now."),
-            ("Results kept in memory only", "Yes: never written to disk, never logged."),
+            ("Results kept in memory only", "Yes: until the text changes or the keyboard closes. Never written to disk, never logged."),
             ("One ✦ tap = one use, however many styles", "Yes. Needs a server change: today every request reserves one use, and the free allowance is a one-time trial (AI_FREE_TRIAL_LIMIT, default 5)."),
         ],
     },
     {
         "slug": "translate", "title": "Translate", "kind": "change", "status": "ready",
         "risky": ["editor", "privacy"], "ids": ["B4", "B5", "A6"],
-        "summary": "Same panel as Rewrite, languages as chips, and one tap to switch between them.",
+        "summary": "Same panel as Rewrite, with languages as chips that never get cut off.",
         "problem": [
-            "Translate already runs on open, which works well. But the language chips are cut off behind Copy and Replace (B4), the way back sits bottom-left here and top-left in Rewrite (B5), and switching between Rewrite and Translate means closing one panel and opening the other.",
+            "Translate already runs on open, which works well. But the language chips are cut off behind Copy and Replace (B4), and the way back sits bottom-left here and top-left in Rewrite (B5).",
         ],
         "compare": [
             ("Panel", [("img", "B140-3.jpg", "Chips clipped behind the buttons; back button bottom-left (build 140)")], [("scr", "tr-open", "Same header, chips and dock as Rewrite; English first, then pinned languages")]),
@@ -180,15 +180,15 @@ FLOWS = [
         ],
         "changes": [
             ("Tap Translate in the smartbar", "Opens Translate", "Opens on the last-used language and translates straight away"),
-            ("Switch from Rewrite", "Close one panel, open the other", "One tap on Translate in the smartbar; same text"),
+            ("Switch from Rewrite", "Close one panel, open the other", "‹, then Translate: the same text; a translation already fetched shows instantly"),
             ("Language chips", "Clipped behind the dock (B4)", "Scroll inside the body; the dock never covers them"),
             ("Way back", "Bottom-left (B5)", "‹ Translate in the header, like every panel"),
-            ("Results", "—", "Kept in memory until the text changes; switching back costs no request"),
+            ("Results", "—", "Kept in memory until the text changes; reopening costs no request"),
         ],
         "done": [
             "Language chips are never covered by the dock.",
             "The header is ‹ Translate with the uses-left badge, in the same place as Rewrite.",
-            "Switching between Rewrite, Translate and Format keeps the same text and doesn't repeat a request for results already in memory.",
+            "Going from Rewrite to Translate or Format (‹, then the button) keeps the same text and doesn't repeat a request for results already in memory.",
         ],
         "code": [("Translate panel", "ime/text/smartype/AiOverlay.kt; docs/flows/translate.md"), ("Panel frame", "ime/ui/KeyboardPanel.kt")],
         "decisions": [],
@@ -210,7 +210,7 @@ FLOWS = [
         "new": [("scr", "fm-open", "Runs the last-used format straight away"), ("scr", "fm-short", "Summarise explains why it's unavailable")],
         "done": [
             "Format is reachable in one tap from the smartbar and from the note editor.",
-            "Switching between Format, Rewrite and Translate keeps the text.",
+            "Going between Format, Rewrite and Translate (‹, then the button) keeps the text and reuses results already fetched.",
             "Summarise on text under 100 characters shows the reason and sends nothing.",
             "Replace and Undo behave exactly as in Rewrite.",
         ],

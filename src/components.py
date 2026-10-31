@@ -79,22 +79,19 @@ SMARTBAR = [
 ]
 
 
-def smartbar(active=None, emoji=False, annotate=True):
+def smartbar(emoji=False, annotate=True):
     btns = []
     for icon, label, ai in SMARTBAR:
         if label == "Emoji" and not emoji:
             continue
-        on = active == label
-        cls = "s-btn " + ("ai" if ai else "plain") + (" on" if on else "")
+        cls = "s-btn " + ("ai" if ai else "plain")
         a = ""
         if annotate and label == "Rewrite":
             a = ann("AI action button", "Touch target 48 × 48 dp; circle 36 dp; icon 20 dp",
                     "ai-gradient-start → ai-gradient-end (135°); icon on-ai-gradient", "spark (brand)")
         elif annotate and label == "Clipboard":
             a = ann("Plain action button", "Touch target 48 × 48 dp; icon 24 dp", "icon: keyboard on-surface-variant", "content_paste")
-        elif annotate and on:
-            a = ann("Open panel's button", "Ring 2 dp with a 2 dp gap: 44 dp overall", "ring: keyboard primary", icon)
-        btns.append(f'<div class="{cls}" title="{label}"{a}><div class="c">{ic(icon, fill=on and not ai, size=20 if ai else 24)}</div></div>')
+        btns.append(f'<div class="{cls}" title="{label}"{a}><div class="c">{ic(icon, size=20 if ai else 24)}</div></div>')
     mic_a = ann("Mic button", "Same as an AI action button, pinned to the right", "ai-gradient", "mic") if annotate else ""
     btns.append('<div class="s-sp"></div>')
     btns.append(f'<div class="s-btn ai" title="Voice"{mic_a}><div class="c">{ic("mic", size=20)}</div></div>')
@@ -143,8 +140,8 @@ def ime(*parts):
 def panel(title, body, badge=None, action=None, dock=None, back=True):
     b = ""
     if back:
-        b = f'<div class="s-btn" style="color:var(--kb-on)"{ann("Back", "Touch target 48 dp; icon 24 dp; returns to the keys (same as system Back)", "keyboard on-background", "arrow_back")}>{ic("arrow_back")}</div>'
-    head = (f'<div class="s-phead"{ann("Panel header", "Height 48 dp; title-medium 16/24 sp; 1 dp divider", "keyboard background; divider keyboard line")}>'
+        b = f'<div class="s-btn" style="color:var(--kb-on)"{ann("Back", "Touch target 48 dp; icon 24 dp; brings back the keyboard and the smartbar (same as system Back)", "keyboard on-background", "arrow_back")}>{ic("arrow_back")}</div>'
+    head = (f'<div class="s-phead"{ann("Panel header", "Height 48 dp, in place of the smartbar; title-medium 16/24 sp; 1 dp divider", "keyboard background; divider keyboard line")}>'
             f'{b}<div class="t">{esc(title)}</div>')
     if badge:
         head += f'<span class="s-badge"{ann("Uses-left badge", "Height 24 dp; radius 8 dp; label-small 12 sp", "keyboard key surface; on-surface-variant")}>{esc(badge)}</span>'
@@ -152,7 +149,7 @@ def panel(title, body, badge=None, action=None, dock=None, back=True):
         head += action
     head += "</div>"
     d = dock or ""
-    return (f'<div class="s-panel"{ann("Keyboard panel", "Replaces the suggestion row and the keys: 268 dp. The smartbar stays above it.", "keyboard theme colours (KeyboardPanelColors)")}>'
+    return (f'<div class="s-panel"{ann("Keyboard panel", "Replaces the smartbar, the suggestion row and the keys: 48 + 48 + 220 = 316 dp. Its header sits where the smartbar was.", "keyboard theme colours (KeyboardPanelColors)")}>'
             f'{head}<div class="s-pbody">{body}</div>{d}</div>')
 
 

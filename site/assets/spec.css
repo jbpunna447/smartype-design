@@ -58,8 +58,6 @@
 .s-btn { width: 48px; height: 48px; flex: 0 0 48px; display: grid; place-items: center; color: var(--kb-on-var); position: relative; }
 .s-btn .c { width: 36px; height: 36px; border-radius: 18px; display: grid; place-items: center; }
 .s-btn.ai .c { background: linear-gradient(135deg, var(--ai-gradient-start), var(--ai-gradient-end)); color: var(--on-ai-gradient); }
-.s-btn.on .c { box-shadow: 0 0 0 2px var(--kb-bg), 0 0 0 4px var(--kb-primary); }
-.s-btn.plain.on .c { background: var(--kb-key-var); color: var(--kb-on); box-shadow: none; }
 .s-btn.dis { opacity: .38; }
 .s-sp { flex: 1 1 auto; }
 .s-sugg { justify-content: stretch; padding: 0 8px; }
@@ -81,8 +79,8 @@
 .s-k.space { font-size: 12px; color: var(--kb-on-var); }
 .s-keys.dim { opacity: .4; }
 
-/* keyboard panels (replace the suggestion row and the keys: 48 + 220 = 268 dp) */
-.s-panel { height: 268px; flex: 0 0 268px; display: flex; flex-direction: column; background: var(--kb-bg); color: var(--kb-on); }
+/* keyboard panels (replace the smartbar, the suggestion row and the keys: 48 + 48 + 220 = 316 dp) */
+.s-panel { height: 316px; flex: 0 0 316px; display: flex; flex-direction: column; background: var(--kb-bg); color: var(--kb-on); }
 .s-phead { height: 48px; flex: 0 0 48px; display: flex; align-items: center; gap: 4px; padding: 0 8px 0 0; border-bottom: 1px solid var(--kb-line); }
 .s-phead .t { font: 500 16px/24px var(--font-sans); flex: 1 1 auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .s-phead .meta { font: 400 12px/16px var(--font-sans); color: var(--kb-on-var); white-space: nowrap; }
