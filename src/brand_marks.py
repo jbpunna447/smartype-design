@@ -44,19 +44,54 @@ def today_mono(gid):
     return f'<g transform="translate(23 20) scale(.68)" fill="MONO"><path d="{S_PATH}"/><path d="{STAR_PATH}"/></g>'
 
 
-# A · Keycap: a flat key with the S as its legend.
+# A · Keycap: a white key with a light lip, the S as its legend. The AI version adds the spark as the key's
+# corner legend, the way a real key shows its long-press symbol.
+LIP = "#C3D5DA"
+TEAL = "#0B727B"
+SPARK_PATH = ("M10.5 4c.55 4.3 2.7 6.45 7 7-4.3.55-6.45 2.7-7 7-.55-4.3-2.7-6.45-7-7 4.3-.55 6.45-2.7 7-7Z"
+              "M18.5 2c.28 1.75 1.13 2.6 2.88 2.88-1.75.28-2.6 1.13-2.88 2.88-.28-1.75-1.13-2.6-2.88-2.88C17.37 4.6 18.22 3.75 18.5 2Z")
+
+
 def key_bg(gid):
     return f'<defs>{_grad(gid)}</defs><rect width="108" height="108" fill="url(#{gid})"/>'
 
 
+def _keycap(gid):
+    return (f'<defs><linearGradient id="{gid}k" x1="0" y1="28" x2="0" y2="74" gradientUnits="userSpaceOnUse">'
+            f'<stop stop-color="#FFFFFF"/><stop offset="1" stop-color="#EDF3F5"/></linearGradient></defs>'
+            f'<rect x="31" y="33" width="46" height="46" rx="11" fill="{LIP}"/>'
+            f'<rect x="31" y="28" width="46" height="46" rx="11" fill="url(#{gid}k)"/>')
+
+
 def key_fg(gid):
-    return ('<rect x="31" y="33" width="46" height="46" rx="11" fill="#0B4F57" opacity=".55"/>'
-            f'<rect x="31" y="28" width="46" height="46" rx="11" fill="{PORCELAIN}"/>' + _s(54, 51, 30, INK))
+    return _keycap(gid) + _s(54, 51, 30, INK)
 
 
 def key_mono(gid):
     return ('<mask id="%sm"><rect width="108" height="108" fill="#000"/><rect x="31" y="28" width="46" height="51" rx="11" fill="#fff"/>' % gid +
             _s(54, 51, 30, "#000") + '</mask><rect width="108" height="108" fill="MONO" mask="url(#%sm)"/>' % gid)
+
+
+# The S and the spark as one group, centred on the key's top face (54, 51). The spark's big star sits just off the
+# S's top-right shoulder, like an exponent.
+KS_CX, KS_CY, KS_H, KS_K = 48.8, 54.4, 29, .7
+
+
+def _spark(fill):
+    tx = KS_CX + 14 - 10.5 * KS_K
+    ty = KS_CY - 15 - 11 * KS_K
+    return f'<path fill="{fill}" transform="translate({tx:.2f} {ty:.2f}) scale({KS_K})" d="{SPARK_PATH}"/>'
+
+
+def _keyai(spark_fill):
+    def fg(gid):
+        return _keycap(gid) + _s(KS_CX, KS_CY, KS_H, INK) + _spark(spark_fill)
+    return fg
+
+
+def keyai_mono(gid):
+    return ('<mask id="%sm"><rect width="108" height="108" fill="#000"/><rect x="31" y="28" width="46" height="51" rx="11" fill="#fff"/>' % gid +
+            _s(KS_CX, KS_CY, KS_H, "#000") + _spark("#000") + '</mask><rect width="108" height="108" fill="MONO" mask="url(#%sm)"/>' % gid)
 
 
 # B · Caret: the S followed by a text cursor, as if it had just been typed.
@@ -92,7 +127,9 @@ def talk_mono(gid):
 
 DIRECTIONS = {
     "today": ("Today", today_bg, today_fg, today_mono),
-    "key": ("A · Keycap", key_bg, key_fg, key_mono),
+    "keyai": ("A · Keycap with the AI spark", key_bg, _keyai(TEAL), keyai_mono),
+    "keyai_ink": ("Spark in ink", key_bg, _keyai(INK), keyai_mono),
+    "key": ("Keycap without the spark", key_bg, key_fg, key_mono),
     "caret": ("B · Caret", caret_bg, caret_fg, caret_mono),
     "talk": ("C · Talk key", talk_bg, talk_fg, talk_mono),
 }

@@ -59,10 +59,10 @@ def brand_body(root):
              _fig(SPARK.format(s=140, c="#0b727b"), "<b>Spark on the smartbar.</b> Two curved stars: the AI buttons in the new designs."))
     sparks = (f'<div class="bk-sparks"><div>{STAR.format(s=56, c=SEAGLASS)}<span>App icon star</span></div><div>{AI_LOGO.format(s=56)}<span>AI logo</span></div>'
               f'<div>{SPARK.format(s=56, c="#0b727b")}<span>Smartbar spark</span></div><div><img src="{root}assets/art/logo.png" alt="" width="56" height="56" style="border-radius:12px"><span>Keycap glow star</span></div></div>')
-    dirs = (_direction("key", "A key, and the S is its legend.",
-                       "A flat porcelain keycap with a darker lip, the S printed on it, on the brand gradient. No spark: the spark belongs to AI actions inside the app.",
-                       ["Says \"keyboard\" at any size, even 24 px", "Different from messaging apps and from the S-in-a-circle look", "Simple vector: two shapes and the S; the themed icon is the key's silhouette", "The key shape carries into the splash, the website and store art"],
-                       ["The tile inside a circle is a little busy on circle launchers; the lip keeps it a key", "Teal backgrounds are common for productivity apps"], pick=True) +
+    dirs = (_direction("keyai", "A key: the S is its legend, the spark is its second function.",
+                       "A white keycap with a light grey lip on the brand gradient. On real keys the small symbol in the top corner is what a long-press gives you; here it's the AI spark, in teal, so the icon says \"keyboard with AI built in\" in a keyboard's own language.",
+                       ["Says \"keyboard\" at any size, and \"AI\" from 48 px up", "The spark is part of the key, not a sticker: different from the floating sparkles other AI apps use", "Two colours on the key: ink for typing, teal for AI, the same split as the smartbar", "Simple vector; the themed icon is the key's silhouette with the S and spark cut out"],
+                       ["Below 32 px the spark becomes a dot; the S and the key still read", "Teal backgrounds are common for productivity apps"], pick=True) +
             _direction("caret", "The S, just typed: a text cursor after it.",
                        "Keeps today's graphite and white S, and replaces the floating star with a text cursor in the brand gradient.",
                        ["Keeps what people may already know from today's icon", "The cursor says typing; it can blink in the splash and on the website", "Strong contrast, reads well in a dark row of icons"],
@@ -71,14 +71,18 @@ def brand_body(root):
                        "The keycap gets a speech tail, for typing and speaking.",
                        ["Tells the voice story at a glance", "Friendly, distinct colour"],
                        ["A speech bubble reads as a messaging app (chat apps use bubbles)", "People may expect to send messages from it"]))
+    variants = ('<div class="bk-row">' + "".join(
+        f'<div class="bk-sz">{icon(k, 96, "circle")}{icon(k, 48, "circle")}<span>{lbl}</span></div>' for k, lbl in
+        [("keyai", "Spark in teal (recommended)"), ("keyai_ink", "Spark in ink"), ("key", "No spark")]) + "</div>"
+        '<p>Teal keeps the spark apart from the S, so it reads as a second meaning, not part of the letter. Ink is calmer but blends into the S at 48 px. Without the spark the key is cleaner but says nothing about AI, which is the reason to choose SmarType.</p>')
     colour = ('<div class="bk-sws">' +
               _swatch("Glacier", GLACIER, "Gradient start: icon background, AI actions") + _swatch("Seaglass", SEAGLASS, "Gradient end") +
               _swatch("Ink", INK, "Text on the gradient; the S on the key") + _swatch("Porcelain", PORCELAIN, "The key; light surfaces") +
-              _swatch("Graphite", GRAPHITE, "Dark surfaces, dark splash") + _swatch("Teal (UI primary)", "#0B727B", "Buttons and links in the app, light theme") + "</div>")
+              _swatch("Graphite", GRAPHITE, "Dark surfaces, dark splash") + _swatch("Teal (UI primary)", "#0B727B", "Buttons and links in the app; the spark on the logo key") + "</div>")
     word = (f'<div class="bk-words"><div class="bk-wcard">{_wordmark()}<span>Plain: Google Sans Flex 600</span></div>'
             f'<div class="bk-wcard">{_wordmark(True)}<span>The T in the gradient: one letter shared by Smart and Type</span></div>'
             f'<div class="bk-wcard dark">{_wordmark(True, color=PORCELAIN)}<span>On graphite</span></div>'
-            f'<div class="bk-wcard"><span class="bk-lock">{icon("key", 48, "squircle")}{_wordmark(False, 30)}</span><span>Lockup with icon A: icon height = 1.6 × the cap height; gap = half the icon</span></div></div>')
+            f'<div class="bk-wcard"><span class="bk-lock">{icon("keyai", 48, "squircle")}{_wordmark(False, 30)}</span><span>Lockup with icon A: icon height = 1.6 × the cap height; gap = half the icon</span></div></div>')
     return (
         '<h1>Brand review</h1><p class="lede">One SmarType mark that works from the Play Store down to the status bar, one spark for AI, and colours that match what the app already uses.</p>'
         '<h2>What we have today</h2><div class="bk-figs">' + today + '</div>'
@@ -92,14 +96,16 @@ def brand_body(root):
         '<tr><td>Splash, website, store art</td><td>Large</td><td>Room for motion (a key press, a blinking cursor)</td></tr>'
         '</tbody></table></div>'
         '<h2>Three directions</h2><p>Same colours and the same S for all three, so the comparison is about the idea. Shown at real launcher sizes, as themed icons and in the status bar.</p>' + dirs +
+        '<h2>The spark on the key</h2>' + variants +
         '<h2>One spark for AI</h2>' + sparks +
-        '<p>Keep one spark: the two curved stars already on the smartbar\'s AI buttons. Use it only on AI actions (Rewrite, Translate, Format, voice tidy-up, Premium), filled with the gradient or in ink on the gradient. Retire the three-star circle (ic_ai_logo) and take the star off the app icon, so the logo means SmarType and the spark means AI.</p>'
+        '<p>Keep one spark: the two curved stars already on the smartbar\'s AI buttons. It appears in two places only: as the corner legend on the logo\'s key, and on AI actions in the app (Rewrite, Translate, Format, voice tidy-up, Premium). Retire the three-star circle (ic_ai_logo) and the straight star on today\'s icon, so there is one spark, and it always means AI.</p>'
         '<h2>Colour</h2><p>Keep the shipped family. The brand gradient runs Glacier → Seaglass; Ink sits on it. In the app, the teal tokens stay as they are.</p>' + colour +
         '<h2>Wordmark</h2><p>Set in Google Sans Flex, the typeface these designs use. The app still bundles DM Sans (res/font), so the switch the earlier kit proposed is part of this decision. The name\'s capital T is shared by \"Smart\" and \"Type\"; colouring it is optional.</p>' + word +
         '<h2>Your call</h2><div class="tbl"><table><thead><tr><th>Decision</th><th>Recommendation</th></tr></thead><tbody>'
-        '<tr><td>Logo direction</td><td>A · Keycap</td></tr>'
+        '<tr><td>Logo direction</td><td>A · Keycap with the AI spark</td></tr>'
+        '<tr><td>Spark colour on the key</td><td>Teal (#0B727B), with the S in ink</td></tr>'
         '<tr><td>Wordmark: plain or the T in the gradient</td><td>The gradient T for the website and store art; plain for small sizes and in the app</td></tr>'
-        '<tr><td>One spark, AI only</td><td>Yes: the smartbar spark everywhere AI appears; no spark in the logo</td></tr>'
+        '<tr><td>One spark, AI only</td><td>Yes: the smartbar spark, on the logo\'s key and on AI actions; nothing else uses a spark</td></tr>'
         '<tr><td>Colours</td><td>Keep the cyan–teal family; drop the earlier move to blue</td></tr>'
         '<tr><td>Typeface</td><td>Google Sans Flex for the wordmark and the app, replacing DM Sans (open licence, one variable file)</td></tr>'
         '</tbody></table></div>'
