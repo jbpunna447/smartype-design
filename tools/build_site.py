@@ -222,17 +222,19 @@ def illustrations_page():
         f'<figcaption><b>{E(title)}</b> · <span>{E(where)}</span><br>{E(text)}</figcaption></figure>' for key, title, fn, where, text in SCENES)
     body = ('<h1>Illustrations</h1><p class="lede">The key, alive and in action: the brand key is the character, and it does what SmarType does. Animated here on light and dark.</p>'
             '<h2>Proposed: the key, in action</h2><p>A merge of two concepts below: the character from <a href="#alive">The key, alive</a> performs the product scenes from <a href="#moments">Moments</a>. '
-            'It starts as the app icon: the S squashes down into its smile, so the character is the logo come to life. Then it fixes, translates and listens. '
+            'It starts as the app icon: the S lifts off the key and becomes the first letter of a message, and the blank key opens its eyes and watches the rest being typed. Then it fixes, translates and listens. '
             'Every illustration in the set is one of these moments or a pose of the same character (holding a note for Notes, searching for no results, asleep for an empty list).</p>'
             '<div class="ill-scenes">' + scenes + '</div>'
             '<div class="tbl" style="margin-top:16px"><table><thead><tr><th>Rule</th><th>Spec</th></tr></thead><tbody>'
             '<tr><td>Character</td><td>The brand key (white face, light lip). Face: two Ink eyes and a smile, mint cheeks. No arms, no legs, no S while it\'s a character</td></tr>'
-            '<tr><td>Where it comes from</td><td>The app icon: the S squashes into the smile and the spark jumps up as its idea; the reverse plays back to the logo</td></tr>'
+            '<tr><td>Where it comes from</td><td>The app icon: the S lifts off the key and becomes the first letter typed; the blank key wakes up. At the end the S flies home to the logo</td></tr>'
+            '<tr><td>Expressions</td><td>Watching: eyes follow the caret. Surprised: eyes wide, eyebrows up, a small round mouth, head tilt. Focused: eyes squint, eyebrows down. Happy: ^ ^ eyes, big smile, a hop. Asleep: closed eyes (empty lists)</td></tr>'
             '<tr><td>The spark</td><td>Its idea and its tool: it throws the spark to fix things. Always the brand spark, deep gradient</td></tr>'
             '<tr><td>Motion</td><td>Springy: squash and stretch on hops, a blink every few seconds, loops of 4–6 s. Lottie in the app, a still frame for reduced motion</td></tr>'
             '<tr><td>Words in scenes</td><td>Short and localised: one short message per bubble</td></tr>'
             '</tbody></table></div>'
-
+            '<p>Other ways in, if this one doesn\'t land: the logo key flips over like a card and the back is the face; or the spark taps the key like a press, the S fades and the eyes open. '
+            'Morphing the S itself into a face was tried and dropped: one letter doesn\'t turn into a face convincingly.</p>'
             '<h2>Why a new set</h2><p>Today\'s four illustrations are 3D clay renders of a graphite key with a puffy star: they match neither the new white key nor the brand spark, and they\'re images, not vectors. '
             'A first flat-vector try with the brand\'s shapes was clean but read as large icons, with no story and no life. Strong onboarding art (Duolingo, Headspace, Google\'s Material 3 Expressive) gets its life from a story, a character or motion.</p>'
             + '<h2>Earlier concepts</h2>' + "".join(cards) +
