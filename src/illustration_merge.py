@@ -1,5 +1,5 @@
 """The merged concept: the key, alive and in action. The brand key is the character, and it performs the product's
-moments: it comes out of the logo (the S squashes into its smile), fixes a typo, translates, and listens.
+moments: it comes out of the logo (the S becomes the first letter typed), fixes a typo, translates, and listens.
 Each scene is an animated SVG (CSS motion) with a still frame for reduced motion."""
 from brand_marks import INK, _s_voice
 from illustration_concepts import FONT, _glow, _id, _key, _shadow, _spark, _svg
@@ -116,61 +116,6 @@ def hello(size=240):
             f'<g class="fs">{_logo_s(x, y, s, p + "ls")}</g>'
             f'<g class="fly">{_spark(p + "sp2", 22)}</g>')
     return _svg(p, style, body, size, "The S from the logo becomes the first letter of a message; the key watches, spots a typo and fixes it", still=7.3)
-
-
-# ---------- 1 · From logo to friend ----------
-
-def origin(size=240):
-    """The app icon's key comes alive: the S squashes into a smile, eyes pop open, the spark jumps up as an idea."""
-    p = _id("or")
-    T = "5.6s"
-    style = (f"@keyframes {p}s {{ 0%,22% {{ opacity: 1; transform: none; }} 34%,84% {{ opacity: 0; transform: translateY(14px) scale(.9,.12); }} 96%,100% {{ opacity: 1; transform: none; }} }}"
-             f" @keyframes {p}e {{ 0%,28% {{ transform: scale(0); }} 36% {{ transform: scale(1.25); }} 40%,82% {{ transform: scale(1); }} 88%,100% {{ transform: scale(0); }} }}"
-             f" @keyframes {p}m {{ 0%,30% {{ stroke-dashoffset: 1; }} 42%,82% {{ stroke-dashoffset: 0; }} 88%,100% {{ stroke-dashoffset: 1; }} }}"
-             f" @keyframes {p}c {{ 0%,40% {{ opacity: 0; }} 48%,80% {{ opacity: 1; }} 86%,100% {{ opacity: 0; }} }}"
-             f" @keyframes {p}sp {{ 0%,24% {{ transform: translate(0,0) scale(1) rotate(0); }} 36% {{ transform: translate(14px,-30px) scale(1.5) rotate(25deg); }}"
-             f" 44%,80% {{ transform: translate(12px,-26px) scale(1.3) rotate(0); }} 92%,100% {{ transform: translate(0,0) scale(1) rotate(0); }} }}"
-             f" @keyframes {p}hop {{ 0%,44%,74%,100% {{ transform: none; }} 50% {{ transform: translateY(2px) scale(1.05,.94); }} 58% {{ transform: translateY(-12px) scale(.98,1.03); }} 66% {{ transform: translateY(0) scale(1.03,.97); }} }}"
-             f" @keyframes {p}b {{ 0%,68%,74%,100% {{ transform: scaleY(1); }} 71% {{ transform: scaleY(.1); }} }}"
-             f" .{p} .s {{ animation: {p}s {T} cubic-bezier(.5,0,.3,1) infinite; transform-origin: 50% 100%; }}"
-             f" .{p} .eyes {{ animation: {p}e {T} infinite; }} .{p} .blink {{ animation: {p}b {T} infinite; }}"
-             f" .{p} .smile {{ stroke-dasharray: 1; animation: {p}m {T} infinite; }} .{p} .cheeks {{ animation: {p}c {T} infinite; }}"
-             f" .{p} .sp {{ animation: {p}sp {T} cubic-bezier(.3,1.4,.5,1) infinite; }} .{p} .hop {{ animation: {p}hop {T} infinite; transform-origin: 50% 100%; }}")
-    x, y, s = 54, 58, 92
-    body = (_glow(100, 104, 90, p + "g") + _shadow(100, 166, 46, 7, p + "sh") +
-            f'<g class="hop">{_key(x, y, s, p + "k")}<g class="s">{_logo_s(x, y, s, p + "ls")}</g>{_face(x, y, s, p)}'
-            f'<g transform="translate({x + .728 * s:.1f} {y + .239 * s:.1f})"><g class="sp">{_spark(p + "sp", .365 * s)}</g></g></g>')
-    return _svg(p, style, body, size, "The SmarType key comes alive")
-
-
-# ---------- 2 · Fixing ----------
-
-def fixing(size=240):
-    """The key reads a typo, winds up, throws the spark, and smiles when the message is fixed."""
-    p = _id("fx")
-    T = "4.8s"
-    style = (f"@keyframes {p}look {{ 0%,10% {{ transform: none; }} 16%,40% {{ transform: translate(3px,-3px); }} 62%,100% {{ transform: none; }} }}"
-             f" @keyframes {p}wind {{ 0%,22%,40%,56%,72%,100% {{ transform: none; }} 28% {{ transform: translateY(3px) scale(1.06,.92); }}"
-             f" 34% {{ transform: translateY(-6px) scale(.97,1.04) rotate(-4deg); }} 62% {{ transform: translateY(-10px); }} }}"
-             f" @keyframes {p}fly {{ 0%,30% {{ offset-distance: 0%; opacity: 1; transform: scale(1); }} 44% {{ offset-distance: 100%; opacity: 1; transform: scale(1.3) rotate(90deg); }}"
-             f" 48%,92% {{ offset-distance: 100%; opacity: 0; transform: scale(.3); }} 100% {{ offset-distance: 0%; opacity: 1; transform: scale(1); }} }}"
-             f" @keyframes {p}out {{ 0%,44% {{ opacity: 1; }} 50%,92% {{ opacity: 0; }} 100% {{ opacity: 1; }} }}"
-             f" @keyframes {p}in {{ 0%,46% {{ opacity: 0; transform: translateY(3px); }} 54%,92% {{ opacity: 1; transform: none; }} 100% {{ opacity: 0; }} }}"
-             f" @keyframes {p}burst {{ 0%,44% {{ opacity: 0; transform: scale(.3); }} 50% {{ opacity: .8; transform: scale(1); }} 62%,100% {{ opacity: 0; transform: scale(1.6); }} }}"
-             f" @keyframes {p}grin {{ 0%,52% {{ transform: none; }} 58%,88% {{ transform: scale(1.25,1.35); }} 96%,100% {{ transform: none; }} }}"
-             f" .{p} .eyes {{ animation: {p}look {T} infinite; }} .{p} .wind {{ animation: {p}wind {T} cubic-bezier(.4,0,.2,1) infinite; transform-origin: 50% 100%; }}"
-             f" .{p} .fly {{ offset-path: path('M58 92 C 70 40, 120 30, 150 52'); offset-rotate: 0deg; animation: {p}fly {T} cubic-bezier(.4,0,.2,1) infinite; }}"
-             f" .{p} .out {{ animation: {p}out {T} infinite; }} .{p} .in {{ animation: {p}in {T} infinite; }}"
-             f" .{p} .burst {{ animation: {p}burst {T} infinite; }} .{p} .smile {{ animation: {p}grin {T} infinite; }}")
-    x, y, s = 26, 104, 70
-    bubble = (f'<g transform="translate(0 -6)">{_bubble(54, 34, 138, 52, "left")}'
-              f'<g class="out"><text x="68" y="66" font-size="14" font-weight="500" fill="{INK}" {FONT}>runing late sry</text>'
-              '<path d="M68 70 q2.5 2.5 5 0 t5 0 t5 0 t5 0 t5 0 t5 0 t5 0 t5 0 t2 0" fill="none" stroke="#E5395B" stroke-width="1.5" stroke-linecap="round"/></g>'
-              f'<g class="in"><text x="68" y="66" font-size="13" font-weight="600" fill="{INK}" {FONT}>Running late, sorry!</text></g>'
-              f'<g transform="translate(150 52)"><g class="burst"><circle r="14" fill="none" stroke="#2AA8E0" stroke-width="2"/></g></g></g>')
-    body = (_glow(110, 110, 88, p + "g") + _shadow(x + s / 2, 186, 34, 6, p + "sh") + bubble +
-            f'<g class="wind">{_key(x, y, s, p + "k")}{_face(x, y, s, p)}</g>' + f'<g class="fly">{_spark(p + "sp", 24)}</g>')
-    return _svg(p, style, body, size, "The SmarType key fixing a typo")
 
 
 # ---------- 3 · Translating ----------

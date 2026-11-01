@@ -25,7 +25,6 @@ from taps import TAPS  # noqa: E402
 from flows import BUILD_ORDER, FLOWS, RISK, RULES  # noqa: E402
 from screens import S  # noqa: E402
 from brand_page import brand_body  # noqa: E402
-from illustration_concepts import CONCEPTS  # noqa: E402
 from illustration_merge import SCENES  # noqa: E402
 from illustration_set import SET as ILLUSTRATIONS  # noqa: E402
 
@@ -198,60 +197,33 @@ def flow_page(i, f):
     return page(f"flows/{f['slug']}.html", f"{f['title']} · SmarType", "".join(parts), current="index.html#flows")
 
 
-# ---------- illustration concepts ----------
-
-ART_NEEDED = [
-    ("Welcome", "Setup, first page", "200 dp hero"), ("Sign in", "Setup, after the first try", "200 dp hero"),
-    ("You're all set", "Setup, last page", "200 dp hero"), ("Premium", "Premium screen", "200 dp hero"),
-    ("SmarType AI", "AI settings screen", "200 dp hero"), ("No notes yet", "Notes list", "160 dp empty state"),
-    ("No writing styles yet", "Writing styles", "160 dp empty state"), ("No languages found", "Add language search", "160 dp empty state"),
-    ("No keyboard languages", "Keyboard languages", "160 dp empty state"), ("No custom themes", "Themes", "160 dp empty state"),
-    ("Empty dictionary", "User dictionary", "160 dp empty state"), ("Extension not found", "Extensions", "160 dp empty state"),
-]
-
+# ---------- illustrations ----------
 
 def illustrations_page():
-    cards = []
-    for key, title, fn, idea, good, risks in CONCEPTS:
-        cards.append(
-            f'<section class="bk-dir" id="{key}"><div class="ill-stage"><div class="ill-light">{fn(240)}</div><div class="ill-dark">{fn(240)}</div></div>'
-            f'<div class="bk-body"><h3>{E(title)}</h3><p>{E(idea)}</p><div class="bk-pc"><div><h4>Works</h4><ul>' +
-            "".join(f"<li>{E(x)}</li>" for x in good) + '</ul></div><div><h4>Watch out</h4><ul>' + "".join(f"<li>{E(x)}</li>" for x in risks) + "</ul></div></div></div></section>")
-    need = "".join(f"<tr><td>{E(a)}</td><td>{E(b)}</td><td>{E(c)}</td></tr>" for a, b, c in ART_NEEDED)
-    scenes = "".join(
+    extra = "".join(
         f'<figure class="ill-scene" id="{key}"><div class="ill-pair"><div class="ill-light">{fn(240)}</div><div class="ill-dark">{fn(240)}</div></div>'
-        f'<figcaption><b>{E(title)}</b> · <span>{E(where)}</span><br>{E(text)}</figcaption></figure>' for key, title, fn, where, text in SCENES)
+        f'<figcaption><b>{E(title)}</b> · <span>{E(where)}</span><br>{E(text)}</figcaption></figure>' for key, title, fn, where, text in SCENES if key != "hello")
     set_cells = "".join(
         f'<figure class="ill-item" id="{name}"><div class="ill-pair"><div class="ill-light sm">{fn(160)}</div><div class="ill-dark sm">{fn(160)}</div></div>'
         f'<figcaption><b>{E(title)}</b> · {E(where)} · {dp} dp<br><code>{name}</code></figcaption></figure>' for name, title, where, dp, fn, kind in ILLUSTRATIONS)
+    rules = [
+        ("Character", "The brand key: white face, light grey lip. Two Ink eyes with a white catchlight, a smile, mint cheeks. No arms, no legs, no S"),
+        ("Where it comes from", "The app icon: the S lifts off the key and becomes the first letter typed, and the blank key wakes up. At the end the S flies home to the logo"),
+        ("Expressions", "Watching: eyes follow the action. Surprised: eyes wide, eyebrows up, a small round mouth. Curious: one eyebrow up. Focused: eyes squint, eyebrows down. Happy: ^ ^ eyes, big smile, a hop. Asleep: closed eyes"),
+        ("The spark", "Its idea and its tool: it throws the spark to fix things. The deep spark gradient on light surfaces, the AI gradient on dark"),
+        ("Dark surfaces", "Anything drawn straight onto the background in Ink (voice bars, the magnifier) turns light; shapes on white cards and the key stay as they are"),
+        ("Motion", "Springy: squash and stretch on hops, a blink every 4 s, loops of 3–9 s. Lottie in the app; when animations are off, the still frozen at the key moment"),
+        ("Words in scenes", "Short and translated with the app: one short message per bubble"),
+        ("Not illustrated", "Anything inside the keyboard, settings rows, dialogs and banners: they keep icons"),
+    ]
     body = ('<h1>Illustrations</h1><p class="lede">The key, alive and in action: the brand key is the character, and it does what SmarType does. Animated here on light and dark.</p>'
             '<h2>The set</h2><p>Twelve illustrations: five heroes for onboarding, Premium and AI, and seven empty states. '
             '<a href="downloads/smartype-illustrations.zip" download>Download the set</a> (animated SVG for light and dark, still SVG, still PNG).</p>'
             '<div class="ill-grid">' + set_cells + '</div>'
-            '<h2>The key, in action</h2><p>A merge of two concepts below: the character from <a href="#alive">The key, alive</a> performs the product scenes from <a href="#moments">Moments</a>. '
-            'It starts as the app icon: the S lifts off the key and becomes the first letter of a message, and the blank key opens its eyes and watches the rest being typed. Then it fixes, translates and listens. '
-            'Every illustration in the set is one of these moments or a pose of the same character (holding a note for Notes, searching for no results, asleep for an empty list).</p>'
-            '<div class="ill-scenes">' + scenes + '</div>'
-            '<div class="tbl" style="margin-top:16px"><table><thead><tr><th>Rule</th><th>Spec</th></tr></thead><tbody>'
-            '<tr><td>Character</td><td>The brand key (white face, light lip). Face: two Ink eyes and a smile, mint cheeks. No arms, no legs, no S while it\'s a character</td></tr>'
-            '<tr><td>Where it comes from</td><td>The app icon: the S lifts off the key and becomes the first letter typed; the blank key wakes up. At the end the S flies home to the logo</td></tr>'
-            '<tr><td>Expressions</td><td>Watching: eyes follow the caret. Surprised: eyes wide, eyebrows up, a small round mouth, head tilt. Focused: eyes squint, eyebrows down. Happy: ^ ^ eyes, big smile, a hop. Asleep: closed eyes (empty lists)</td></tr>'
-            '<tr><td>The spark</td><td>Its idea and its tool: it throws the spark to fix things. Always the brand spark, deep gradient</td></tr>'
-            '<tr><td>Motion</td><td>Springy: squash and stretch on hops, a blink every few seconds, loops of 4–6 s. Lottie in the app, a still frame for reduced motion</td></tr>'
-            '<tr><td>Words in scenes</td><td>Short and localised: one short message per bubble</td></tr>'
-            '</tbody></table></div>'
-            '<p>Other ways in, if this one doesn\'t land: the logo key flips over like a card and the back is the face; or the spark taps the key like a press, the S fades and the eyes open. '
-            'Morphing the S itself into a face was tried and dropped: one letter doesn\'t turn into a face convincingly.</p>'
-            '<h2>Why a new set</h2><p>Today\'s four illustrations are 3D clay renders of a graphite key with a puffy star: they match neither the new white key nor the brand spark, and they\'re images, not vectors. '
-            'A first flat-vector try with the brand\'s shapes was clean but read as large icons, with no story and no life. Strong onboarding art (Duolingo, Headspace, Google\'s Material 3 Expressive) gets its life from a story, a character or motion.</p>'
-            + '<h2>Earlier concepts</h2>' + "".join(cards) +
-            '<h2>Where art is needed</h2><div class="tbl"><table><thead><tr><th>Illustration</th><th>Screen</th><th>Size</th></tr></thead><tbody>' + need + "</tbody></table></div>"
-            '<p>Inside the keyboard stays icon-only. All art is vector: SVG for the site and store, Lottie for motion in the app, with a still frame for reduced motion.</p>'
-            '<p style="font-size:13.5px;color:var(--on-surface-variant)">References: '
-            '<a href="https://speckyboy.com/8-beautifully-illustrated-onboarding-screens-in-mobile-design/" rel="noopener">Speckyboy: illustrated onboarding screens</a>; '
-            '<a href="https://fireart.studio/blog/7-tips-to-create-engaging-illustrations-for-mobile-app-onboarding/" rel="noopener">Fireart: engaging onboarding illustrations</a>; '
-            '<a href="https://www.dezeen.com/2025/05/28/google-ushers-in-age-of-expressive-interfaces-with-material-design-update/amp/" rel="noopener">Dezeen: Material 3 Expressive</a>; '
-            '<a href="https://www.androidauthority.com/google-material-3-expressive-features-changes-availability-supported-devices-3556392/" rel="noopener">Android Authority: Material 3 Expressive</a>.</p>')
+            '<h2>The character</h2><div class="tbl"><table><thead><tr><th>Rule</th><th>Spec</th></tr></thead><tbody>' +
+            "".join(f"<tr><td>{E(a)}</td><td>{E(b)}</td></tr>" for a, b in rules) + "</tbody></table></div>"
+            '<h2>More moments</h2><p>For tips, the store listing and the website: the same character translating and listening.</p>'
+            '<div class="ill-scenes">' + extra + '</div>')
     return page("illustrations.html", "Illustrations · SmarType", body, current="illustrations.html")
 
 

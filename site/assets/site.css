@@ -153,12 +153,9 @@ details.dev h3 { margin-top: 24px; }
   background: linear-gradient(90deg, var(--ai-gradient-start), var(--ai-gradient-end)); color: var(--on-ai-gradient); }
 .bk-inl { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 12px; background: #fff; color: #10282e; font: 600 15px/1 var(--font-sans); box-shadow: inset 0 0 0 1px var(--outline-variant); }
 .bk-inl.dark { background: #0D1114; color: #e6eef1; box-shadow: none; }
-/* Illustration concepts */
-.ill-stage { display: flex; flex-direction: column; gap: 10px; }
+/* Illustrations */
 .ill-light, .ill-dark { width: 240px; height: 240px; border-radius: 20px; overflow: hidden; }
 .ill-light { background: #F5FAFB; box-shadow: inset 0 0 0 1px var(--outline-variant); } .ill-dark { background: #0B1416; }
-#moments, #alive, #playground { grid-template-columns: 240px minmax(0, 1fr); }
-@media (max-width: 700px) { #moments, #alive, #playground { grid-template-columns: 1fr; } }
 .ill-scenes { display: grid; grid-template-columns: repeat(auto-fill, minmax(500px, 1fr)); gap: 22px; }
 .ill-scene { margin: 0; }
 .ill-pair { display: flex; flex-wrap: wrap; gap: 10px; }
