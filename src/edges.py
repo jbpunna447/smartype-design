@@ -3,6 +3,10 @@
 EDGES = {
     "setup": [
         ("Android shows its warning that a keyboard can collect what you type", "Expected: the privacy screen before it explains what SmarType does; the step stays until the switch is on."),
+        ("A long keyboard name (\"Microsoft SwiftKey AI Keyboard\")", "One line, cut with \"…\"; the switch stays in place."),
+        ("The keyboard in use is SmarType already (reinstall)", "Both steps are done, so the pictures aren't shown; the user lands on Try it."),
+        ("Several keyboards are on", "The pictures show only the one in use now, next to SmarType."),
+        ("The phone's keyboard can't be read and the maker is unknown", "The picture says \"Your keyboard\" with the keyboard icon."),
         ("Reduce motion is on", "The pictures show the end state (switch on, SmarType chosen) without moving."),
         ("The user backs out of Android's \"allow keyboard\" screen", "Step 1 stays \"Not on yet\" with its button; nothing is lost."),
         ("The user picks another keyboard in the picker", "Step 2 stays \"Not yet\" and says \"Pick SmarType in the list\"."),

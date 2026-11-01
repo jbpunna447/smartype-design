@@ -146,6 +146,13 @@ def flow_page(i, f):
             ncol = "".join(f'<div class="newtext">{E(x[1])}</div>' if x[0] == "text" else item_html(x, depth) for x in new)
             parts.append(f'<section class="step"><h3>{E(label)}</h3><div class="cmp"><div class="col today"><h4>Today</h4><div class="shots">{tcol}</div></div>'
                          f'<div class="col new"><h4>New</h4><div class="shots">{ncol}</div></div></div></section>')
+    for t in f.get("tables", []):
+        parts.append(f'<h2>{E(t["title"])}</h2>' + "".join(f"<p>{E(x)}</p>" for x in t.get("intro", [])) +
+                     '<div class="tbl"><table><thead><tr>' + "".join(f"<th>{E(h)}</th>" for h in t["head"]) + "</tr></thead><tbody>" +
+                     "".join("<tr>" + "".join(f"<td>{E(c)}</td>" for c in r) + "</tr>" for r in t["rows"]) + "</tbody></table></div>" +
+                     ("".join(f"<p>{E(x)}</p>" for x in t.get("after", []))) +
+                     ('<p style="font-size:13.5px;color:var(--on-surface-variant)">Sources: ' +
+                      "; ".join(f'<a href="{E(u)}" rel="noopener">{E(n)}</a>' for n, u in t["sources"]) + "</p>" if t.get("sources") else ""))
     taps = f.get("taps") or TAPS.get(f["slug"])
     if taps:
         parts.append('<h2>Steps and taps</h2><p style="color:var(--on-surface-variant);margin:0 0 10px">The main tasks: how many taps today and in the new design, and whether the user types or speaks.</p>'

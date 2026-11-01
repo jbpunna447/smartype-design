@@ -203,25 +203,37 @@ S["su-privacy"] = device('<div class="s-onb"><div class="s-skip">Skip</div><h3 s
                          '<div class="s-dots"><i></i><i class="on"></i></div>' + abtn("Set up keyboard", "fill", "l") + '<div style="height:16px"></div></div>', app=True)
 
 _LOGO = '<img src="{root}assets/art/logo.png" alt="" width="20" height="20" style="border-radius:5px;display:block">'
-_SYS1 = (f'<div class="s-sys" aria-hidden="true"{ann("Picture of Android settings", "Decorative and animated, not a control; tapping the card does the same as Open settings", "surface-container-highest; toggle primary")}>'
-         f'<div class="bar">{ic("arrow_back", size=20)}On-screen keyboard</div>'
-         f'<div class="row">{ic("keyboard", size=20)}<span class="n">Gboard</span><span class="s-tog on"></span></div>'
-         f'<div class="row hi" style="position:relative">{_LOGO}<span class="n">SmarType</span><span class="s-tog anim"></span>'
-         '<span class="s-tap" style="right:16px;top:4px"></span></div></div>')
-_SYS2 = (f'<div class="s-sys" aria-hidden="true"{ann("Picture of the keyboard picker", "Decorative and animated, not a control; tapping the card does the same as Choose keyboard", "surface-container-highest; radio primary")}>'
-         '<div class="bar">Choose input method</div>'
-         f'<div class="row"><span class="s-rad"></span><span class="n">Gboard</span></div>'
-         f'<div class="row hi" style="position:relative"><span class="s-rad anim"></span><span class="n">SmarType</span>{_LOGO}'
-         '<span class="s-tap" style="left:6px;top:4px"></span></div></div>')
+def _sys1(other="Gboard"):
+    """Android's on-screen keyboard list. `other` is the phone's current keyboard (see the setup flow: device-aware name)."""
+    return (f'<div class="s-sys" aria-hidden="true"{ann("Picture of Android settings", "Decorative and animated, not a control; tapping it does the same as Open settings. Rows 40 dp; radius 12 dp; 1 dp outline; the first row names the keyboard this phone uses now", "sys-picture (light: surface-container-lowest, dark: surface-container-high); outline-variant; switch primary")}>'
+            f'<div class="bar">{ic("arrow_back", size=20)}On-screen keyboard</div>'
+            f'<div class="row">{ic("keyboard", size=20)}<span class="n">{other}</span><span class="s-tog on"></span></div>'
+            f'<div class="row hi" style="position:relative">{_LOGO}<span class="n">SmarType</span><span class="s-tog anim"></span>'
+            '<span class="s-tap" style="right:20px;top:6px"></span></div></div>')
 
-S["su-step1"] = device('<div class="s-onb"><div class="s-steps"' + ann("Progress", "3 bars, 4 dp tall, gap 4 dp", "primary; outline-variant") + '><i class="on"></i><i></i><i></i></div>'
-                       '<h3>Turn on SmarType</h3><p class="l" style="margin-bottom:24px">Two quick steps in Android settings.</p>'
-                       f'<div class="s-step"{ann("Active step card", "Radius 16 dp; padding 16 dp; action inside the card", "surface-container-low")}><div class="h">1 · Allow SmarType<span class="s-abadge neu"{ann("Status badge", "24 dp; radius 8 dp; not a switch", "tertiary-container")}>Not on yet</span></div>'
-                       '<p>Android asks you to allow a new keyboard once.</p>' + _SYS1 + abtn("Open settings", "fill", "m") + '</div>'
-                       '<div class="s-step dim"><div class="h">2 · Choose SmarType<span class="s-abadge neu">Next</span></div><p>Pick it as the keyboard you type with.</p></div></div>', app=True)
+
+def _sys2(other="Gboard"):
+    """Android's keyboard picker, with the phone's current keyboard first."""
+    return (f'<div class="s-sys" aria-hidden="true"{ann("Picture of the keyboard picker", "Decorative and animated, not a control; tapping it does the same as Choose keyboard. Same surface as the settings picture", "sys-picture; outline-variant; radio primary")}>'
+            '<div class="bar">Choose input method</div>'
+            f'<div class="row"><span class="s-rad out"></span><span class="n">{other}</span></div>'
+            f'<div class="row hi" style="position:relative"><span class="s-rad anim"></span><span class="n">SmarType</span>'
+            '<span class="s-tap" style="left:11px;top:6px"></span></div></div>')
+
+
+def _step1(other="Gboard"):
+    return device('<div class="s-onb"><div class="s-steps"' + ann("Progress", "3 bars, 4 dp tall, gap 4 dp", "primary; outline-variant") + '><i class="on"></i><i></i><i></i></div>'
+                  '<h3>Turn on SmarType</h3><p class="l" style="margin-bottom:24px">Two quick steps in Android settings.</p>'
+                  f'<div class="s-step"{ann("Active step card", "Radius 16 dp; padding 16 dp; action inside the card", "surface-container-low")}><div class="h">1 · Allow SmarType<span class="s-abadge neu"{ann("Status badge", "24 dp; radius 8 dp; not a switch", "tertiary-container")}>Not on yet</span></div>'
+                  '<p>Android asks you to allow a new keyboard once.</p>' + _sys1(other) + abtn("Open settings", "fill", "m") + '</div>'
+                  '<div class="s-step dim"><div class="h">2 · Choose SmarType<span class="s-abadge neu">Next</span></div><p>Pick it as the keyboard you type with.</p></div></div>', app=True)
+
+
+S["su-step1"] = _step1("Gboard")
+S["su-step1-samsung"] = _step1("Samsung Keyboard")
 S["su-step2"] = device('<div class="s-onb"><div class="s-steps"><i class="on"></i><i class="on"></i><i></i></div><h3>Turn on SmarType</h3><p class="l" style="margin-bottom:24px">Two quick steps in Android settings.</p>'
                        f'<div class="s-step dim"><div class="h">1 · Allow SmarType<span class="s-abadge ok"{ann("Done badge", "24 dp; radius 8 dp", "secondary-container; on-secondary-container")}>On ✓</span></div></div>'
-                       '<div class="s-step"><div class="h">2 · Choose SmarType<span class="s-abadge neu">Not yet</span></div><p>Pick it as the keyboard you type with.</p>' + _SYS2 + abtn("Choose keyboard", "fill", "m") + '</div></div>', app=True)
+                       '<div class="s-step"><div class="h">2 · Choose SmarType<span class="s-abadge neu">Not yet</span></div><p>Pick it as the keyboard you type with.</p>' + _sys2() + abtn("Choose keyboard", "fill", "m") + '</div></div>', app=True)
 S["su-try"] = device('<div class="s-onb" style="padding-bottom:0"><div class="s-steps"><i class="on"></i><i class="on"></i><i class="on"></i></div><h3>Try it</h3>'
                      '<p class="l">Type anything, or fix this one:</p>'
                      f'<div class="s-tryf"{ann("Test field", "Min height 56 dp; radius 16 dp", "surface-container-high")}>{TYPED}<span class="s-caret"></span></div>'
