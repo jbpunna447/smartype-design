@@ -149,12 +149,12 @@ def talk_mono(gid):
 
 DIRECTIONS = {
     "today": ("Today", today_bg, today_fg, today_mono),
-    "keyai": ("A · Keycap with the AI spark", _bg("deep", False), _keyai(TEAL), keyai_mono),
-    "keyai_ink": ("Spark in ink", _bg("deep", False), _keyai(INK), keyai_mono),
+    "keyai": ("A · Keycap with the AI spark", _bg("vivid", True), _keyai(TEAL), keyai_mono),
+    "keyai_ink": ("Spark in ink", _bg("vivid", True), _keyai(INK), keyai_mono),
     "keyai_soft": ("Soft (today's colours)", key_bg, _keyai(TEAL), keyai_mono),
     "keyai_vivid": ("Vivid", _bg("vivid", False), _keyai(TEAL), keyai_mono),
-    "keyai_vivid_glow": ("Vivid with light", _bg("vivid", True), _keyai(TEAL), keyai_mono),
-    "key": ("Keycap without the spark", _bg("deep", False), key_fg, key_mono),
+    "keyai_deep": ("Deep", _bg("deep", False), _keyai(TEAL), keyai_mono),
+    "key": ("Keycap without the spark", _bg("vivid", True), key_fg, key_mono),
     "caret": ("B · Caret", caret_bg, caret_fg, caret_mono),
     "talk": ("C · Talk key", talk_bg, talk_fg, talk_mono),
 }
