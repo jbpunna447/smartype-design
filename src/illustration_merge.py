@@ -91,7 +91,7 @@ def hello(size=240):
         f" @keyframes {p}sp {{ 0%,17% {{ transform: none; opacity: 1; }} 24%,66% {{ transform: translate(14px,-30px) scale(1.2); opacity: 1; }} 67%,92% {{ opacity: 0; transform: translate(14px,-30px); }} 96%,100% {{ transform: none; opacity: 1; }} }}"
         f" @keyframes {p}fly {{ 0%,66% {{ offset-distance: 0%; opacity: 0; }} 67% {{ opacity: 1; }} 74% {{ offset-distance: 100%; opacity: 1; transform: scale(1.3) rotate(90deg); }} 76%,100% {{ offset-distance: 100%; opacity: 0; }} }}"
         f" @keyframes {p}burst {{ 0%,73% {{ opacity: 0; transform: scale(.3); }} 76% {{ opacity: .9; transform: scale(1); }} 84%,100% {{ opacity: 0; transform: scale(1.8); }} }}"
-        f" .{p} .fs {{ animation: {p}fs {T} cubic-bezier(.5,0,.3,1) infinite; }} .{p} .bub {{ animation: {p}bub {T} cubic-bezier(.3,1.3,.5,1) infinite; transform-origin: 20% 100%; }}"
+        f" .{p} .fs {{ animation: {p}fs {T} cubic-bezier(.5,0,.3,1) infinite; filter: drop-shadow(0 0 1.2px #fff) drop-shadow(0 0 1.2px #fff); }} .{p} .bub {{ animation: {p}bub {T} cubic-bezier(.3,1.3,.5,1) infinite; transform-origin: 20% 100%; }}"
         f" .{p} .typed {{ animation: {p}type {T} steps({n - 1}, end) infinite; transform-origin: 0 50%; }}"
         f" .{p} .caret {{ animation: {p}caret {T} steps({n - 1}, end) infinite; }} .{p} .typo {{ animation: {p}typo {T} infinite; }}"
         f" .{p} .old {{ animation: {p}old {T} infinite; }} .{p} .new {{ animation: {p}new {T} infinite; }}"
@@ -115,7 +115,7 @@ def hello(size=240):
             f'<g transform="translate({x + .728 * s:.1f} {y + .239 * s:.1f})"><g class="sp">{_spark(p + "sp", .365 * s)}</g></g></g>'
             f'<g class="fs">{_logo_s(x, y, s, p + "ls")}</g>'
             f'<g class="fly">{_spark(p + "sp2", 22)}</g>')
-    return _svg(p, style, body, size, "The S from the logo becomes the first letter of a message; the key watches, spots a typo and fixes it")
+    return _svg(p, style, body, size, "The S from the logo becomes the first letter of a message; the key watches, spots a typo and fixes it", still=7.3)
 
 
 # ---------- 1 · From logo to friend ----------
@@ -222,7 +222,7 @@ def listening(size=240):
     closed = (f'<g class="shut" fill="none" stroke="{INK}" stroke-width="{.045 * s:.1f}" stroke-linecap="round">'
               f'<path d="M{x + .30 * s:.1f} {y + .40 * s:.1f} q{.06 * s:.1f} {.06 * s:.1f} {.12 * s:.1f} 0"/>'
               f'<path d="M{x + .58 * s:.1f} {y + .40 * s:.1f} q{.06 * s:.1f} {.06 * s:.1f} {.12 * s:.1f} 0"/></g>')
-    barg = "".join(f'<rect class="bar" style="animation-delay:-{i * .13:.2f}s" x="{126 + i * 11}" y="{124 - 22 * h}" width="6" height="{44 * h:.1f}" rx="3" fill="{INK}"/>'
+    barg = "".join(f'<rect class="bar" style="animation-delay:-{i * .13:.2f}s" x="{126 + i * 11}" y="{124 - 22 * h}" width="6" height="{44 * h:.1f}" rx="3" fill="var(--ill-ink, {INK})"/>'
                    for i, h in bars)
     words = (f'<g class="words">{_bubble(70, 28, 120, 46, "left")}'
              f'<text x="130" y="57" text-anchor="middle" font-size="14" font-weight="600" fill="{INK}" {FONT}>On my way!</text></g>')

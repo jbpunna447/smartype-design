@@ -165,3 +165,9 @@ details.dev h3 { margin-top: 24px; }
 .ill-scene figcaption { margin-top: 10px; font-size: 14px; color: var(--on-surface-variant); max-width: 490px; }
 .ill-scene figcaption b { color: var(--on-surface); }
 @media (max-width: 560px) { .ill-scenes { grid-template-columns: 1fr; } .ill-pair .ill-dark { display: none; } }
+.ill-dark { --ill-ink: #E3EEF0; --sp0: #2AA8E0; --sp1: #3CC4C1; --sp2: #4BDCA4; }
+.ill-light { --ill-ink: #08323B; --sp0: #1257A8; --sp1: #0E8DA6; --sp2: #119A76; }
+.ill-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px; }
+.ill-item { margin: 0; } .ill-item figcaption { margin-top: 8px; font-size: 13.5px; color: var(--on-surface-variant); } .ill-item figcaption b { color: var(--on-surface); }
+.ill-light.sm, .ill-dark.sm { width: 160px; height: 160px; }
+@media (max-width: 560px) { .ill-grid { grid-template-columns: 1fr; } }

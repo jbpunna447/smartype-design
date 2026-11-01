@@ -27,7 +27,13 @@ def _spark(gid, size, stops=SPARK_STOPS, fill=None):
     k = size / 24
     if fill:
         return f'<path fill="{fill}" transform="scale({k:.4f}) translate(-12 -11)" d="{SPARK_PATH}"/>'
-    return (f'<defs>{_grad(gid, stops, -9 * k, -9 * k, 9 * k, 9 * k)}</defs>'
+    if stops is SPARK_STOPS:
+        # Brand rule: the deep spark gradient on light surfaces; a dark surface swaps in the AI gradient via --sp0..2.
+        st = "".join(f'<stop offset="{o}" style="stop-color: var(--sp{i}, {c})"/>' for i, (o, c) in enumerate(stops))
+        g = f'<linearGradient id="{gid}" x1="{-9 * k:.2f}" y1="{-9 * k:.2f}" x2="{9 * k:.2f}" y2="{9 * k:.2f}" gradientUnits="userSpaceOnUse">{st}</linearGradient>'
+    else:
+        g = _grad(gid, stops, -9 * k, -9 * k, 9 * k, 9 * k)
+    return (f'<defs>{g}</defs>'
             f'<path fill="url(#{gid})" transform="scale({k:.4f}) translate(-12 -11)" d="{SPARK_PATH}"/>')
 
 
@@ -56,11 +62,15 @@ def _shadow(cx, cy, rx, ry, gid, cls=""):
 
 FONT = "font-family=\"'Google Sans Flex', 'DM Sans', system-ui, sans-serif\""
 STILL = "@media (prefers-reduced-motion: reduce) {{ .{p} * {{ animation: none !important; }} }}"
+# With a still time, reduced motion shows the illustration frozen at its key moment instead of its first frame.
+STILL_AT = ("@media (prefers-reduced-motion: reduce) {{ .{p} * {{ animation-play-state: paused !important; "
+            "animation-delay: -{t}s !important; }} }}")
 
 
-def _svg(p, style, body, size, label):
+def _svg(p, style, body, size, label, still=None):
+    rm = STILL.format(p=p) if still is None else STILL_AT.format(p=p, t=still)
     return (f'<svg class="{p}" width="{size}" height="{size}" viewBox="0 0 200 200" role="img" aria-label="{label}">'
-            f'<style>.{p} [class] {{ transform-box: fill-box; transform-origin: center; }} {style} {STILL.format(p=p)}</style>{body}</svg>')
+            f'<style>.{p} [class] {{ transform-box: fill-box; transform-origin: center; }} {style} {rm}</style>{body}</svg>')
 
 
 # ---------- A · Moments ----------

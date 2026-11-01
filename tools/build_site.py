@@ -27,6 +27,7 @@ from screens import S  # noqa: E402
 from brand_page import brand_body  # noqa: E402
 from illustration_concepts import CONCEPTS  # noqa: E402
 from illustration_merge import SCENES  # noqa: E402
+from illustration_set import SET as ILLUSTRATIONS  # noqa: E402
 
 E = html.escape
 DS = os.path.join(SRC, "design-system")
@@ -220,8 +221,14 @@ def illustrations_page():
     scenes = "".join(
         f'<figure class="ill-scene" id="{key}"><div class="ill-pair"><div class="ill-light">{fn(240)}</div><div class="ill-dark">{fn(240)}</div></div>'
         f'<figcaption><b>{E(title)}</b> · <span>{E(where)}</span><br>{E(text)}</figcaption></figure>' for key, title, fn, where, text in SCENES)
+    set_cells = "".join(
+        f'<figure class="ill-item" id="{name}"><div class="ill-pair"><div class="ill-light sm">{fn(160)}</div><div class="ill-dark sm">{fn(160)}</div></div>'
+        f'<figcaption><b>{E(title)}</b> · {E(where)} · {dp} dp<br><code>{name}</code></figcaption></figure>' for name, title, where, dp, fn, kind in ILLUSTRATIONS)
     body = ('<h1>Illustrations</h1><p class="lede">The key, alive and in action: the brand key is the character, and it does what SmarType does. Animated here on light and dark.</p>'
-            '<h2>Proposed: the key, in action</h2><p>A merge of two concepts below: the character from <a href="#alive">The key, alive</a> performs the product scenes from <a href="#moments">Moments</a>. '
+            '<h2>The set</h2><p>Twelve illustrations: five heroes for onboarding, Premium and AI, and seven empty states. '
+            '<a href="downloads/smartype-illustrations.zip" download>Download the set</a> (animated SVG for light and dark, still SVG, still PNG).</p>'
+            '<div class="ill-grid">' + set_cells + '</div>'
+            '<h2>The key, in action</h2><p>A merge of two concepts below: the character from <a href="#alive">The key, alive</a> performs the product scenes from <a href="#moments">Moments</a>. '
             'It starts as the app icon: the S lifts off the key and becomes the first letter of a message, and the blank key opens its eyes and watches the rest being typed. Then it fixes, translates and listens. '
             'Every illustration in the set is one of these moments or a pose of the same character (holding a note for Notes, searching for no results, asleep for an empty list).</p>'
             '<div class="ill-scenes">' + scenes + '</div>'
@@ -414,7 +421,7 @@ def design_system():
     toc = "".join(f'<a href="{c.lower()}.html"><b>{c}</b><span>Component</span></a>' for c in COMPONENTS)
     toc += ('<a href="icons.html"><b>Icons</b><span>Material Symbols Rounded</span></a><a href="tokens.html"><b>Tokens</b><span>Colour, type, spacing, radius</span></a>'
             '<a href="audit-buttons.html"><b>Button audit</b><span>Today\'s code</span></a><a href="audit-components.html"><b>Component audit</b><span>Today\'s code</span></a>'
-            '<a href="illustrations.html"><b>Illustrations</b><span>Prompts and export sizes</span></a>')
+            '<a href="illustrations.html"><b>Illustrations</b><span>Character, set and export</span></a>')
     ds_write("design-system/index.html", "Design system · SmarType", f'<h1>Design system</h1><div class="toc">{toc}</div>' + md(os.path.join(DS, "README.md")))
     for c in COMPONENTS:
         if c == "KeyboardPanel":
@@ -464,16 +471,17 @@ def downloads_page():
     shutil.copytree(os.path.join(ASSETS, "brand/svg"), os.path.join(OUT, "assets/brand"), dirs_exist_ok=True)
     for f in ("favicon.svg", "favicon-32.png", "apple-touch-icon.png"):
         shutil.copy(os.path.join(ASSETS, "brand/web", f), os.path.join(OUT, "assets", f))
-    art = "".join(f'<figure><img src="assets/art/{n}.webp" alt=""><figcaption><code>{n}</code></figcaption></figure>'
-                  for n in ("art_onb_suggestions", "art_signin", "art_subscription", "art_empty_languages"))
+    art = "".join(f'<figure><img src="assets/illustrations/still/{n}.svg" alt="" width="160" height="160"><figcaption><code>{n}</code></figcaption></figure>'
+                  for n, *_ in ILLUSTRATIONS)
     body = ('<h1>Downloads</h1><p class="lede">Files developers need. Everything else is on the flow pages.</p>'
             '<h2>Icon kit</h2><div class="bl" style="border:0"><img src="assets/art/logo.png" alt="SmarType app icon" style="box-shadow:none;border-radius:24px">'
             '<div><ul class="check"><li>Android: adaptive icon layers as vector drawables, themed icon, debug and beta icons, status-bar icon and splash icon.</li>'
             '<li>Play Store icon (512 px, 32-bit PNG), favicons and web app icons.</li><li>Wordmark and lockup as outlined SVG, and lockup PNGs.</li>'
             '<li>See <a href="brand.html">Brand</a> for how it\'s built and the spark rules. Don\'t recolour, crop or add effects.</li></ul>'
             '<p><a href="downloads/smartype-brand-assets.zip" download>smartype-brand-assets.zip</a>: everything above, with a README on where each file goes in the app.</p></div></div>'
-            f'<h2>Illustrations</h2><p>Soft clay art for onboarding, sign-in, Premium and empty states. Show at 160–240 dp; never inside the keyboard.</p><div class="art">{art}</div>'
-            '<p><a href="downloads/smartype-illustrations.zip" download>smartype-illustrations.zip</a>: WebP at mdpi, xhdpi and xxhdpi, plus 2000 px masters.</p>'
+            f'<h2>Illustrations</h2><p>The key character in 12 moments: onboarding, Premium, AI and empty states. Heroes at 200 dp, empty states at 160 dp; never inside the keyboard. '
+            'See <a href="illustrations.html">Illustrations</a> for them animated.</p><div class="art">{art}</div>'
+            '<p><a href="downloads/smartype-illustrations.zip" download>smartype-illustrations.zip</a>: animated SVG (light and dark), still SVG for reduced motion, still PNG at 3x, and a README.</p>'
             '<h2>Icons</h2><p><a href="downloads/smartype-icons.zip" download>smartype-icons.zip</a>: Material Symbols Rounded as SVG and Android vector drawables. '
             'See <a href="design-system/icons.html">Icons</a> for which goes where.</p>')
     return page("downloads.html", "Downloads · SmarType", body, current="downloads.html")
@@ -489,8 +497,8 @@ def main():
         shutil.copy(os.path.join(SRC, f), os.path.join(OUT, "assets", f))
     for f in os.listdir(os.path.join(ASSETS, "screens/today")):
         shutil.copy(os.path.join(ASSETS, "screens/today", f), os.path.join(OUT, "assets/today", f))
-    for n in ("art_onb_suggestions", "art_signin", "art_subscription", "art_empty_languages"):
-        shutil.copy(os.path.join(ASSETS, f"illustrations/android/drawable-xxhdpi/{n}.webp"), os.path.join(OUT, f"assets/art/{n}.webp"))
+    for sub in ("svg", "still"):
+        shutil.copytree(os.path.join(ASSETS, "illustrations", sub), os.path.join(OUT, "assets/illustrations", sub), dirs_exist_ok=True)
     icons_zip()
     write("index.html", home_page())
     for i, f in enumerate(FLOWS):

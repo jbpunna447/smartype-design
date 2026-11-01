@@ -189,8 +189,11 @@ S["er-signin-fail"] = device('<div class="s-onb"><div class="s-skip">Not now</di
                              abtn("Skip for now", "txt", "m") + '<div style="height:16px"></div></div>', app=True)
 
 # ---------- setup (app) ----------
-_art = '<img class="s-art" src="{root}assets/art/{name}.webp" alt=""' + ann("Illustration", "200 × 200 dp; WebP from assets/illustrations") + ">"
-S["su-welcome"] = device('<div class="s-onb"><div class="s-skip"' + ann("Skip", "Text button, 48 dp tall", "primary") + '>Skip</div>' + _art.format(root="{root}", name="art_onb_suggestions") +
+def _art_svg(name, dp=200):
+    from illustration_set import SET
+    fn = {n: f for n, t, w, d, f, k in SET}[name]
+    return (f'<div class="s-art"' + ann("Illustration", f"{dp} × {dp} dp; animated, with a still frame for reduced motion (assets/illustrations)", None, None) + f'>{fn(dp)}</div>')
+S["su-welcome"] = device('<div class="s-onb"><div class="s-skip"' + ann("Skip", "Text button, 48 dp tall", "primary") + '>Skip</div>' + _art_svg("art_welcome") +
                          '<h3' + ann("Headline", "headline-medium 28/36 sp") + '>Type, fix and translate in one keyboard</h3><p class="l">Smart suggestions, a clean keyboard, and AI that fixes your message in one tap.</p>'
                          '<div class="s-dots"' + ann("Page dots", "8 dp dots; current 24 dp wide", "primary; outline-variant") + '><i class="on"></i><i></i></div>' +
                          abtn("Next", "fill", "l", annotate=("Main action", "Filled, large, 56 dp; full width", "primary; on-primary")) + '<div style="height:16px"></div></div>', app=True)
@@ -240,11 +243,11 @@ S["su-try"] = device('<div class="s-onb" style="padding-bottom:0"><div class="s-
                      + banner("info", "Tap ✦ above the keys to fix it", "").replace('class="s-banner info"', 'class="s-banner info" style="margin:0"') +
                      '<div style="margin-top:auto;align-self:flex-end;font:500 14px/20px var(--font-sans);color:var(--primary);padding:12px 0">Done</div></div>' +
                      ime(smartbar(annotate=False), suggestions(annotate=False), keys(annotate=False)), app=True, ime=True)
-S["su-signin"] = device('<div class="s-onb"><div class="s-skip">Not now</div>' + _art.format(root="{root}", name="art_signin") +
+S["su-signin"] = device('<div class="s-onb"><div class="s-skip">Not now</div>' + _art_svg("art_signin") +
                         '<h3>Try AI for free</h3><p class="l">Sign in to get free AI tries for rewrite, translate and format, and to keep Premium on all your phones.</p><div style="margin-top:auto"></div>'
                         f'<div class="s-gbtn"{ann("Google sign-in button", "56 dp; radius 14 dp; 1 dp border; Google G 20 dp (brand mark)", "outline; on-surface", "Google G (ic_google_g_icon)")}>{ic("google", size=20)}Continue with Google</div>'
                         '<div style="text-align:center;font:400 14px/20px var(--font-sans);color:var(--on-surface-variant);padding:12px 0 16px">Typing works without an account.</div></div>', app=True)
-S["su-done"] = device('<div class="s-onb"><h3 style="margin-top:48px">You\'re all set</h3><p class="l">Signed in as priya…@gmail.com</p><div style="margin-top:auto"></div>' +
+S["su-done"] = device('<div class="s-onb">' + _art_svg("art_done") + '<h3>You\'re all set</h3><p class="l">Signed in as priya…@gmail.com</p><div style="margin-top:auto"></div>' +
                       abtn("Go to SmarType", "fill", "l") + '<div style="height:16px"></div></div>', app=True)
 
 # ---------- settings, Home and Writing styles (app) ----------
