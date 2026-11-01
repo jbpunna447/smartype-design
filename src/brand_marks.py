@@ -25,8 +25,8 @@ S2_PATH = "M66.45,24.50 A19,15 0 1 0 50,47 A22,18 0 1 1 30.95,74.00"
 S2_WEIGHT = 13
 
 
-def _s(cx, cy, h, fill):
-    """The S centred on (cx, cy), h units tall."""
+def _s_drawn(cx, cy, h, fill):
+    """The hand-drawn two-ellipse S (kept for the comparison on the brand page)."""
     k = h / 79
     tx = cx - 50 * k
     ty = cy - 50 * k
@@ -127,6 +127,49 @@ def _spark(fill, gid=None):
             f'<path fill="url(#{gid}sp)" {path}/><path fill="url(#{gid}spl)" {path}/>')
 
 
+def _s(cx, cy, h, fill):
+    """The logo S: Google Sans Flex at weight 700, roundness 100, centred on (cx, cy), h units tall."""
+    return _sfont("w700r100", cx, cy, h, fill)
+
+
+def _sfont(key, cx, cy, h, fill):
+    """The Google Sans Flex S (brand_glyphs.GLYPH_S[key]) centred on (cx, cy), h units tall."""
+    from brand_glyphs import GLYPH_S
+    w, gh, d = GLYPH_S[key]
+    k = h / gh
+    return f'<path fill="{fill}" transform="translate({cx - w * k / 2:.2f} {cy - h / 2:.2f}) scale({k:.5f})" d="{d}"/>'
+
+
+def _voice_mask(gid, cx, cy, h, style):
+    """Voice variants: 'bars' cuts the whole lower half of the S into a level meter; 'fade' cuts only its left end,
+    with gaps that widen towards the tail, like sound trailing off."""
+    w = h * .75
+    if style == "bars":
+        cuts = "".join(f'<rect x="{cx - w / 2 + i * 2.1:.2f}" y="{cy + h * .04:.2f}" width=".75" height="{h / 2:.2f}" fill="#000"/>' for i in range(11))
+    else:
+        cuts = "".join(f'<rect x="{cx - w / 2 + 6.6 - i * 2.2:.2f}" y="{cy + h * .12:.2f}" width="{.5 + i * .3:.2f}" height="{h / 2:.2f}" fill="#000"/>' for i in range(4))
+    return f'<mask id="{gid}v"><rect width="108" height="108" fill="#fff"/>{cuts}</mask>'
+
+
+def _keyfont(key, spark_fill=None, voice=False):
+    def fg(gid):
+        out = _keycap(gid)
+        glyph = _sfont(key, KS_CX, KS_CY, KS_H, INK)
+        if voice:
+            out += _voice_mask(gid, KS_CX, KS_CY, KS_H, voice) + f'<g mask="url(#{gid}v)">{glyph}</g>'
+        else:
+            out += glyph
+        return out + _spark(spark_fill or "gradient", gid)
+    return fg
+
+
+def _keyfont_mono(key):
+    def mono(gid):
+        return ('<mask id="%sm"><rect width="108" height="108" fill="#000"/><rect x="31" y="29" width="46" height="48.5" rx="11" fill="#fff"/>' % gid +
+                _sfont(key, KS_CX, KS_CY, KS_H, "#000") + _spark("#000") + '</mask><rect width="108" height="108" fill="MONO" mask="url(#%sm)"/>' % gid)
+    return mono
+
+
 def _keyai(spark_fill):
     def fg(gid):
         return _keycap(gid) + _s(KS_CX, KS_CY, KS_H, INK) + _spark(spark_fill, gid)
@@ -177,6 +220,12 @@ DIRECTIONS = {
     "keyai_soft": ("Soft (today's colours)", key_bg, _keyai("gradient"), keyai_mono),
     "keyai_vivid": ("Vivid", _bg("vivid", False), _keyai("gradient"), keyai_mono),
     "keyai_deep": ("Deep", _bg("deep", False), _keyai("gradient"), keyai_mono),
+    "f650": ("Google Sans Flex S · 650 round", _bg("vivid", True), _keyfont("w650r100"), _keyfont_mono("w650r100")),
+    "f700": ("Google Sans Flex S · 700 round", _bg("vivid", True), _keyfont("w700r100"), _keyfont_mono("w700r100")),
+    "f800": ("Google Sans Flex S · 800 round", _bg("vivid", True), _keyfont("w800r100"), _keyfont_mono("w800r100")),
+    "f700sq": ("Google Sans Flex S · 700 square", _bg("vivid", True), _keyfont("w700r0"), _keyfont_mono("w700r0")),
+    "f700bars": ("700 round, voice bars", _bg("vivid", True), _keyfont("w700r100", voice="bars"), _keyfont_mono("w700r100")),
+    "f700fade": ("700 round, voice fade", _bg("vivid", True), _keyfont("w700r100", voice="fade"), _keyfont_mono("w700r100")),
     "key": ("Keycap without the spark", _bg("vivid", True), key_fg, key_mono),
     "caret": ("B · Caret", caret_bg, caret_fg, caret_mono),
     "talk": ("C · Talk key", talk_bg, talk_fg, talk_mono),

@@ -1,7 +1,7 @@
 """The brand review page: today's marks, three logo directions, one spark, colour and the wordmark."""
 import html
 
-from brand_marks import DIRECTIONS, GLACIER, GRAPHITE, INK, PORCELAIN, S2_PATH, S2_WEIGHT, S_PATH, SEAGLASS, SPARK_PATH, icon, notification
+from brand_marks import DIRECTIONS, GLACIER, GRAPHITE, INK, PORCELAIN, S2_PATH, S2_WEIGHT, S_PATH, SEAGLASS, SPARK_PATH, icon, notification  # noqa: F401
 
 E = html.escape
 
@@ -51,18 +51,32 @@ def _wordmark(tshare=False, size=44, color=INK):
     return f'<span class="bk-wm" style="font-size:{size}px;color:{color}">Smar{t}ype</span>'
 
 
+def _glyph_svg(key, size=150):
+    from brand_glyphs import GLYPH_S
+    w, h, d = GLYPH_S[key]
+    pad = 140
+    return (f'<svg width="{size}" height="{size}" style="background:#fff;border-radius:16px" viewBox="{-pad} {-pad} {w + 2 * pad:.0f} {h + 2 * pad:.0f}" aria-hidden="true">'
+            f'<path fill="{INK}" d="{d}"/></svg>')
+
+
 def _s_compare():
-    old = (f'<svg width="200" height="200" style="background:#fff;border-radius:16px" viewBox="0 8 85 90" aria-label="Today\'s S over itself turned 180 degrees"><path d="{S_PATH}" fill="{INK}"/>'
+    old = (f'<svg width="150" height="150" style="background:#fff;border-radius:16px" viewBox="0 8 85 90" aria-label="Today\'s S over itself turned 180 degrees"><path d="{S_PATH}" fill="{INK}"/>'
            f'<path d="{S_PATH}" fill="none" stroke="#e5395b" stroke-width=".7" transform="rotate(180 42.5 53.5)"/></svg>')
-    new = (f'<svg width="200" height="200" style="background:#fff;border-radius:16px" viewBox="5 5 90 90" aria-label="New S with its two construction ellipses">'
-           '<ellipse cx="50" cy="32" rx="19" ry="15" fill="none" stroke="#e5395b" stroke-width=".6" stroke-dasharray="1.5 1"/>'
-           '<ellipse cx="50" cy="65" rx="22" ry="18" fill="none" stroke="#e5395b" stroke-width=".6" stroke-dasharray="1.5 1"/>'
-           f'<path d="{S2_PATH}" fill="none" stroke="{INK}" stroke-width="{S2_WEIGHT}" stroke-linecap="round"/>'
-           f'<path d="{S2_PATH}" fill="none" stroke="#fff" stroke-width=".5"/></svg>')
-    return ('<div class="bk-figs">' + _fig(old, "<b>Today.</b> In red, the same S turned 180°: the top bowl is smaller and sits further left, "
-                                            "the two ends are cut at different angles, and short straight joins leave small kinks in the spine.") +
-            _fig(new, "<b>New.</b> Each bowl is an even ellipse (red), so the curves are smooth and the stroke is one even weight with round ends. "
-                      "The top bowl is deliberately smaller than the bottom one, as in the original S: it keeps the S from looking top-heavy and leaves room for the spark.") + "</div>")
+    drawn = (f'<svg width="150" height="150" style="background:#fff;border-radius:16px" viewBox="5 5 90 90" aria-hidden="true">'
+             f'<path d="{S2_PATH}" fill="none" stroke="{INK}" stroke-width="{S2_WEIGHT}" stroke-linecap="round"/></svg>')
+    figs = ('<div class="bk-figs">' +
+            _fig(old, "<b>Today.</b> In red, the same S turned 180°: the top bowl is smaller and sits further left, the ends are cut at different angles, and short straight joins leave small kinks in the spine.") +
+            _fig(drawn, "<b>Drawn from two ellipses.</b> Even bowls, but the bowls only touch in the middle: the waist is flat and the curve flips direction at once, so the centre feels wrong. Also too thin.") +
+            _fig(_glyph_svg("w700r100"), "<b>Chosen: Google Sans Flex, weight 700, roundness 100.</b> A professionally drawn S: the spine runs diagonally and eases into each bowl, the top bowl is smaller (balanced by the spark), and the round ends match the key. Converted to a vector path.") + "</div>")
+    weights = ('<p style="margin-top:18px">Other settings of the same font, converted the same way:</p><div class="bk-row">' + "".join(
+        f'<div class="bk-sz">{icon(k, 104, "circle")}{icon(k, 48, "circle")}<span>{lbl}</span></div>' for k, lbl in
+        [("f650", "650 round"), ("keyai", "700 round (chosen)"), ("f800", "800 round"), ("f700sq", "700 square ends")]) + "</div>")
+    voice = ('<h3 style="margin-top:22px">A voice version?</h3><div class="bk-row">' + "".join(
+        f'<div class="bk-sz">{icon(k, 104, "circle")}{icon(k, 48, "circle")}<span>{lbl}</span></div>' for k, lbl in
+        [("f700fade", "Tail fades into sound"), ("f700bars", "Lower half as a level meter")]) + "</div>"
+        '<p>Both say voice at large sizes, but at 48 px the cuts turn into grey texture, and the key and spark already carry two ideas. '
+        'Recommendation: keep the solid S in the icon, and use the fading bars as motion: the S\'s tail breaking into sound in the splash, the voice bar and on the website.</p>')
+    return figs + weights + voice
 
 
 def _ai_strip():
@@ -144,7 +158,7 @@ def brand_body(root):
         '<tr><td>Key depth</td><td>Lip 2.5 units of 108 (about 5% of the key), light grey #C3D5DA</td></tr>'
         '<tr><td>Icon background</td><td>Chosen: vivid gradient #1E9BD7 → #22C3CF → #4BDCA4 with a soft light</td></tr>'
         '<tr><td>AI buttons in the app</td><td>Move to the brand family: #2AA8E0 → #4BDCA4 with Ink (updated in tokens.json)</td></tr>'
-        '<tr><td>The S</td><td>The new S: even, round bowls, a smaller top bowl balanced by the spark, round ends; in the logo, splash and lockup</td></tr>'
+        '<tr><td>The S</td><td>Google Sans Flex S, weight 700, roundness 100, as a vector path; solid in the icon, the voice fade only in motion</td></tr>'
         '<tr><td>Wordmark: plain or the T in the gradient</td><td>The gradient T for the website and store art; plain for small sizes and in the app</td></tr>'
         '<tr><td>One spark, AI only</td><td>Yes: the smartbar spark, on the logo\'s key and on AI actions; nothing else uses a spark</td></tr>'
         '<tr><td>Colours</td><td>Keep the cyan–teal family; drop the earlier move to blue</td></tr>'
