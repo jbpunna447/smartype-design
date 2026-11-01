@@ -385,6 +385,9 @@ def preview_icons(html_text):
         if name != "spark" and not os.path.exists(os.path.join(ASSETS, "icons/material-symbols-rounded", f"{name}.svg")):
             raise SystemExit(f"preview icon not in the library: {name}")
         return f'<svg class="ds-ic" aria-hidden="true"><use href="#{ref}"/></svg>'
+    from illustration_set import SET
+    arts = {n: f for n, t, w, d, f, k in SET}
+    html_text = re.sub(r"\{\{art:([a-z_]+)\}\}", lambda m: arts[m.group(1)](160), html_text)
     return re.sub(r"\{\{icon:([a-z_]+)\}\}", one, html_text)
 
 

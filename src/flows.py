@@ -437,6 +437,7 @@ FLOWS = [
         },
         "compare": [
             ("Open Notes", [("img", "N1-2.jpg", "Scratch draft and notes, two names")], [("scr", "nt-list", "New note on top, then notes, most recent first")]),
+            ("No notes yet (in the app)", [("text", "A plain card: \"No saved notes\"")], [("scr", "nt-app-empty", "The key watching a blank note, one line, New note. In the keyboard's Notes panel the empty list keeps an icon and one line: no art inside the keyboard")]),
             ("New note", [("img", "N2-1.jpg", "A blank editor; \"Saved\" while typing; Save empties it")],
              [("scr", "nt-new", "Cursor ready, keyboard up: type or tap the Mic. If something is copied, one tap pastes it")]),
             ("A list", [("text", "Plain text, no help")], [("scr", "nt-grocery", "Autosaved. Suggestions fit a list: Group by aisle, Add quantities")]),
@@ -500,6 +501,7 @@ FLOWS = [
         "compare": [
             ("Fresh install", [("img", "L1-1.jpg", "\"No keyboard languages yet\"")], [("scr", "lg-fresh", "English (US) shown and marked in use")]),
             ("Add a language", [("img", "L3-1.jpg", "English variants first")], [("scr", "lg-add", "The phone's and the region's languages first")]),
+            ("Search finds nothing", [("text", "An empty list")], [("scr", "lg-search-empty", "The key searching with a magnifier; the query in the message; no button: the user is already typing")]),
             ("After adding Hindi", [("img", "L2-1.jpg", "English is gone")], [("scr", "lg-added", "English stays the default; Undo")]),
             ("Language details", [("img", "L4-1.jpg", "Rows can't be tapped")], [("scr", "lg-details", "Make default, Remove"), ("scr", "lg-remove", "Remove asks first")]),
             ("🌐 key", [("img", "L2-2.jpg", "Opened another keyboard app")], [("scr", "lg-globe", "Cycles SmarType's languages; long-press lists them")]),
@@ -558,7 +560,7 @@ FLOWS = [
         ],
         "compare": [
             ("Home", [("img", "H1-1.jpg", "\"Update SmarType\" and a bright Upgrade")], [("scr", "er-home", "The real reason and what still works; Upgrade hidden")]),
-            ("Premium", [("img", "P1-1.jpg", "\"Sign in…billing catalog\" and Retry")], [("scr", "er-premium", "Prices shown as unavailable; no Retry")]),
+            ("Premium", [("img", "P1-1.jpg", "\"Sign in…billing catalog\" and Retry")], [("scr", "er-premium", "The Premium hero (art_premium); prices shown as unavailable; no Retry")]),
             ("AI panel", [("img", "A1-1.jpg", "The same error three times")], [("scr", "er-ai", "One message; no action that can't work")]),
             ("After signing in", [("img", "V2-1.jpg", "\"Sign in before restoring\" on every launch")], [("scr", "er-signedin", "\"Signed in as …\"")]),
         ],
@@ -604,6 +606,7 @@ FLOWS = [
         "compare": [
             ("Settings", [("img", "S1-1.jpg", "A tip covers two rows; rows without summaries")], [("scr", "st-settings", "Search, a summary on every row, the tip inline under its group")]),
             ("Writing styles", [("img", "AS3-1.jpg", "23 chips; the 4-pin limit isn't explained")], [("scr", "st-styles", "The 4 pinned styles first, with drag handles; the rest grouped with a pin")]),
+            ("Your styles, none yet", [("text", "A plain card: \"No custom styles created yet\"")], [("scr", "st-styles-empty", "The curious key and an empty slot; one line on what a style can be; Create style")]),
             ("Home", [("img", "H2-1.jpg", "Every row a card; AI Settings twice; no plan details")], [("scr", "st-home", "Plan card with renewal and Manage; a try field; grouped rows; help at the bottom")]),
         ],
         "changes": [

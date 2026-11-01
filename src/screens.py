@@ -5,6 +5,11 @@ from components import (abtn, appbar, banner, chat, chips, device, dock, esc, gr
 TYPED = "im running late for the meet sorry"
 
 
+def _illo(name, dp):
+    from illustration_set import SET
+    return {n: f for n, t, w, d, f, k in SET}[name](dp)
+
+
 def _kb(panel_html=None, sugg=None, **kk):
     """The keyboard: smartbar, suggestion row and keys; an open panel replaces all three."""
     if panel_html:
@@ -175,7 +180,7 @@ S["lg-hindi-later"] = device(chat(text="kal milte") + ime(smartbar(annotate=Fals
 S["er-home"] = device(appbar("SmarType", back=False) + '<div class="s-scroll">' +
                       f'<div class="s-card"{ann("Plan card", "Hero card: radius 16 dp; padding 16 dp", "surface-container")}><h5>Free plan</h5><p>3 of 5 free AI tries left.</p></div>' +
                       banner("warn", "Premium isn't available on this phone right now", "Google Play couldn't confirm this device. Typing, themes and your settings still work.", act="Learn more") + "</div>", app=True)
-S["er-premium"] = device(appbar("Premium") + '<div class="s-scroll">' +
+S["er-premium"] = device(appbar("Premium") + '<div class="s-scroll">' + '<div class="s-art" style="margin:0 auto 8px"' + ann("Hero", "200 dp illustration (art_premium)") + '>' + _illo("art_premium", 200) + '</div>' +
                          banner("warn", "Plans can't load on this phone", "Google Play couldn't confirm this device, so purchases are turned off. Trying again won't fix this.", act="What can I do?") +
                          '<div class="s-card"><h5>Monthly · ₹120</h5><p>Unavailable on this phone</p></div><div class="s-card"><h5>Yearly · ₹999</h5><p>Unavailable on this phone</p></div></div>', app=True)
 S["er-ai"] = device(chat(text="im running late") + _kb(panel_html=panel(
@@ -342,3 +347,20 @@ S["tb-more"] = _focus(S["kb-more"], [
     (".s-phead .s-btn", "1"), (".s-phead .t", "2"), (".s-phead .s-ptext", "3"), (".s-more > .g", "4"),
     (".s-more .s-tile:nth-child(1)", "5"), (".s-more .s-tile:nth-child(2)", "6"), (".s-more .s-tile:nth-child(3)", "7"), (".s-more .s-tile:nth-child(4)", "8"),
 ])
+
+
+# ---------- empty states and heroes with the illustration set ----------
+def _empty(name, title, msg, action=None, inline=False):
+    btn = abtn(action, "ton", "m") if action else ""
+    return (f'<div class="s-empty{" inline" if inline else ""}"' + ann("Empty state", "Art 160 dp; title headline-small 24/32; message body-medium 14/20; one tonal button, or none", "on-surface; on-surface-variant") +
+            f'>{_illo(name, 160)}<h4>{esc(title)}</h4><p>{esc(msg)}</p>{btn}</div>')
+
+
+S["nt-app-empty"] = device(appbar("Notes") + _empty("art_empty_notes", "No notes yet", "Notes you write on the keyboard show up here.", "New note"), app=True)
+S["lg-search-empty"] = device(appbar("Add language") + '<div class="s-scroll" style="display:flex;flex-direction:column">' +
+                              f'<div class="s-search">{ic("search")}<span style="color:var(--on-surface)">klingon</span></div>' +
+                              _empty("art_empty_search", "No languages found", "Nothing matches \u201cklingon\u201d. Try another spelling, or the language\u2019s own name.") + "</div>", app=True)
+S["st-styles-empty"] = device(appbar("Writing styles") + '<div class="s-scroll">' +
+                              '<div class="s-sech">On your keyboard · 4 of 4</div>' + group(lrow("Polite", "Pinned", ic("drag_indicator")), lrow("Professional", "Pinned", ic("drag_indicator")), annotate=False) +
+                              '<div class="s-sech">Your styles</div>' +
+                              _empty("art_empty_styles", "No styles of your own yet", "Make one for how you write: a tone, a sign-off, a format.", "Create style", inline=True) + "</div>", app=True)

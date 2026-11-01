@@ -90,7 +90,7 @@ EDGES = {
         ("Old clips", "Unpinned clips follow the existing clean-up setting; pinned clips stay."),
     ],
     "notes": [
-        ("No notes yet", "\"Your notes show up here\" with New note."),
+        ("No notes yet", "In the app: the empty state with the art (art_empty_notes) and New note. In the keyboard's Notes panel: an icon and \"Your notes show up here\", no art."),
         ("The \"display over other apps\" permission isn't granted", "First time: a short explanation and Allow. If refused, the note opens in the SmarType app instead."),
         ("Nothing copied", "No Paste chip."),
         ("The copied text is a password or other sensitive clip", "No Paste chip."),
@@ -108,7 +108,7 @@ EDGES = {
     "languages": [
         ("Remove the default language", "The next language becomes the default."),
         ("Only one language", "Remove isn't offered; the 🌐 key shows the emoji key instead."),
-        ("Search finds nothing", "Empty state \"No languages found\" with the search term."),
+        ("Search finds nothing", "Empty state with art_empty_search: \"No languages found\" and the search term; no button."),
         ("Five or more languages", "🌐 cycles through all; the long-press list scrolls."),
         ("The phone's language has no layout", "Suggestions come from the region only."),
         ("Existing users with English and other languages", "Nothing changes for them."),

@@ -72,6 +72,7 @@
 <tr>
 <th>Name</th>
 <th>Screen</th>
+<th>Replaces in code</th>
 <th>Moment</th>
 </tr>
 </thead>
@@ -79,61 +80,73 @@
 <tr>
 <td><code>art_welcome</code></td>
 <td>Setup, first page</td>
+<td><code>WelcomeIllustration()</code> in <code>app/onboarding/OnboardingScreen.kt</code></td>
 <td>The S lifts off the logo and becomes the first letter; the key watches the message, spots "runing", throws the spark, cheers at "running"</td>
 </tr>
 <tr>
 <td><code>art_signin</code></td>
 <td>Setup, sign in</td>
+<td>The plain mark at the top of <code>app/auth/AuthScreen.kt</code></td>
 <td>Three free tries pop out of a little box; the key watches, then cheers</td>
 </tr>
 <tr>
 <td><code>art_done</code></td>
 <td>Setup, You're all set</td>
+<td>New (the setup's last page)</td>
 <td>The key hops; a check pops; confetti falls</td>
 </tr>
 <tr>
 <td><code>art_premium</code></td>
 <td>Premium</td>
+<td>Top of <code>app/ui/SubscriptionScreen.kt</code></td>
 <td>The key on a stage, sparks orbiting</td>
 </tr>
 <tr>
 <td><code>art_ai</code></td>
 <td>SmarType AI</td>
+<td>The gradient medallion in <code>app/settings/ai/SmarTypeAiScreen.kt</code></td>
 <td>Messy lines snap into a neat card as the key focuses</td>
 </tr>
 <tr>
 <td><code>art_empty_notes</code></td>
-<td>Notes</td>
+<td>Notes in the app, no notes</td>
+<td>Quick Notes "Saved notes" empty card</td>
 <td>A blank note with a blinking caret; the key watches</td>
 </tr>
 <tr>
 <td><code>art_empty_styles</code></td>
-<td>Writing styles</td>
+<td>Writing styles, none of your own</td>
+<td>Writing styles "No custom styles created yet" card</td>
 <td>Two style chips and an empty slot with a plus; the key is curious</td>
 </tr>
 <tr>
 <td><code>art_empty_search</code></td>
 <td>Add language, no results</td>
+<td><code>SmarTypeEmptyState</code> in <code>AddKeyboardScreen.kt</code></td>
 <td>A magnifier sweeps; a question mark pops</td>
 </tr>
 <tr>
 <td><code>art_empty_languages</code></td>
-<td>Keyboard languages</td>
-<td>A globe turns; letters in three scripts pop out</td>
+<td>Keyboard languages, none</td>
+<td><code>SmarTypeEmptyState</code> in <code>KeyboardLanguagesScreen.kt</code></td>
+<td>A globe turns; letters in three scripts pop out. With the new Languages flow the list is never empty (the language in use is always saved), so this is a fallback only</td>
 </tr>
 <tr>
 <td><code>art_empty_themes</code></td>
-<td>Themes</td>
+<td>Themes, no custom themes</td>
+<td>Custom themes list (<code>settings__custom_theme__list_empty</code>)</td>
 <td>Swatches circle the key and tint its face</td>
 </tr>
 <tr>
 <td><code>art_empty_dictionary</code></td>
-<td>User dictionary</td>
+<td>User dictionary, empty</td>
+<td><code>settings__udm__no_words_in_dictionary</code></td>
 <td>The key naps against an empty book</td>
 </tr>
 <tr>
 <td><code>art_extension</code></td>
 <td>Extension not found</td>
+<td><code>SmarTypeEmptyState</code> in <code>app/ext/ExtensionNotFoundScreen.kt</code></td>
 <td>A puzzle with a missing piece; the key is puzzled</td>
 </tr>
 </tbody>

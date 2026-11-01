@@ -318,3 +318,10 @@
 /* TalkBack focus order: numbered markers drawn on the spec screens by spec.js (not part of the UI). */
 .s-dev .s-fo { position: absolute; z-index: 15; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; transform: translate(-11px, -11px);
   background: #c2185b; color: #fff; font: 700 10.5px/18px var(--font-sans); text-align: center; box-shadow: 0 0 0 2px #fff; pointer-events: none; }
+
+/* Empty state (EmptyState): art 160 dp, title, one line, at most one tonal button; centred in the empty area. */
+.s-empty { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px 32px 40px; }
+.s-empty svg { display: block; }
+.s-empty h4 { margin: 16px 0 0; font: 500 24px/32px var(--font-sans); color: var(--on-surface); }
+.s-empty p { margin: 8px 0 20px; font: 400 14px/20px var(--font-sans); color: var(--on-surface-variant); max-width: 260px; }
+.s-empty.inline { flex: 0 0 auto; padding: 8px 32px 24px; }

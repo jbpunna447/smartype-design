@@ -25,20 +25,20 @@ One character across the app: the SmarType key, alive. It comes from the logo (t
 
 Heroes are drawn for 200 dp, empty states for 160 dp. See the Illustrations page for each one animated, on light and dark, and `assets/illustrations/README.md` for the files.
 
-| Name | Screen | Moment |
-| --- | --- | --- |
-| `art_welcome` | Setup, first page | The S lifts off the logo and becomes the first letter; the key watches the message, spots "runing", throws the spark, cheers at "running" |
-| `art_signin` | Setup, sign in | Three free tries pop out of a little box; the key watches, then cheers |
-| `art_done` | Setup, You're all set | The key hops; a check pops; confetti falls |
-| `art_premium` | Premium | The key on a stage, sparks orbiting |
-| `art_ai` | SmarType AI | Messy lines snap into a neat card as the key focuses |
-| `art_empty_notes` | Notes | A blank note with a blinking caret; the key watches |
-| `art_empty_styles` | Writing styles | Two style chips and an empty slot with a plus; the key is curious |
-| `art_empty_search` | Add language, no results | A magnifier sweeps; a question mark pops |
-| `art_empty_languages` | Keyboard languages | A globe turns; letters in three scripts pop out |
-| `art_empty_themes` | Themes | Swatches circle the key and tint its face |
-| `art_empty_dictionary` | User dictionary | The key naps against an empty book |
-| `art_extension` | Extension not found | A puzzle with a missing piece; the key is puzzled |
+| Name | Screen | Replaces in code | Moment |
+| --- | --- | --- | --- |
+| `art_welcome` | Setup, first page | `WelcomeIllustration()` in `app/onboarding/OnboardingScreen.kt` | The S lifts off the logo and becomes the first letter; the key watches the message, spots "runing", throws the spark, cheers at "running" |
+| `art_signin` | Setup, sign in | The plain mark at the top of `app/auth/AuthScreen.kt` | Three free tries pop out of a little box; the key watches, then cheers |
+| `art_done` | Setup, You're all set | New (the setup's last page) | The key hops; a check pops; confetti falls |
+| `art_premium` | Premium | Top of `app/ui/SubscriptionScreen.kt` | The key on a stage, sparks orbiting |
+| `art_ai` | SmarType AI | The gradient medallion in `app/settings/ai/SmarTypeAiScreen.kt` | Messy lines snap into a neat card as the key focuses |
+| `art_empty_notes` | Notes in the app, no notes | Quick Notes "Saved notes" empty card | A blank note with a blinking caret; the key watches |
+| `art_empty_styles` | Writing styles, none of your own | Writing styles "No custom styles created yet" card | Two style chips and an empty slot with a plus; the key is curious |
+| `art_empty_search` | Add language, no results | `SmarTypeEmptyState` in `AddKeyboardScreen.kt` | A magnifier sweeps; a question mark pops |
+| `art_empty_languages` | Keyboard languages, none | `SmarTypeEmptyState` in `KeyboardLanguagesScreen.kt` | A globe turns; letters in three scripts pop out. With the new Languages flow the list is never empty (the language in use is always saved), so this is a fallback only |
+| `art_empty_themes` | Themes, no custom themes | Custom themes list (`settings__custom_theme__list_empty`) | Swatches circle the key and tint its face |
+| `art_empty_dictionary` | User dictionary, empty | `settings__udm__no_words_in_dictionary` | The key naps against an empty book |
+| `art_extension` | Extension not found | `SmarTypeEmptyState` in `app/ext/ExtensionNotFoundScreen.kt` | A puzzle with a missing piece; the key is puzzled |
 
 ## Motion
 
