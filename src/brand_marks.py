@@ -140,15 +140,17 @@ def _sfont(key, cx, cy, h, fill):
     return f'<path fill="{fill}" transform="translate({cx - w * k / 2:.2f} {cy - h / 2:.2f}) scale({k:.5f})" d="{d}"/>'
 
 
-def _voice_mask(gid, cx, cy, h, style):
-    """Voice variants: 'bars' cuts the whole lower half of the S into a level meter; 'fade' cuts only its left end,
-    with gaps that widen towards the tail, like sound trailing off."""
+def _voice_cuts(cx, cy, h, style, fill="#000"):
+    """Voice variants: 'bars' cuts the whole lower half of the S into a level meter; 'fade' (the logo) cuts only its
+    tail, with gaps that widen towards the end, like sound trailing off."""
     w = h * .75
     if style == "bars":
-        cuts = "".join(f'<rect x="{cx - w / 2 + i * 2.1:.2f}" y="{cy + h * .04:.2f}" width=".75" height="{h / 2:.2f}" fill="#000"/>' for i in range(11))
-    else:
-        cuts = "".join(f'<rect x="{cx - w / 2 + 6.6 - i * 2.2:.2f}" y="{cy + h * .12:.2f}" width="{.5 + i * .3:.2f}" height="{h / 2:.2f}" fill="#000"/>' for i in range(4))
-    return f'<mask id="{gid}v"><rect width="108" height="108" fill="#fff"/>{cuts}</mask>'
+        return "".join(f'<rect x="{cx - w / 2 + i * 2.1:.2f}" y="{cy + h * .04:.2f}" width=".75" height="{h / 2:.2f}" fill="{fill}"/>' for i in range(11))
+    return "".join(f'<rect x="{cx - w / 2 + 6.6 - i * 2.2:.2f}" y="{cy + h * .12:.2f}" width="{.5 + i * .3:.2f}" height="{h / 2:.2f}" fill="{fill}"/>' for i in range(4))
+
+
+def _voice_mask(gid, cx, cy, h, style):
+    return f'<mask id="{gid}v"><rect width="108" height="108" fill="#fff"/>{_voice_cuts(cx, cy, h, style)}</mask>'
 
 
 def _keyfont(key, spark_fill=None, voice=False):
@@ -171,12 +173,22 @@ def _keyfont_mono(key):
 
 
 def _keyai(spark_fill):
+    """The chosen logo: the key, the S with its tail fading into sound, and the spark."""
     def fg(gid):
-        return _keycap(gid) + _s(KS_CX, KS_CY, KS_H, INK) + _spark(spark_fill, gid)
+        return (_keycap(gid) + _voice_mask(gid, KS_CX, KS_CY, KS_H, "fade") +
+                f'<g mask="url(#{gid}v)">' + _s(KS_CX, KS_CY, KS_H, INK) + "</g>" + _spark(spark_fill, gid))
     return fg
 
 
 def keyai_mono(gid):
+    """Themed icon: the key's silhouette with the S, its voice cuts and the spark cut out."""
+    return ('<mask id="%sm"><rect width="108" height="108" fill="#000"/><rect x="31" y="29" width="46" height="48.5" rx="11" fill="#fff"/>' % gid +
+            _s(KS_CX, KS_CY, KS_H, "#000") + _voice_cuts(KS_CX, KS_CY, KS_H, "fade", "#fff") + _spark("#000") +
+            '</mask><rect width="108" height="108" fill="MONO" mask="url(#%sm)"/>' % gid)
+
+
+def keyai_mono_solid(gid):
+    """Status-bar icon (24 dp): the solid S, since the voice cuts vanish at that size."""
     return ('<mask id="%sm"><rect width="108" height="108" fill="#000"/><rect x="31" y="29" width="46" height="48.5" rx="11" fill="#fff"/>' % gid +
             _s(KS_CX, KS_CY, KS_H, "#000") + _spark("#000") + '</mask><rect width="108" height="108" fill="MONO" mask="url(#%sm)"/>' % gid)
 
@@ -221,7 +233,7 @@ DIRECTIONS = {
     "keyai_vivid": ("Vivid", _bg("vivid", False), _keyai("gradient"), keyai_mono),
     "keyai_deep": ("Deep", _bg("deep", False), _keyai("gradient"), keyai_mono),
     "f650": ("Google Sans Flex S · 650 round", _bg("vivid", True), _keyfont("w650r100"), _keyfont_mono("w650r100")),
-    "f700": ("Google Sans Flex S · 700 round", _bg("vivid", True), _keyfont("w700r100"), _keyfont_mono("w700r100")),
+    "f700": ("Google Sans Flex S · 700 round, solid", _bg("vivid", True), _keyfont("w700r100"), _keyfont_mono("w700r100")),
     "f800": ("Google Sans Flex S · 800 round", _bg("vivid", True), _keyfont("w800r100"), _keyfont_mono("w800r100")),
     "f700sq": ("Google Sans Flex S · 700 square", _bg("vivid", True), _keyfont("w700r0"), _keyfont_mono("w700r0")),
     "f700bars": ("700 round, voice bars", _bg("vivid", True), _keyfont("w700r100", voice="bars"), _keyfont_mono("w700r100")),
@@ -258,5 +270,6 @@ def notification(key, size=24, color="currentColor"):
     """The status-bar icon: the monochrome layer alone, cropped to the safe zone."""
     _n[0] += 1
     gid = f"n{key}{_n[0]}"
+    mono = keyai_mono_solid if key.startswith("keyai") else DIRECTIONS[key][3]
     return (f'<svg width="{size}" height="{size}" viewBox="21 21 66 66" aria-hidden="true">' +
-            DIRECTIONS[key][3](gid).replace("MONO", color) + "</svg>")
+            mono(gid).replace("MONO", color) + "</svg>")

@@ -70,12 +70,12 @@ def _s_compare():
             _fig(_glyph_svg("w700r100"), "<b>Chosen: Google Sans Flex, weight 700, roundness 100.</b> A professionally drawn S: the spine runs diagonally and eases into each bowl, the top bowl is smaller (balanced by the spark), and the round ends match the key. Converted to a vector path.") + "</div>")
     weights = ('<p style="margin-top:18px">Other settings of the same font, converted the same way:</p><div class="bk-row">' + "".join(
         f'<div class="bk-sz">{icon(k, 104, "circle")}{icon(k, 48, "circle")}<span>{lbl}</span></div>' for k, lbl in
-        [("f650", "650 round"), ("keyai", "700 round (chosen)"), ("f800", "800 round"), ("f700sq", "700 square ends")]) + "</div>")
-    voice = ('<h3 style="margin-top:22px">A voice version?</h3><div class="bk-row">' + "".join(
+        [("f650", "650 round"), ("f700", "700 round"), ("f800", "800 round"), ("f700sq", "700 square ends")]) + "</div>")
+    voice = ('<h3 style="margin-top:22px">The voice fade</h3><div class="bk-row">' + "".join(
         f'<div class="bk-sz">{icon(k, 104, "circle")}{icon(k, 48, "circle")}<span>{lbl}</span></div>' for k, lbl in
-        [("f700fade", "Tail fades into sound"), ("f700bars", "Lower half as a level meter")]) + "</div>"
-        '<p>Both say voice at large sizes, but at 48 px the cuts turn into grey texture, and the key and spark already carry two ideas. '
-        'Recommendation: keep the solid S in the icon, and use the fading bars as motion: the S\'s tail breaking into sound in the splash, the voice bar and on the website.</p>')
+        [("keyai", "Tail fades into sound (chosen)"), ("f700bars", "Lower half as a level meter"), ("f700", "Solid")]) + "</div>"
+        '<p>Chosen: the S\'s tail breaks into four thinning bars, like sound trailing off, so the mark says typing, voice and AI. '
+        'The cuts read from 48 px up; the 24 dp status-bar icon uses the solid S, where the cuts would vanish. In motion, the bars can pulse in the splash and the voice bar.</p>')
     return figs + weights + voice
 
 
@@ -101,9 +101,9 @@ def brand_body(root):
     sparks = (f'<div class="bk-sparks"><div>{STAR.format(s=56, c=SEAGLASS)}<span>App icon star</span></div><div>{AI_LOGO.format(s=56)}<span>AI logo</span></div>'
               f'<div>{SPARK.format(s=56, c="#0b727b")}<span>Smartbar spark</span></div><div><img src="{root}assets/art/logo.png" alt="" width="56" height="56" style="border-radius:12px"><span>Keycap glow star</span></div></div>')
     dirs = (_direction("keyai", "A key: the S is its legend, the spark is its second function.",
-                       "A white keycap with a thin light grey lip on a vivid blue → cyan → mint gradient with a soft light from the top left. On real keys the small symbol in the top corner is what a long-press gives you; here it's the AI spark, in a deeper version of the background's gradient, up in the key's top-right corner, so the icon says \"keyboard with AI built in\" in a keyboard's own language.",
-                       ["Says \"keyboard\" at any size, and \"AI\" from 48 px up", "The spark is part of the key, not a sticker: different from the floating sparkles other AI apps use", "Written backwards, the S ends at its top tip and flows on into the spark: one movement, typing becoming AI", "Simple vector; the themed icon is the key's silhouette with the S and spark cut out"],
-                       ["Below 32 px the spark becomes a dot; the S and the key still read", "Teal backgrounds are common for productivity apps"], pick=True) +
+                       "A white keycap with a thin light grey lip; the S (Google Sans Flex 700, round) has a tail that fades into sound on a vivid blue → cyan → mint gradient with a soft light from the top left. On real keys the small symbol in the top corner is what a long-press gives you; here it's the AI spark, in a deeper version of the background's gradient, up in the key's top-right corner, so the icon says \"keyboard with AI built in\" in a keyboard's own language.",
+                       ["Says \"keyboard\" at any size, and \"AI\" from 48 px up", "The spark is part of the key, not a sticker: different from the floating sparkles other AI apps use", "Written backwards, the S ends at its top tip and flows on into the spark: one movement, typing becoming AI", "The S's tail fades into sound: typing, voice and AI in one mark", "Simple vector; the themed icon is the key's silhouette with the S, its voice cuts and the spark cut out"],
+                       ["Below 32 px the spark becomes a dot and the voice cuts close up; the status-bar icon uses the solid S", "Teal backgrounds are common for productivity apps"], pick=True) +
             _direction("caret", "The S, just typed: a text cursor after it.",
                        "Keeps today's graphite and white S, and replaces the floating star with a text cursor in the brand gradient.",
                        ["Keeps what people may already know from today's icon", "The cursor says typing; it can blink in the splash and on the website", "Strong contrast, reads well in a dark row of icons"],
@@ -158,7 +158,7 @@ def brand_body(root):
         '<tr><td>Key depth</td><td>Lip 2.5 units of 108 (about 5% of the key), light grey #C3D5DA</td></tr>'
         '<tr><td>Icon background</td><td>Chosen: vivid gradient #1E9BD7 → #22C3CF → #4BDCA4 with a soft light</td></tr>'
         '<tr><td>AI buttons in the app</td><td>Move to the brand family: #2AA8E0 → #4BDCA4 with Ink (updated in tokens.json)</td></tr>'
-        '<tr><td>The S</td><td>Google Sans Flex S, weight 700, roundness 100, as a vector path; solid in the icon, the voice fade only in motion</td></tr>'
+        '<tr><td>The S</td><td>Chosen: Google Sans Flex S, weight 700, roundness 100, as a vector path, with the voice fade on its tail; solid S in the 24 dp status-bar icon</td></tr>'
         '<tr><td>Wordmark: plain or the T in the gradient</td><td>The gradient T for the website and store art; plain for small sizes and in the app</td></tr>'
         '<tr><td>One spark, AI only</td><td>Yes: the smartbar spark, on the logo\'s key and on AI actions; nothing else uses a spark</td></tr>'
         '<tr><td>Colours</td><td>Keep the cyan–teal family; drop the earlier move to blue</td></tr>'
