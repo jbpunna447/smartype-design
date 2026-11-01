@@ -141,3 +141,9 @@ details.dev h3 { margin-top: 24px; }
   .bk-hero svg { width: 160px; height: 160px; }
   .bk-pc { grid-template-columns: 1fr; }
 }
+.bk-strip { display: flex; flex-wrap: wrap; gap: 14px; align-items: stretch; }
+.bk-strip > div { background: var(--surface-container-low); border-radius: 14px; padding: 14px; min-width: 130px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--on-surface-variant); }
+.bk-aib { width: 36px; height: 36px; border-radius: 18px; display: grid; place-items: center; background: linear-gradient(135deg, var(--ai-gradient-start), var(--ai-gradient-end)); color: var(--on-ai-gradient); }
+.bk-chip { height: 32px; border-radius: 12px; padding: 0 12px; display: inline-flex; align-items: center; gap: 6px; font: 500 13px/1 var(--font-sans); background: linear-gradient(90deg, var(--ai-gradient-start), var(--ai-gradient-end)); color: var(--on-ai-gradient); }
+.bk-chip svg { width: 16px; height: 16px; }
+.bk-pill { height: 40px; border-radius: 14px; padding: 0 22px; display: grid; place-items: center; font: 500 14px/1 var(--font-sans); background: linear-gradient(90deg, var(--ai-gradient-start), var(--ai-gradient-end)); color: var(--on-ai-gradient); }

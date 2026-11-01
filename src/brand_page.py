@@ -1,7 +1,7 @@
 """The brand review page: today's marks, three logo directions, one spark, colour and the wordmark."""
 import html
 
-from brand_marks import DIRECTIONS, GLACIER, GRAPHITE, INK, PORCELAIN, SEAGLASS, icon, notification
+from brand_marks import DIRECTIONS, GLACIER, GRAPHITE, INK, PORCELAIN, S2_PATH, S2_WEIGHT, S_PATH, SEAGLASS, SPARK_PATH, icon, notification
 
 E = html.escape
 
@@ -51,6 +51,33 @@ def _wordmark(tshare=False, size=44, color=INK):
     return f'<span class="bk-wm" style="font-size:{size}px;color:{color}">Smar{t}ype</span>'
 
 
+def _s_compare():
+    old = (f'<svg width="200" height="200" style="background:#fff;border-radius:16px" viewBox="0 8 85 90" aria-label="Today\'s S over itself turned 180 degrees"><path d="{S_PATH}" fill="{INK}"/>'
+           f'<path d="{S_PATH}" fill="none" stroke="#e5395b" stroke-width=".7" transform="rotate(180 42.5 53.5)"/></svg>')
+    new = (f'<svg width="200" height="200" style="background:#fff;border-radius:16px" viewBox="5 5 90 90" aria-label="New S with its two construction ellipses">'
+           '<ellipse cx="50" cy="32" rx="19" ry="15" fill="none" stroke="#e5395b" stroke-width=".6" stroke-dasharray="1.5 1"/>'
+           '<ellipse cx="50" cy="65" rx="22" ry="18" fill="none" stroke="#e5395b" stroke-width=".6" stroke-dasharray="1.5 1"/>'
+           f'<path d="{S2_PATH}" fill="none" stroke="{INK}" stroke-width="{S2_WEIGHT}" stroke-linecap="round"/>'
+           f'<path d="{S2_PATH}" fill="none" stroke="#fff" stroke-width=".5"/></svg>')
+    return ('<div class="bk-figs">' + _fig(old, "<b>Today.</b> In red, the same S turned 180°: the top bowl is smaller and sits further left, "
+                                            "the two ends are cut at different angles, and short straight joins leave small kinks in the spine.") +
+            _fig(new, "<b>New.</b> Each bowl is an even ellipse (red), so the curves are smooth and the stroke is one even weight with round ends. "
+                      "The top bowl is deliberately smaller than the bottom one, as in the original S: it keeps the S from looking top-heavy and leaves room for the spark.") + "</div>")
+
+
+def _ai_strip():
+    sp = f'<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="{SPARK_PATH}"/></svg>'
+    return ('<div class="bk-strip">'
+            f'<div>{icon("keyai", 72, "squircle")}<span>App icon</span></div>'
+            f'<div><span class="bk-aib">{sp}</span><span>Smartbar AI button</span></div>'
+            f'<div><span class="bk-chip">{sp}Fix grammar</span><span>Selected style</span></div>'
+            '<div><span class="bk-pill">Replace</span><span>Main AI action</span></div>'
+            '<div><span class="tag new">Premium</span><span>AI and Premium tags</span></div></div>'
+            '<p>One spark shape everywhere (the path in spark.svg) and one blue → mint family. In the app, AI actions use '
+            '<code>ai-gradient-start #2AA8E0</code> → <code>ai-gradient-end #4BDCA4</code> with Ink on top (5.1:1 and 7.9:1). '
+            'On the white key, the spark uses a deeper version of the same colours so it stays visible. The three-star circle (ic_ai_logo) is retired.</p>')
+
+
 def brand_body(root):
     keycap = f'<img src="{root}assets/art/logo.png" alt="3D keycap logo from the earlier kit" width="140" height="140" style="border-radius:28px">'
     today = (_fig(icon("today", 140, "circle"), "<b>App icon today.</b> White S and a small star on graphite. Clean, but a plain S in a circle is a common look, nothing says keyboard, and the star disappears below 48 px.") +
@@ -96,6 +123,7 @@ def brand_body(root):
         '<tr><td>Splash, website, store art</td><td>Large</td><td>Room for motion (a key press, a blinking cursor)</td></tr>'
         '</tbody></table></div>'
         '<h2>Three directions</h2><p>Same colours and the same S for all three, so the comparison is about the idea. Shown at real launcher sizes, as themed icons and in the status bar.</p>' + dirs +
+        '<h2>The S</h2>' + _s_compare() +
         '<h2>The spark on the key</h2>' + variants +
         '<h2>The background gradient</h2><div class="bk-row">' + "".join(
             f'<div class="bk-sz">{icon(k, 112, "circle")}{icon(k, 48, "circle")}<span>{lbl}</span></div>' for k, lbl in
@@ -106,16 +134,17 @@ def brand_body(root):
         '<tr><td>Light: radial, centre at the top left of the visible icon, radius 64% of the icon</td><td><code>#FFFFFF</code> at 45% → 0%</td></tr>'
         '</tbody></table></div>'
         '<div class="note" style="margin-top:16px"><b>Everything is vector.</b> The key, its lip, the S, the spark and the gradients are vector paths (SVG here; Android vector drawables in the app), so they stay sharp at every size. The S is the drawn monogram from today\'s icon (ic_smartype_foreground.xml), not a font. Only the 512 px Play Store icon and store art are exported as PNG, from these vectors. The 3D keycap from the earlier kit and the illustrations are the only raster art; the keycap is retired.</div>'
-        '<h2>One spark for AI</h2>' + sparks +
+        '<h2>One spark for AI</h2><p>Today: four different stars.</p>' + sparks + '<p style="margin-top:18px">New: the same spark and the same colours from the app icon to every AI action.</p>' + _ai_strip() +
         '<p>Keep one spark: the two curved stars already on the smartbar\'s AI buttons. It appears in two places only: as the corner legend on the logo\'s key, and on AI actions in the app (Rewrite, Translate, Format, voice tidy-up, Premium). Retire the three-star circle (ic_ai_logo) and the straight star on today\'s icon, so there is one spark, and it always means AI.</p>'
-        '<h2>Colour</h2><p>Keep the shipped family. The icon, splash and store art use the vivid gradient with light above. Inside the app, the AI buttons keep the lighter Glacier → Seaglass gradient with Ink icons, which reads better at 36 dp; the teal tokens stay as they are.</p>' + colour +
+        '<h2>Colour</h2><p>Keep the shipped family. The icon, splash and store art use the vivid gradient with light above. Inside the app, AI actions move to the same blue → mint family (#2AA8E0 → #4BDCA4) with Ink icons and text; the teal tokens stay as they are.</p>' + colour +
         '<h2>Wordmark</h2><p>Set in Google Sans Flex, the typeface these designs use. The app still bundles DM Sans (res/font), so the switch the earlier kit proposed is part of this decision. The name\'s capital T is shared by \"Smart\" and \"Type\"; colouring it is optional.</p>' + word +
         '<h2>Your call</h2><div class="tbl"><table><thead><tr><th>Decision</th><th>Recommendation</th></tr></thead><tbody>'
         '<tr><td>Logo direction</td><td>A · Keycap with the AI spark</td></tr>'
         '<tr><td>Spark on the key</td><td>Chosen: deeper gradient #1257A8 → #0E8DA6 → #119A76, in the key\'s top-right corner just after the S\'s tip; S in ink</td></tr>'
         '<tr><td>Key depth</td><td>Lip 2.5 units of 108 (about 5% of the key), light grey #C3D5DA</td></tr>'
         '<tr><td>Icon background</td><td>Chosen: vivid gradient #1E9BD7 → #22C3CF → #4BDCA4 with a soft light</td></tr>'
-        '<tr><td>AI buttons in the app</td><td>Keep the lighter Glacier → Seaglass gradient; the vivid one is for the icon and brand art</td></tr>'
+        '<tr><td>AI buttons in the app</td><td>Move to the brand family: #2AA8E0 → #4BDCA4 with Ink (updated in tokens.json)</td></tr>'
+        '<tr><td>The S</td><td>The new S: even, round bowls, a smaller top bowl balanced by the spark, round ends; in the logo, splash and lockup</td></tr>'
         '<tr><td>Wordmark: plain or the T in the gradient</td><td>The gradient T for the website and store art; plain for small sizes and in the app</td></tr>'
         '<tr><td>One spark, AI only</td><td>Yes: the smartbar spark, on the logo\'s key and on AI actions; nothing else uses a spark</td></tr>'
         '<tr><td>Colours</td><td>Keep the cyan–teal family; drop the earlier move to blue</td></tr>'

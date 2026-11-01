@@ -9,19 +9,29 @@ GRAPHITE = "#0D1114"
 GLACIER = "#67CEE5"
 SEAGLASS = "#69D4BD"
 
-# The shipped monogram (ic_smartype_foreground.xml), in its own 0..85 coordinates: x 15..70, y 18..89.
+# The shipped monogram (ic_smartype_foreground.xml), in its own 0..85 coordinates: x 15..70, y 18..89. Only "Today"
+# uses it: it isn't symmetric (smaller, offset top bowl; ends cut at different angles; small flats in the spine).
 S_PATH = ("M62,27 C58,21 51,18 43,18 C29,18 20,26 20,37 C20,48 28,54 42,57 L47,58 C54,60 58,63 58,68 C58,74 52,78 44,78 "
           "C35,78 29,74 26,67 L15,71 C19,82 29,89 44,89 C60,89 70,81 70,68 C70,57 62,51 48,48 L42,47 C35,45 32,42 32,37 "
           "C32,32 36,29 43,29 C49,29 54,32 57,37 Z")
 STAR_PATH = "M74,13 L77,20 L84,23 L77,26 L74,33 L71,26 L64,23 L71,20 Z"
 
 
+# The new S: two evenly round bowls drawn as ellipses, the top one deliberately smaller (rx 19, ry 15 at (50, 32))
+# than the bottom one (rx 22, ry 18 at (50, 65)), as in the original S; the spark fills the space the smaller top
+# leaves. The bowls meet level at (50, 47); each end stops 30° past the side of its bowl. Even stroke, round ends.
+# Box with the stroke: x 21.5..78.5, y 10.5..89.5 (57 × 79), centred on (50, 50).
+S2_PATH = "M66.45,24.50 A19,15 0 1 0 50,47 A22,18 0 1 1 30.95,74.00"
+S2_WEIGHT = 13
+
+
 def _s(cx, cy, h, fill):
-    """The monogram centred on (cx, cy), h units tall."""
-    k = h / 71
-    tx = cx - 42.5 * k
-    ty = cy - 53.5 * k
-    return f'<path fill="{fill}" transform="translate({tx:.2f} {ty:.2f}) scale({k:.4f})" d="{S_PATH}"/>'
+    """The S centred on (cx, cy), h units tall."""
+    k = h / 79
+    tx = cx - 50 * k
+    ty = cy - 50 * k
+    return (f'<path fill="none" stroke="{fill}" stroke-width="{S2_WEIGHT}" stroke-linecap="round" stroke-linejoin="round" '
+            f'transform="translate({tx:.2f} {ty:.2f}) scale({k:.4f})" d="{S2_PATH}"/>')
 
 
 def _grad(gid):
@@ -95,20 +105,11 @@ def key_mono(gid):
             _s(54, 52, 30, "#000") + '</mask><rect width="108" height="108" fill="MONO" mask="url(#%sm)"/>' % gid)
 
 
-# The S and the spark as one group, centred on the key's top face (54, 51). Written backwards, the S ends at its
-# top tip moving right and a little down; the spark's big star sits a short gap further along that line.
+# The S sits a little down-left on the key's top face; the spark sits up in the key's top-right corner, a short gap
+# after the S's top tip (the end of the stroke when the S is written backwards).
 KS_H, KS_K = 29, .7
-_KS = KS_H / 71
-_TIP = (17 * _KS, -21.5 * _KS)          # centre of the S's top tip, relative to the S's centre
-_FLOW = (.89, .45)                      # the stroke's direction at the tip
-_GAP = 2.2
-_R = 7 * KS_K                           # radius of the spark's big star
-_SPARK_DX = _TIP[0] + _FLOW[0] * (_GAP + _R)
-_SPARK_DY = _TIP[1] + _FLOW[1] * (_GAP + _R)
-# Group bounds (S ± 11.2 × 14.5; spark reaches 7.6 right of and 10.4 above its big star) give the centre offset.
-# The owner moved the spark up towards the key's top-right corner; the S shifts down-left to balance it.
 KS_CX, KS_CY = 51, 54
-_SPARK_DX, _SPARK_DY = 14, -14.5
+_SPARK_DX, _SPARK_DY = 13.5, -14
 
 
 def _spark(fill, gid=None):
