@@ -142,11 +142,11 @@ def _sfont(key, cx, cy, h, fill):
 
 def _voice_cuts(cx, cy, h, style, fill="#000"):
     """Voice variants: 'bars' cuts the whole lower half of the S into a level meter; 'fade' (the logo) cuts only its
-    tail, with gaps that widen towards the end, like sound trailing off."""
+    tail into even bars, like a voice level meter (no thinning at the end, per the owner)."""
     w = h * .75
     if style == "bars":
         return "".join(f'<rect x="{cx - w / 2 + i * 2.1:.2f}" y="{cy + h * .04:.2f}" width=".75" height="{h / 2:.2f}" fill="{fill}"/>' for i in range(11))
-    return "".join(f'<rect x="{cx - w / 2 + 6.6 - i * 2.2:.2f}" y="{cy + h * .12:.2f}" width="{.5 + i * .3:.2f}" height="{h / 2:.2f}" fill="{fill}"/>' for i in range(4))
+    return "".join(f'<rect x="{cx - w / 2 + 6.6 - i * 2.2:.2f}" y="{cy + h * .12:.2f}" width=".85" height="{h / 2:.2f}" fill="{fill}"/>' for i in range(4))
 
 
 def _voice_mask(gid, cx, cy, h, style):
