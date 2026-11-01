@@ -61,6 +61,7 @@ BG_STOPS = {
     "soft": [(0, GLACIER), (1, SEAGLASS)],
     "vivid": [(0, "#1E9BD7"), (.5, "#22C3CF"), (1, "#4BDCA4")],
     "deep": [(0, "#1663B8"), (.5, "#1BAFC8"), (1, "#40D9A0")],
+    "spark": [(0, "#1257A8"), (.5, "#0E8DA6"), (1, "#119A76")],
 }
 
 
@@ -79,19 +80,19 @@ def _bg(stops, glow):
 
 
 def _keycap(gid):
-    return (f'<defs><linearGradient id="{gid}k" x1="0" y1="28" x2="0" y2="74" gradientUnits="userSpaceOnUse">'
+    return (f'<defs><linearGradient id="{gid}k" x1="0" y1="29" x2="0" y2="75" gradientUnits="userSpaceOnUse">'
             f'<stop stop-color="#FFFFFF"/><stop offset="1" stop-color="#EDF3F5"/></linearGradient></defs>'
-            f'<rect x="31" y="33" width="46" height="46" rx="11" fill="{LIP}"/>'
-            f'<rect x="31" y="28" width="46" height="46" rx="11" fill="url(#{gid}k)"/>')
+            f'<rect x="31" y="31.5" width="46" height="46" rx="11" fill="{LIP}"/>'
+            f'<rect x="31" y="29" width="46" height="46" rx="11" fill="url(#{gid}k)"/>')
 
 
 def key_fg(gid):
-    return _keycap(gid) + _s(54, 51, 30, INK)
+    return _keycap(gid) + _s(54, 52, 30, INK)
 
 
 def key_mono(gid):
-    return ('<mask id="%sm"><rect width="108" height="108" fill="#000"/><rect x="31" y="28" width="46" height="51" rx="11" fill="#fff"/>' % gid +
-            _s(54, 51, 30, "#000") + '</mask><rect width="108" height="108" fill="MONO" mask="url(#%sm)"/>' % gid)
+    return ('<mask id="%sm"><rect width="108" height="108" fill="#000"/><rect x="31" y="29" width="46" height="48.5" rx="11" fill="#fff"/>' % gid +
+            _s(54, 52, 30, "#000") + '</mask><rect width="108" height="108" fill="MONO" mask="url(#%sm)"/>' % gid)
 
 
 # The S and the spark as one group, centred on the key's top face (54, 51). Written backwards, the S ends at its
@@ -105,9 +106,9 @@ _R = 7 * KS_K                           # radius of the spark's big star
 _SPARK_DX = _TIP[0] + _FLOW[0] * (_GAP + _R)
 _SPARK_DY = _TIP[1] + _FLOW[1] * (_GAP + _R)
 # Group bounds (S ± 11.2 × 14.5; spark reaches 7.6 right of and 10.4 above its big star) give the centre offset.
-_right = _SPARK_DX + 7.6
-KS_CX = 54 - (_right - 11.2) / 2
-KS_CY = 51
+# The owner moved the spark up towards the key's top-right corner; the S shifts down-left to balance it.
+KS_CX, KS_CY = 51, 54
+_SPARK_DX, _SPARK_DY = 14, -14.5
 
 
 def _spark(fill, gid=None):
@@ -118,10 +119,10 @@ def _spark(fill, gid=None):
         return f'<path fill="{fill}" {path}/>'
     # The background's vivid gradient and light, laid over the spark's own box.
     x0, y0, x1, y1 = tx + 3.5 * KS_K, ty + 2 * KS_K, tx + 21.4 * KS_K, ty + 18 * KS_K
-    st = "".join(f'<stop offset="{o}" stop-color="{c}"/>' for o, c in BG_STOPS["vivid"])
+    st = "".join(f'<stop offset="{o}" stop-color="{c}"/>' for o, c in BG_STOPS["spark"])
     return (f'<defs><linearGradient id="{gid}sp" x1="{x0:.2f}" y1="{y0:.2f}" x2="{x1:.2f}" y2="{y1:.2f}" gradientUnits="userSpaceOnUse">{st}</linearGradient>'
             f'<radialGradient id="{gid}spl" cx="{x0:.2f}" cy="{y0:.2f}" r="{(x1 - x0) * .9:.2f}" gradientUnits="userSpaceOnUse">'
-            '<stop stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>'
+            '<stop stop-color="#fff" stop-opacity=".25"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>'
             f'<path fill="url(#{gid}sp)" {path}/><path fill="url(#{gid}spl)" {path}/>')
 
 
@@ -132,7 +133,7 @@ def _keyai(spark_fill):
 
 
 def keyai_mono(gid):
-    return ('<mask id="%sm"><rect width="108" height="108" fill="#000"/><rect x="31" y="28" width="46" height="51" rx="11" fill="#fff"/>' % gid +
+    return ('<mask id="%sm"><rect width="108" height="108" fill="#000"/><rect x="31" y="29" width="46" height="48.5" rx="11" fill="#fff"/>' % gid +
             _s(KS_CX, KS_CY, KS_H, "#000") + _spark("#000") + '</mask><rect width="108" height="108" fill="MONO" mask="url(#%sm)"/>' % gid)
 
 
@@ -159,12 +160,12 @@ def talk_bg(gid):
 
 
 def talk_fg(gid):
-    return f'<path fill="{PORCELAIN}" d="{_BUBBLE}"/>' + _s(54, 51, 30, INK)
+    return f'<path fill="{PORCELAIN}" d="{_BUBBLE}"/>' + _s(54, 52, 30, INK)
 
 
 def talk_mono(gid):
     return ('<mask id="%sm"><rect width="108" height="108" fill="#000"/><path fill="#fff" d="%s"/>' % (gid, _BUBBLE) +
-            _s(54, 51, 30, "#000") + '</mask><rect width="108" height="108" fill="MONO" mask="url(#%sm)"/>' % gid)
+            _s(54, 52, 30, "#000") + '</mask><rect width="108" height="108" fill="MONO" mask="url(#%sm)"/>' % gid)
 
 
 DIRECTIONS = {

@@ -60,7 +60,7 @@ def brand_body(root):
     sparks = (f'<div class="bk-sparks"><div>{STAR.format(s=56, c=SEAGLASS)}<span>App icon star</span></div><div>{AI_LOGO.format(s=56)}<span>AI logo</span></div>'
               f'<div>{SPARK.format(s=56, c="#0b727b")}<span>Smartbar spark</span></div><div><img src="{root}assets/art/logo.png" alt="" width="56" height="56" style="border-radius:12px"><span>Keycap glow star</span></div></div>')
     dirs = (_direction("keyai", "A key: the S is its legend, the spark is its second function.",
-                       "A white keycap with a light grey lip on a vivid blue → cyan → mint gradient with a soft light from the top left. On real keys the small symbol in the top corner is what a long-press gives you; here it's the AI spark, in the same gradient and light as the background, so the icon says \"keyboard with AI built in\" in a keyboard's own language.",
+                       "A white keycap with a thin light grey lip on a vivid blue → cyan → mint gradient with a soft light from the top left. On real keys the small symbol in the top corner is what a long-press gives you; here it's the AI spark, in a deeper version of the background's gradient, up in the key's top-right corner, so the icon says \"keyboard with AI built in\" in a keyboard's own language.",
                        ["Says \"keyboard\" at any size, and \"AI\" from 48 px up", "The spark is part of the key, not a sticker: different from the floating sparkles other AI apps use", "Written backwards, the S ends at its top tip and flows on into the spark: one movement, typing becoming AI", "Simple vector; the themed icon is the key's silhouette with the S and spark cut out"],
                        ["Below 32 px the spark becomes a dot; the S and the key still read", "Teal backgrounds are common for productivity apps"], pick=True) +
             _direction("caret", "The S, just typed: a text cursor after it.",
@@ -74,7 +74,7 @@ def brand_body(root):
     variants = ('<div class="bk-row">' + "".join(
         f'<div class="bk-sz">{icon(k, 96, "circle")}{icon(k, 48, "circle")}<span>{lbl}</span></div>' for k, lbl in
         [("keyai", "Spark in the gradient (chosen)"), ("keyai_teal", "Spark in teal"), ("keyai_ink", "Spark in ink"), ("key", "No spark")]) + "</div>"
-        '<p>The spark takes the background\'s gradient and light, so the key\'s AI legend and the glow around the key are one colour story. At small sizes it reads mostly blue, which keeps it visible on the white key. It sits a short gap after the S\'s top tip, along the direction the stroke ends in. Teal and ink are calmer alternatives; without the spark the icon says nothing about AI.</p>')
+        '<p>The spark uses a deeper version of the background\'s gradient (#1257A8 → #0E8DA6 → #119A76) with a faint light, so it stands out on the white key and still belongs with the glow around it. It sits in the key\'s top-right corner, just after the S\'s top tip. Teal and ink are calmer alternatives; without the spark the icon says nothing about AI.</p>')
     colour = ('<div class="bk-sws">' +
               _swatch("Glacier", GLACIER, "Gradient start: icon background, AI actions") + _swatch("Seaglass", SEAGLASS, "Gradient end") +
               _swatch("Ink", INK, "Text on the gradient; the S on the key") + _swatch("Porcelain", PORCELAIN, "The key; light surfaces") +
@@ -112,7 +112,8 @@ def brand_body(root):
         '<h2>Wordmark</h2><p>Set in Google Sans Flex, the typeface these designs use. The app still bundles DM Sans (res/font), so the switch the earlier kit proposed is part of this decision. The name\'s capital T is shared by \"Smart\" and \"Type\"; colouring it is optional.</p>' + word +
         '<h2>Your call</h2><div class="tbl"><table><thead><tr><th>Decision</th><th>Recommendation</th></tr></thead><tbody>'
         '<tr><td>Logo direction</td><td>A · Keycap with the AI spark</td></tr>'
-        '<tr><td>Spark on the key</td><td>Chosen: the background\'s vivid gradient and light, a short gap after the S\'s top tip, with the S in ink</td></tr>'
+        '<tr><td>Spark on the key</td><td>Chosen: deeper gradient #1257A8 → #0E8DA6 → #119A76, in the key\'s top-right corner just after the S\'s tip; S in ink</td></tr>'
+        '<tr><td>Key depth</td><td>Lip 2.5 units of 108 (about 5% of the key), light grey #C3D5DA</td></tr>'
         '<tr><td>Icon background</td><td>Chosen: vivid gradient #1E9BD7 → #22C3CF → #4BDCA4 with a soft light</td></tr>'
         '<tr><td>AI buttons in the app</td><td>Keep the lighter Glacier → Seaglass gradient; the vivid one is for the icon and brand art</td></tr>'
         '<tr><td>Wordmark: plain or the T in the gradient</td><td>The gradient T for the website and store art; plain for small sizes and in the app</td></tr>'
