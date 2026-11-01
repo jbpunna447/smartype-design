@@ -35,6 +35,9 @@ SPARK_DX, SPARK_DY = 13.5, -14
 # units is left along the S's outline so the letter keeps its shape.
 EDGE = .9
 SLOT = 1.1
+# Themed and status-bar icons: the S cut out of the key is thinned by this much on each side, because a light shape
+# on a dark one looks bolder than the same shape dark on light.
+MONO_THIN = .4
 
 
 def _stops(stops):
@@ -64,6 +67,15 @@ def _glyph(cx, cy, h, fill):
     w, gh, d = GLYPH_S[S_KEY]
     k = h / gh
     return f'<path fill="{fill}" transform="translate({cx - w * k / 2:.2f} {cy - h / 2:.2f}) scale({k:.5f})" d="{d}"/>'
+
+
+def _glyph_edge(amount, colour):
+    """A stroke of `amount` on each side of the S's outline: drawn in white inside a mask, it thins the S."""
+    from brand_glyphs import GLYPH_S
+    w, gh, d = GLYPH_S[S_KEY]
+    k = S_H / gh
+    return (f'<path fill="none" stroke="{colour}" stroke-width="{2 * amount / k:.1f}" stroke-linejoin="round" '
+            f'transform="translate({S_CX - w * k / 2:.2f} {S_CY - S_H / 2:.2f}) scale({k:.5f})" d="{d}"/>')
 
 
 def _inner_mask(gid):
@@ -116,7 +128,7 @@ def monochrome(gid, voice=True):
     bars = f'<g mask="url(#{gid}i)">{_bars("#fff")}</g>' if voice else ""
     return (_inner_mask(gid) +
             f'<mask id="{gid}m"><rect width="108" height="108" fill="#000"/><rect x="31" y="29" width="46" height="48.5" rx="11" fill="#fff"/>' +
-            _glyph(S_CX, S_CY, S_H, "#000") + bars + _key_spark("#000") +
+            _glyph(S_CX, S_CY, S_H, "#000") + _glyph_edge(MONO_THIN, "#fff") + bars + _key_spark("#000") +
             f'</mask><rect width="108" height="108" fill="MONO" mask="url(#{gid}m)"/>')
 
 

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SmarType app icon: the key, the S with voice bars, the spark. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:fillColor="#C3D5DA" android:pathData="M42 31.5H66C72.08 31.5 77 36.42 77 42.5V66.5C77 72.58 72.08 77.5 66 77.5H42C35.92 77.5 31 72.58 31 66.5V42.5C31 36.42 35.92 31.5 42 31.5Z"/>
+    <path android:pathData="M42 29H66C72.08 29 77 33.92 77 40V64C77 70.08 72.08 75 66 75H42C35.92 75 31 70.08 31 64V40C31 33.92 35.92 29 42 29Z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:type="linear" android:startX="54.00" android:startY="29.00" android:endX="54.00" android:endY="75.00">
+                <item android:offset="0" android:color="#FFFFFF"/>
+                <item android:offset="1" android:color="#EDF3F5"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path android:fillColor="#08323B" android:pathData="M51.29 68.5Q46.9 68.5 44.03 66.88Q41.16 65.26 40.17 62.83Q39.64 61.55 40.18 60.41Q40.73 59.28 42.09 58.82Q43.16 58.46 44.2 58.85Q45.24 59.24 45.88 60.3Q46.5 61.54 47.92 62.34Q49.33 63.15 51.32 63.15Q53.07 63.15 54.08 62.35Q55.08 61.55 55.08 60.18Q55.08 58.88 53.94 58.04Q52.79 57.21 49.31 56.06Q44.97 54.63 42.88 52.66Q40.8 50.68 40.8 47.68Q40.8 44.09 43.71 41.8Q46.63 39.5 51.22 39.5Q54.67 39.5 57.22 40.93Q59.77 42.36 60.7 44.32Q61.28 45.53 60.85 46.63Q60.42 47.72 59.19 48.2Q58.12 48.58 57.12 48.25Q56.11 47.92 55.47 46.98Q54.87 45.95 53.87 45.35Q52.87 44.75 51.28 44.75Q49.73 44.75 48.74 45.53Q47.74 46.3 47.74 47.4Q47.74 48.49 48.97 49.27Q50.2 50.05 53.81 51.26Q58.38 52.73 60.24 54.78Q62.09 56.83 62.09 60Q62.09 63.98 59.07 66.24Q56.04 68.5 51.29 68.5ZM42.72 59.58V64.87Q43.22 65.31 43.83 65.71V59.67Q43.28 59.48 42.72 59.58ZM44.92 60.49V66.34Q45.45 66.6 46.03 66.8V62.02Q45.46 61.44 45.1 60.73Q45.01 60.6 44.92 60.49ZM47.12 62.91V67.13Q47.66 67.27 48.22 67.36V63.49Q47.83 63.33 47.47 63.12Q47.29 63.02 47.12 62.91ZM41.62 63.64V60.05Q41.21 60.36 40.99 60.81Q40.62 61.57 41 62.49Q41.25 63.09 41.62 63.64Z"/>
+    <path android:pathData="M64.5 35.1C64.89 38.11 66.39 39.62 69.4 40C66.39 40.38 64.89 41.89 64.5 44.9C64.11 41.89 62.61 40.38 59.6 40C62.61 39.62 64.11 38.11 64.5 35.1ZM70.1 33.7C70.3 34.92 70.89 35.52 72.12 35.72C70.89 35.91 70.3 36.51 70.1 37.73C69.9 36.51 69.31 35.91 68.08 35.72C69.31 35.52 69.9 34.92 70.1 33.7Z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:type="linear" android:startX="59.60" android:startY="33.70" android:endX="72.13" android:endY="44.90">
+                <item android:offset="0" android:color="#1257A8"/>
+                <item android:offset="0.5" android:color="#0E8DA6"/>
+                <item android:offset="1" android:color="#119A76"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path android:pathData="M64.5 35.1C64.89 38.11 66.39 39.62 69.4 40C66.39 40.38 64.89 41.89 64.5 44.9C64.11 41.89 62.61 40.38 59.6 40C62.61 39.62 64.11 38.11 64.5 35.1ZM70.1 33.7C70.3 34.92 70.89 35.52 72.12 35.72C70.89 35.91 70.3 36.51 70.1 37.73C69.9 36.51 69.31 35.91 68.08 35.72C69.31 35.52 69.9 34.92 70.1 33.7Z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:type="radial" android:centerX="59.60" android:centerY="33.70" android:gradientRadius="11.28">
+                <item android:offset="0" android:color="#40FFFFFF"/>
+                <item android:offset="1" android:color="#00FFFFFF"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+</vector>

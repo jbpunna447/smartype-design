@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SmarType app icon: background layer. Built by tools/build_icon_kit.py. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:pathData="M0,0H108V108H0Z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:type="linear" android:startX="18.00" android:startY="18.00" android:endX="90.00" android:endY="90.00">
+                <item android:offset="0" android:color="#1E9BD7"/>
+                <item android:offset="0.5" android:color="#22C3CF"/>
+                <item android:offset="1" android:color="#4BDCA4"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path android:pathData="M0,0H108V108H0Z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:type="radial" android:centerX="34.00" android:centerY="26.00" android:gradientRadius="46.00">
+                <item android:offset="0" android:color="#73FFFFFF"/>
+                <item android:offset="1" android:color="#00FFFFFF"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+</vector>

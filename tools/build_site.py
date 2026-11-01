@@ -82,6 +82,8 @@ def page(rel, title, body, current=None, extra_head=""):
             f'<title>{E(title)}</title>'
             '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">'
             f'<link rel="stylesheet" href="{up}assets/tokens.css"><link rel="stylesheet" href="{up}assets/site.css"><link rel="stylesheet" href="{up}assets/spec.css">'
+            f'<link rel="icon" href="{up}assets/favicon.svg" type="image/svg+xml"><link rel="icon" href="{up}assets/favicon-32.png" sizes="32x32">'
+            f'<link rel="apple-touch-icon" href="{up}assets/apple-touch-icon.png">'
             f'{extra_head}<script src="{up}assets/spec.js"></script></head>')
     nav = f'<nav class="top" aria-label="Site"><a class="brand" href="{up}index.html">SmarType design</a>{links}<span class="sp"></span>{seg}</nav>'
     return head + "<body>" + SPRITE + nav + f'<main class="wrap">{body}</main></body></html>\n'
@@ -393,15 +395,19 @@ def zip_dir(src, dst, prefix, skip=()):
 def downloads_page():
     zip_dir(os.path.join(ASSETS, "brand"), os.path.join(OUT, "downloads/smartype-brand-assets.zip"), "smartype-brand")
     zip_dir(os.path.join(ASSETS, "illustrations"), os.path.join(OUT, "downloads/smartype-illustrations.zip"), "smartype-illustrations", skip=("source",))
-    shutil.copy(os.path.join(ASSETS, "brand/preview/logo-480.png"), os.path.join(OUT, "assets/art/logo.png"))
+    shutil.copy(os.path.join(ASSETS, "brand/png/logo-480.png"), os.path.join(OUT, "assets/art/logo.png"))
+    shutil.copy(os.path.join(ASSETS, "retired/keycap-3d.png"), os.path.join(OUT, "assets/art/keycap-3d.png"))
+    shutil.copytree(os.path.join(ASSETS, "brand/svg"), os.path.join(OUT, "assets/brand"), dirs_exist_ok=True)
+    for f in ("favicon.svg", "favicon-32.png", "apple-touch-icon.png"):
+        shutil.copy(os.path.join(ASSETS, "brand/web", f), os.path.join(OUT, "assets", f))
     art = "".join(f'<figure><img src="assets/art/{n}.webp" alt=""><figcaption><code>{n}</code></figcaption></figure>'
                   for n in ("art_onb_suggestions", "art_signin", "art_subscription", "art_empty_languages"))
     body = ('<h1>Downloads</h1><p class="lede">Files developers need. Everything else is on the flow pages.</p>'
-            '<h2>App icon and logo</h2><div class="bl" style="border:0"><img src="assets/art/logo.png" alt="SmarType keycap logo" style="box-shadow:none;border-radius:24px">'
-            '<div><ul class="check"><li>Launcher icon: the keycap at 50% of a white adaptive-icon background (108 dp canvas, 72 dp visible, 66 dp safe zone).</li>'
-            '<li>Themed icon (Android 13+): the monochrome S and spark.</li><li>Play Store icon: 512 px, keycap at 74%.</li>'
-            '<li>Don\'t recolour, crop or add effects. The app\'s accent stays teal.</li></ul>'
-            '<p><a href="downloads/smartype-brand-assets.zip" download>smartype-brand-assets.zip</a>: adaptive layers, legacy icons, monochrome layer, Play Store icon, <code>ic_launcher.xml</code>.</p></div></div>'
+            '<h2>Icon kit</h2><div class="bl" style="border:0"><img src="assets/art/logo.png" alt="SmarType app icon" style="box-shadow:none;border-radius:24px">'
+            '<div><ul class="check"><li>Android: adaptive icon layers as vector drawables, themed icon, debug and beta icons, status-bar icon and splash icon.</li>'
+            '<li>Play Store icon (512 px, 32-bit PNG), favicons and web app icons.</li><li>Wordmark and lockup as outlined SVG, and lockup PNGs.</li>'
+            '<li>See <a href="brand.html">Brand</a> for how it\'s built and the spark rules. Don\'t recolour, crop or add effects.</li></ul>'
+            '<p><a href="downloads/smartype-brand-assets.zip" download>smartype-brand-assets.zip</a>: everything above, with a README on where each file goes in the app.</p></div></div>'
             f'<h2>Illustrations</h2><p>Soft clay art for onboarding, sign-in, Premium and empty states. Show at 160–240 dp; never inside the keyboard.</p><div class="art">{art}</div>'
             '<p><a href="downloads/smartype-illustrations.zip" download>smartype-illustrations.zip</a>: WebP at mdpi, xhdpi and xxhdpi, plus 2000 px masters.</p>'
             '<h2>Icons</h2><p><a href="downloads/smartype-icons.zip" download>smartype-icons.zip</a>: Material Symbols Rounded as SVG and Android vector drawables. '

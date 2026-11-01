@@ -33,11 +33,6 @@ def _swatch(name, css, code, use):
     return f'<div class="bk-sw"><i style="background:{css}"></i><b>{E(name)}</b><code>{E(code)}</code><span>{E(use)}</span></div>'
 
 
-def _wordmark(gradient_t=False, size=44, color=INK):
-    t = '<span class="bk-t">T</span>' if gradient_t else "T"
-    return f'<span class="bk-wm" style="font-size:{size}px;color:{color}">Smar{t}ype</span>'
-
-
 def _spark_inline(size=20):
     return f'<svg width="{size}" height="{size}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="{SPARK_PATH}"/></svg>'
 
@@ -95,7 +90,7 @@ def _spark_system(root):
     retired = "".join(_sz(x, lbl) for x, lbl in [
         ('<svg width="40" height="40" viewBox="64 13 20 20" aria-hidden="true"><path fill="#69D4BD" d="M74,13 L77,20 L84,23 L77,26 L74,33 L71,26 L64,23 L71,20 Z"/></svg>', "Straight star (old icon)"),
         (OLD_AI_LOGO.format(s=40), "Three stars (ic_ai_logo)"),
-        (f'<img src="{root}assets/art/logo.png" alt="" width="40" height="40" style="border-radius:9px">', "Glowing star (3D keycap)"),
+        (f'<img src="{root}assets/art/keycap-3d.png" alt="" width="40" height="40" style="border-radius:9px">', "Glowing star (3D keycap)"),
     ])
     return ('<div class="bk-strip">' + places + "</div>"
             '<div class="tbl" style="margin-top:16px"><table><thead><tr><th>Rule</th><th>Spec</th></tr></thead><tbody>' +
@@ -115,15 +110,18 @@ def _colour():
             _swatch("Teal (UI primary)", "#0B727B", "#0B727B", "Buttons and links in the app, light theme") + "</div>")
 
 
-def _wordmarks():
-    return (f'<div class="bk-words"><div class="bk-wcard">{_wordmark()}<span>Plain: in the app and at small sizes</span></div>'
-            f'<div class="bk-wcard">{_wordmark(True)}<span>The T in the gradient (one letter shared by Smart and Type): website and store art</span></div>'
-            f'<div class="bk-wcard dark">{_wordmark(True, color=PORCELAIN)}<span>On graphite</span></div>'
-            f'<div class="bk-wcard"><span class="bk-lock">{icon(48, "squircle")}{_wordmark(False, 30)}</span><span>Lockup: icon height = 1.6 × the cap height; gap = half the icon</span></div></div>')
+def _wordmarks(root):
+    def img(name, h, alt="SmarType"):
+        return f'<img src="{root}assets/brand/{name}.svg" alt="{alt}" height="{h}" style="display:block;max-width:100%">'
+    return (f'<div class="bk-words"><div class="bk-wcard">{img("wordmark-ink", 40)}<span>Wordmark: in the app and at small sizes</span></div>'
+            f'<div class="bk-wcard">{img("wordmark-ink-gradient-t", 40)}<span>The T in the gradient (one letter shared by Smart and Type): website and store art</span></div>'
+            f'<div class="bk-wcard dark">{img("wordmark-porcelain-gradient-t", 40)}<span>On graphite</span></div>'
+            f'<div class="bk-wcard">{img("lockup-ink", 46)}<span>Lockup: icon height = 1.6 × the cap height; gap = half the icon</span></div>'
+            f'<div class="bk-wcard dark">{img("lockup-porcelain", 46)}<span>Lockup on graphite</span></div></div>')
 
 
 def brand_body(root):
-    keycap = f'<img src="{root}assets/art/logo.png" alt="" width="64" height="64" style="border-radius:14px">'
+    keycap = f'<img src="{root}assets/art/keycap-3d.png" alt="" width="64" height="64" style="border-radius:14px">'
     replaces = "".join(_sz(x, lbl) for x, lbl in [
         (icon(64, which="today"), "App icon today"), (keycap, "3D keycap (earlier kit)"), (OLD_AI_LOGO.format(s=64), "AI logo today")])
     return (
@@ -134,11 +132,21 @@ def brand_body(root):
         '<h2>One spark</h2><p>The same spark everywhere SmarType means AI, in two forms: in Ink on the AI gradient, or alone in a gradient. '
         'Nothing else in the product uses a star.</p>' + _spark_system(root) +
         '<h2>Colour</h2>' + _colour() +
-        '<h2>Wordmark</h2><p>Google Sans Flex, the same family as the S. The app still bundles DM Sans; moving the app to Google Sans Flex goes with this.</p>' + _wordmarks() +
+        '<h2>Wordmark</h2><p>Google Sans Flex at weight 600, the standard (not rounded) style, with the font\'s own S, outlined. '
+        'It stays separate from the logo: the two only appear together in the lockup. The app still bundles DM Sans; moving the app to Google Sans Flex goes with this.</p>' + _wordmarks(root) +
         '<h2>What it replaces</h2><div class="bk-row">' + replaces + "</div>"
         '<p>Today there are three different marks and four different stars. All of them are replaced by the logo and the one spark above.</p>'
-        '<h2>Next: the icon kit</h2><ul class="check">'
-        '<li>Android: adaptive icon layers as vector drawables (background, foreground, monochrome), debug and beta badges, notification icon, splash icon.</li>'
-        '<li>Play Store icon (512 px), favicon and web app icons.</li>'
-        '<li>Wordmark and lockup as outlined SVG and PNG, with clear space and minimum sizes.</li></ul>'
+        '<h2>Icon kit</h2><p>Built from these vectors by <code>tools/build_icon_kit.py</code>. '
+        '<a href="downloads/smartype-brand-assets.zip" download>Download smartype-brand-assets.zip</a> (with a README on where each file goes in the app).</p>'
+        '<div class="tbl"><table><thead><tr><th>File</th><th>What it is</th></tr></thead><tbody>'
+        '<tr><td><code>android/drawable/ic_launcher_background.xml</code>, <code>ic_launcher_foreground.xml</code>, <code>ic_launcher_monochrome.xml</code></td><td>Adaptive icon layers and the themed icon, as vector drawables</td></tr>'
+        '<tr><td><code>android/drawable/ic_launcher_foreground_debug.xml</code>, <code>…_beta.xml</code></td><td>The foreground with a DEV or BETA badge</td></tr>'
+        '<tr><td><code>android/mipmap-anydpi-v26/ic_launcher*.xml</code></td><td>Adaptive icons for release, debug and beta, with round versions</td></tr>'
+        '<tr><td><code>android/drawable/ic_stat_smartype.xml</code></td><td>Status-bar icon, 24 dp, white, solid S</td></tr>'
+        '<tr><td><code>android/drawable/ic_smartype_splash.xml</code></td><td>Splash icon: the icon in a circle of two thirds of the canvas</td></tr>'
+        '<tr><td><code>png/play-store-icon-512.png</code></td><td>Play Store icon, 512 × 512, 32-bit PNG, full square</td></tr>'
+        '<tr><td><code>web/</code></td><td>favicon.svg, favicon-16/32, apple-touch-icon, icon-192/512, maskable 512, site.webmanifest</td></tr>'
+        '<tr><td><code>svg/</code></td><td>Icon masters (full, rounded, each layer), wordmark (ink, porcelain, gradient T) and lockups, all outlined</td></tr>'
+        '<tr><td><code>png/lockup-*.png</code>, <code>icon-rounded-1024.png</code></td><td>Lockups and a large icon for documents and slides</td></tr>'
+        '</tbody></table></div>'
     )
