@@ -428,7 +428,7 @@ def main():
     write("backlog.html", backlog_page())
     design_system()
     write("downloads.html", downloads_page())
-    write("brand.html", page("brand.html", "Brand review · SmarType", brand_body(""), current="brand.html"))
+    write("brand.html", page("brand.html", "Brand · SmarType", brand_body(""), current="brand.html"))
     with open(os.path.join(OUT, "vercel.json"), "w") as fh:
         json.dump({"cleanUrls": False, "trailingSlash": False}, fh, indent=2)
         fh.write("\n")
