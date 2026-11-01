@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://smartype.in/sitemap.xml
