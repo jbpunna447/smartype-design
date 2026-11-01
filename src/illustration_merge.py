@@ -36,7 +36,7 @@ def _bubble(x, y, w, h, tail="left"):
 
 def _face_x(x, y, s):
     """An expressive face: eyes with catchlights that look around, widen, squint and turn happy; eyebrows; a smile
-    that can become a small "oh"."""
+    that can become a small "oh" or a wider grin (a separate path, so the line weight never changes)."""
     ex1, ex2, ey = x + .35 * s, x + .65 * s, y + .40 * s
     rx, ry = .07 * s, .095 * s
     eye = "".join(f'<ellipse cx="{ex:.1f}" cy="{ey:.1f}" rx="{rx:.1f}" ry="{ry:.1f}" fill="{INK}"/>'
@@ -46,6 +46,7 @@ def _face_x(x, y, s):
     brows = (f'<path class="bl" d="M{ex1 - rx * 1.1:.1f} {ey - ry * 1.9:.1f} q{rx * 1.1:.1f} {-ry * .5:.1f} {rx * 2.2:.1f} {ry * .2:.1f}" fill="none" stroke="{INK}" stroke-width="{.035 * s:.1f}" stroke-linecap="round"/>'
              f'<path class="br" d="M{ex2 - rx * 1.1:.1f} {ey - ry * 1.7:.1f} q{rx * 1.1:.1f} {-ry * .5:.1f} {rx * 2.2:.1f} {-ry * .2:.1f}" fill="none" stroke="{INK}" stroke-width="{.035 * s:.1f}" stroke-linecap="round"/>')
     mouth = (f'<path class="smile" d="M{x + .40 * s:.1f} {y + .60 * s:.1f} q{.10 * s:.1f} {.11 * s:.1f} {.20 * s:.1f} 0" fill="none" stroke="{INK}" stroke-width="{.05 * s:.1f}" stroke-linecap="round"/>'
+             f'<path class="grin" d="M{x + .37 * s:.1f} {y + .59 * s:.1f} q{.13 * s:.1f} {.16 * s:.1f} {.26 * s:.1f} 0" fill="none" stroke="{INK}" stroke-width="{.05 * s:.1f}" stroke-linecap="round"/>'
              f'<ellipse class="oh" cx="{x + .5 * s:.1f}" cy="{y + .64 * s:.1f}" rx="{.045 * s:.1f}" ry="{.06 * s:.1f}" fill="{INK}"/>')
     cheeks = "".join(f'<ellipse cx="{cx:.1f}" cy="{y + .58 * s:.1f}" rx="{.07 * s:.1f}" ry="{.04 * s:.1f}" fill="#4BDCA4" opacity=".45"/>' for cx in (x + .22 * s, x + .78 * s))
     return (f'<g class="face"><g class="look"><g class="open">{eye}</g><g class="happy">{happy}</g></g>'
@@ -86,7 +87,8 @@ def hello(size=240):
         f" @keyframes {p}brows {{ 0%,57% {{ opacity: 0; transform: none; }} 59%,63% {{ opacity: 1; transform: translateY(-3px); }} 66%,74% {{ opacity: 1; transform: translateY(1px); }} 77%,100% {{ opacity: 0; }} }}"
         f" @keyframes {p}bl {{ 0%,64% {{ transform: none; }} 66%,74% {{ transform: rotate(14deg); }} 77%,100% {{ transform: none; }} }}"
         f" @keyframes {p}br {{ 0%,64% {{ transform: none; }} 66%,74% {{ transform: rotate(-14deg); }} 77%,100% {{ transform: none; }} }}"
-        f" @keyframes {p}smile {{ 0%,57% {{ opacity: 1; transform: none; }} 59%,74% {{ opacity: 0; }} 77% {{ opacity: 1; transform: scale(1.35,1.5); }} 90% {{ transform: scale(1.35,1.5); }} 100% {{ transform: none; }} }}"
+        f" @keyframes {p}smile {{ 0%,57% {{ opacity: 1; }} 59%,90% {{ opacity: 0; }} 94%,100% {{ opacity: 1; }} }}"
+        f" @keyframes {p}grin {{ 0%,75% {{ opacity: 0; }} 77%,90% {{ opacity: 1; }} 94%,100% {{ opacity: 0; }} }}"
         f" @keyframes {p}oh {{ 0%,57% {{ opacity: 0; }} 59%,64% {{ opacity: 1; }} 66%,100% {{ opacity: 0; }} }}"
         f" @keyframes {p}body {{ 0%,5%,11%,57%,100% {{ transform: none; }} 8% {{ transform: translateY(3px) scale(1.02,.92); }} 60%,64% {{ transform: rotate(-6deg) translateY(-2px); }} 67% {{ transform: translateY(3px) scale(1.05,.93); }}"
         f" 71% {{ transform: translateY(-6px) rotate(3deg); }} 75% {{ transform: none; }} 80% {{ transform: translateY(2px) scale(1.05,.94); }} 84% {{ transform: translateY(-12px); }} 88% {{ transform: none; }} }}"
@@ -101,7 +103,7 @@ def hello(size=240):
         f" .{p} .face {{ animation: {p}face {T} infinite; }} .{p} .open {{ animation: {p}open {T} cubic-bezier(.3,1.4,.5,1) infinite; }}"
         f" .{p} .happy {{ animation: {p}happy {T} infinite; opacity: 0; }} .{p} .look {{ animation: {p}look {T} ease-in-out infinite; }}"
         f" .{p} .brows {{ animation: {p}brows {T} infinite; opacity: 0; }} .{p} .bl {{ animation: {p}bl {T} infinite; }} .{p} .br {{ animation: {p}br {T} infinite; }}"
-        f" .{p} .smile {{ animation: {p}smile {T} infinite; }} .{p} .oh {{ animation: {p}oh {T} infinite; opacity: 0; }}"
+        f" .{p} .smile {{ animation: {p}smile {T} infinite; }} .{p} .grin {{ animation: {p}grin {T} infinite; opacity: 0; }} .{p} .oh {{ animation: {p}oh {T} infinite; opacity: 0; }}"
         f" .{p} .body {{ animation: {p}body {T} cubic-bezier(.4,0,.2,1) infinite; transform-origin: 50% 100%; }}"
         f" .{p} .sp {{ animation: {p}sp {T} cubic-bezier(.3,1.4,.5,1) infinite; }}"
         f" .{p} .fly {{ offset-path: path('M{x + .728 * s + 14:.0f} {y + .239 * s - 30:.0f} C 96 70, 104 70, 112 62'); offset-rotate: 0deg; animation: {p}fly {T} cubic-bezier(.4,0,.2,1) infinite; }}"
