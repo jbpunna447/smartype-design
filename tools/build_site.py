@@ -25,6 +25,7 @@ from taps import TAPS  # noqa: E402
 from flows import BUILD_ORDER, FLOWS, RISK, RULES  # noqa: E402
 from screens import S  # noqa: E402
 from brand_page import brand_body  # noqa: E402
+from illustration_concepts import CONCEPTS  # noqa: E402
 
 E = html.escape
 DS = os.path.join(SRC, "design-system")
@@ -69,7 +70,7 @@ def tokens_css():
             f":root[data-theme=amoled]{{{block(themes['amoled'])}}}\n")
 
 
-NAV = [("index.html#flows", "Flows"), ("brand.html", "Brand"), ("backlog.html", "Backlog"), ("design-system/index.html", "Design system"),
+NAV = [("index.html#flows", "Flows"), ("brand.html", "Brand"), ("illustrations.html", "Illustrations"), ("backlog.html", "Backlog"), ("design-system/index.html", "Design system"),
        ("design-system/icons.html", "Icons"), ("downloads.html", "Downloads")]
 
 
@@ -195,6 +196,40 @@ def flow_page(i, f):
     return page(f"flows/{f['slug']}.html", f"{f['title']} · SmarType", "".join(parts), current="index.html#flows")
 
 
+# ---------- illustration concepts ----------
+
+ART_NEEDED = [
+    ("Welcome", "Setup, first page", "200 dp hero"), ("Sign in", "Setup, after the first try", "200 dp hero"),
+    ("You're all set", "Setup, last page", "200 dp hero"), ("Premium", "Premium screen", "200 dp hero"),
+    ("SmarType AI", "AI settings screen", "200 dp hero"), ("No notes yet", "Notes list", "160 dp empty state"),
+    ("No writing styles yet", "Writing styles", "160 dp empty state"), ("No languages found", "Add language search", "160 dp empty state"),
+    ("No keyboard languages", "Keyboard languages", "160 dp empty state"), ("No custom themes", "Themes", "160 dp empty state"),
+    ("Empty dictionary", "User dictionary", "160 dp empty state"), ("Extension not found", "Extensions", "160 dp empty state"),
+]
+
+
+def illustrations_page():
+    cards = []
+    for key, title, fn, idea, good, risks in CONCEPTS:
+        cards.append(
+            f'<section class="bk-dir" id="{key}"><div class="ill-stage"><div class="ill-light">{fn(240)}</div><div class="ill-dark">{fn(240)}</div></div>'
+            f'<div class="bk-body"><h3>{E(title)}</h3><p>{E(idea)}</p><div class="bk-pc"><div><h4>Works</h4><ul>' +
+            "".join(f"<li>{E(x)}</li>" for x in good) + '</ul></div><div><h4>Watch out</h4><ul>' + "".join(f"<li>{E(x)}</li>" for x in risks) + "</ul></div></div></div></section>")
+    need = "".join(f"<tr><td>{E(a)}</td><td>{E(b)}</td><td>{E(c)}</td></tr>" for a, b, c in ART_NEEDED)
+    body = ('<h1>Illustrations</h1><p class="lede">Three directions for the art in onboarding, Premium and empty states. Each is drawn here as the Welcome illustration, animated, on light and dark.</p>'
+            '<h2>Why a new set</h2><p>Today\'s four illustrations are 3D clay renders of a graphite key with a puffy star: they match neither the new white key nor the brand spark, and they\'re images, not vectors. '
+            'A first flat-vector try with the brand\'s shapes was clean but read as large icons, with no story and no life. Strong onboarding art (Duolingo, Headspace, Google\'s Material 3 Expressive) gets its life from a story, a character or motion.</p>'
+            '<h2>Three concepts</h2>' + "".join(cards) +
+            '<h2>Where art is needed</h2><div class="tbl"><table><thead><tr><th>Illustration</th><th>Screen</th><th>Size</th></tr></thead><tbody>' + need + "</tbody></table></div>"
+            '<p>Inside the keyboard stays icon-only. All art is vector: SVG for the site and store, Lottie for motion in the app, with a still frame for reduced motion.</p>'
+            '<p style="font-size:13.5px;color:var(--on-surface-variant)">References: '
+            '<a href="https://speckyboy.com/8-beautifully-illustrated-onboarding-screens-in-mobile-design/" rel="noopener">Speckyboy: illustrated onboarding screens</a>; '
+            '<a href="https://fireart.studio/blog/7-tips-to-create-engaging-illustrations-for-mobile-app-onboarding/" rel="noopener">Fireart: engaging onboarding illustrations</a>; '
+            '<a href="https://www.dezeen.com/2025/05/28/google-ushers-in-age-of-expressive-interfaces-with-material-design-update/amp/" rel="noopener">Dezeen: Material 3 Expressive</a>; '
+            '<a href="https://www.androidauthority.com/google-material-3-expressive-features-changes-availability-supported-devices-3556392/" rel="noopener">Android Authority: Material 3 Expressive</a>.</p>')
+    return page("illustrations.html", "Illustrations · SmarType", body, current="illustrations.html")
+
+
 # ---------- backlog (from the review) ----------
 
 def review_findings():
@@ -270,8 +305,8 @@ ICON_USES = [
     ("New note, add language", "add", ""), ("Pin", "keep", "Filled when pinned"), ("Drag handle", "drag_indicator", ""),
     ("Globe key, languages", "language", ""), ("Copy", "content_copy", ""), ("Share", "share", "Notes ⋯ menu"), ("Undo", "undo", ""),
     ("Search", "search", ""), ("Row opens a screen", "chevron_right", ""), ("Dropdown", "arrow_drop_down", ""),
-    ("Info banner", "info", ""), ("Warning banner", "warning", ""), ("Error banner", "error", ""), ("Settings", "settings", ""),
-    ("Keyboard", "keyboard", ""), ("Close", "close", ""), ("Send (Ask AI in Notes)", "send", ""),
+    ("Info banner", "info", ""), ("Warning and error banners", "error", "The banner colour tells them apart; no triangle icon"), ("Settings", "settings", ""),
+    ("Keyboard", "keyboard", ""), ("Smartbar (settings)", "toolbar", ""), ("Success banner", "check_circle", ""), ("Close", "close", ""), ("Send (Ask AI in Notes)", "send", ""),
     ("Password fields", "lock", ""), ("Redo", "redo", ""), ("Cut", "content_cut", ""),
     ("Select all", "select_all", ""), ("Move cursor", "arrow_range", "Replaces the four-way arrows"), ("Autocorrect", "spellcheck", "Filled when on"),
     ("One-handed", "front_hand", "Filled when on"), ("Incognito", "domino_mask", "Filled when on"), ("Google sign-in", "google", "Google's brand mark (ic_google_g_icon)"),
@@ -345,6 +380,17 @@ def ds_write(rel, title, inner):
     write(rel, page(rel, title, inner, current="design-system/index.html", extra_head=DS_HEAD))
 
 
+def preview_icons(html_text):
+    """{{icon:name}} in a component preview becomes that Material Symbols Rounded icon (or the brand spark) from the sprite."""
+    def one(m):
+        name = m.group(1)
+        ref = "br-spark" if name == "spark" else f"ms-{name}"
+        if name != "spark" and not os.path.exists(os.path.join(ASSETS, "icons/material-symbols-rounded", f"{name}.svg")):
+            raise SystemExit(f"preview icon not in the library: {name}")
+        return f'<svg class="ds-ic" aria-hidden="true"><use href="#{ref}"/></svg>'
+    return re.sub(r"\{\{icon:([a-z_]+)\}\}", one, html_text)
+
+
 def design_system():
     shutil.copy(os.path.join(DS, "components/bundle.css"), os.path.join(OUT, "design-system/bundle.css"))
     toc = "".join(f'<a href="{c.lower()}.html"><b>{c}</b><span>Component</span></a>' for c in COMPONENTS)
@@ -357,7 +403,7 @@ def design_system():
             pv = ('<div class="toolbar"><button type="button" class="mbtn" id="measure-toggle" aria-pressed="false">Show measurements</button><span class="hint">Real size: 1 px = 1 dp.</span></div>'
                   '<div class="shots" style="margin:20px 0">' + screen_html("ai-open", "Rewrite panel", 1) + screen_html("er-ai", "Unavailable: one banner, no dock", 1) + "</div>")
         else:
-            pv = f'<div class="pv">{read(os.path.join(DS, f"components/{c}/preview.html"))}</div>'
+            pv = f'<div class="pv">{preview_icons(read(os.path.join(DS, f"components/{c}/preview.html")))}</div>'
         ds_write(f"design-system/{c.lower()}.html", f"{c} · SmarType",
                  f'<div class="crumb"><a href="index.html">Design system</a> › {c}</div>' + pv + md(os.path.join(DS, f"components/{c}/README.md")))
     for name in ("audit-buttons", "audit-components", "illustrations"):
@@ -434,6 +480,7 @@ def main():
     write("backlog.html", backlog_page())
     design_system()
     write("downloads.html", downloads_page())
+    write("illustrations.html", illustrations_page())
     write("brand.html", page("brand.html", "Brand · SmarType", brand_body(""), current="brand.html"))
     with open(os.path.join(OUT, "vercel.json"), "w") as fh:
         json.dump({"cleanUrls": False, "trailingSlash": False}, fh, indent=2)

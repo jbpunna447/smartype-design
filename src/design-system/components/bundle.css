@@ -92,3 +92,12 @@
 .st-kb .dock{display:flex;gap:8px;padding:8px 12px 12px}
 .st-kb .dock .st-btn{flex:1}
 .st-kb .abc{flex:0 0 auto !important;min-width:72px}
+
+/* Icons in previews: Material Symbols Rounded from the page sprite ({{icon:name}} in preview.html). */
+.ds-ic{width:20px;height:20px;fill:currentColor;display:block;flex:0 0 auto}
+.st-row .lead .ds-ic,.st-row .trail .ds-ic,.st-icon .ds-ic{width:24px;height:24px}
+.st-chip .ds-ic{width:18px;height:18px}.st-badge .ds-ic{width:16px;height:16px}.st-btn .ds-ic{width:20px;height:20px}
+.st-banner .ic .ds-ic{width:24px;height:24px}
+/* Radio (Material 3): 20 dp ring, 2 dp stroke; selected adds a 10 dp dot. Touch target is the whole row. */
+.st-radio{width:20px;height:20px;flex:0 0 20px;border-radius:50%;box-sizing:border-box;border:2px solid var(--on-surface-variant);display:grid;place-items:center}
+.st-radio.on{border-color:var(--primary)}.st-radio.on::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--primary)}

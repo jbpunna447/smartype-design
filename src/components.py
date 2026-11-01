@@ -191,7 +191,7 @@ def dock(*btns, annotate=True):
 
 
 def kbanner(kind, title, text, act=None, icon=None):
-    icon = icon or {"warn": "warning", "err": "error", "info": "info"}[kind]
+    icon = icon or {"warn": "error", "err": "error", "info": "info"}[kind]
     a = ann({"warn": "Warning banner", "err": "Error banner", "info": "Info banner"}[kind], "Radius 14 dp; padding 12 × 16 dp; icon 24 dp; gap 12 dp",
             {"warn": "warning-container / on-warning-container (new token)", "err": "error-container / on-error-container", "info": "keyboard key surface"}[kind], icon)
     actx = f'<span class="act">{esc(act)}</span>' if act else ""
@@ -243,7 +243,7 @@ def abtn(label, kind="fill", size="m", icon=None, full=False, annotate=None):
 
 
 def banner(kind, title, text, act=None):
-    icon = {"warn": "warning", "info": "info", "err": "error"}[kind]
+    icon = {"warn": "error", "info": "info", "err": "error"}[kind]
     a = ann({"warn": "Warning banner", "info": "Info banner", "err": "Error banner"}[kind], "Radius 14 dp; padding 12 × 16 dp; icon 24 dp",
             {"warn": "warning-container / on-warning-container (new token)", "info": "primary-container / on-primary-container", "err": "error-container / on-error-container"}[kind], icon)
     actx = f'<span class="act">{esc(act)}</span>' if act else ""
