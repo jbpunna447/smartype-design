@@ -1,0 +1,13 @@
+01-ai-open.png	SmarType fixing a typo-filled message, im runing late sry, into I'm running late for the meeting, sorry.
+02-tr-open.png	SmarType translating Running late, sorry from English into Hindi, with English, Hindi and Telugu to choose from
+03-vo-listen.png	Voice typing in SmarType: rambling speech turned into a clean message, On my way, be there in 10!
+04-fm-open.png	SmarType turning a run-on list into tidy bullet points: train tickets, hotel for 2 nights, cab, dinner
+05-nt-changed.png	A SmarType note changed by AI after asking, add that I'll pay the rent on Friday, with Undo and Insert
+06-cb-open.png	The SmarType clipboard in the keyboard with pinned and recent clips, ready to paste
+07-lg-globe.png	Switching the SmarType keyboard between English and Hindi with the globe key
+08-privacy.png	SmarType privacy: typing stays on the phone, AI sees only what you send, password fields stay private
+feature-a.png	The SmarType key fixing a typo, translating into Hindi and turning speech into text, on the brand gradient
+feature-b.png	The SmarType key in a spotlight of the brand gradient, with a fixed typo, Hindi and voice floating around it
+feature-c.png	The SmarType key standing on a keyboard as messages in English and Hindi rise off the keys
+feature-d.png	A typo on a grey half turned into a correct message on a bright half by the SmarType key
+feature-e.png	The SmarType key surrounded by greetings in English, Hindi, Tamil, Punjabi, Spanish, French, Japanese and Chinese
