@@ -94,20 +94,40 @@ def key_mono(gid):
             _s(54, 51, 30, "#000") + '</mask><rect width="108" height="108" fill="MONO" mask="url(#%sm)"/>' % gid)
 
 
-# The S and the spark as one group, centred on the key's top face (54, 51). The spark's big star sits just off the
-# S's top-right shoulder, like an exponent.
-KS_CX, KS_CY, KS_H, KS_K = 48.8, 54.4, 29, .7
+# The S and the spark as one group, centred on the key's top face (54, 51). Written backwards, the S ends at its
+# top tip moving right and a little down; the spark's big star sits a short gap further along that line.
+KS_H, KS_K = 29, .7
+_KS = KS_H / 71
+_TIP = (17 * _KS, -21.5 * _KS)          # centre of the S's top tip, relative to the S's centre
+_FLOW = (.89, .45)                      # the stroke's direction at the tip
+_GAP = 2.2
+_R = 7 * KS_K                           # radius of the spark's big star
+_SPARK_DX = _TIP[0] + _FLOW[0] * (_GAP + _R)
+_SPARK_DY = _TIP[1] + _FLOW[1] * (_GAP + _R)
+# Group bounds (S ± 11.2 × 14.5; spark reaches 7.6 right of and 10.4 above its big star) give the centre offset.
+_right = _SPARK_DX + 7.6
+KS_CX = 54 - (_right - 11.2) / 2
+KS_CY = 51
 
 
-def _spark(fill):
-    tx = KS_CX + 14 - 10.5 * KS_K
-    ty = KS_CY - 15 - 11 * KS_K
-    return f'<path fill="{fill}" transform="translate({tx:.2f} {ty:.2f}) scale({KS_K})" d="{SPARK_PATH}"/>'
+def _spark(fill, gid=None):
+    scx, scy = KS_CX + _SPARK_DX, KS_CY + _SPARK_DY
+    tx, ty = scx - 10.5 * KS_K, scy - 11 * KS_K
+    path = f'transform="translate({tx:.2f} {ty:.2f}) scale({KS_K})" d="{SPARK_PATH}"'
+    if fill != "gradient":
+        return f'<path fill="{fill}" {path}/>'
+    # The background's vivid gradient and light, laid over the spark's own box.
+    x0, y0, x1, y1 = tx + 3.5 * KS_K, ty + 2 * KS_K, tx + 21.4 * KS_K, ty + 18 * KS_K
+    st = "".join(f'<stop offset="{o}" stop-color="{c}"/>' for o, c in BG_STOPS["vivid"])
+    return (f'<defs><linearGradient id="{gid}sp" x1="{x0:.2f}" y1="{y0:.2f}" x2="{x1:.2f}" y2="{y1:.2f}" gradientUnits="userSpaceOnUse">{st}</linearGradient>'
+            f'<radialGradient id="{gid}spl" cx="{x0:.2f}" cy="{y0:.2f}" r="{(x1 - x0) * .9:.2f}" gradientUnits="userSpaceOnUse">'
+            '<stop stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>'
+            f'<path fill="url(#{gid}sp)" {path}/><path fill="url(#{gid}spl)" {path}/>')
 
 
 def _keyai(spark_fill):
     def fg(gid):
-        return _keycap(gid) + _s(KS_CX, KS_CY, KS_H, INK) + _spark(spark_fill)
+        return _keycap(gid) + _s(KS_CX, KS_CY, KS_H, INK) + _spark(spark_fill, gid)
     return fg
 
 
@@ -149,11 +169,12 @@ def talk_mono(gid):
 
 DIRECTIONS = {
     "today": ("Today", today_bg, today_fg, today_mono),
-    "keyai": ("A · Keycap with the AI spark", _bg("vivid", True), _keyai(TEAL), keyai_mono),
+    "keyai": ("A · Keycap with the AI spark", _bg("vivid", True), _keyai("gradient"), keyai_mono),
+    "keyai_teal": ("Spark in teal", _bg("vivid", True), _keyai(TEAL), keyai_mono),
     "keyai_ink": ("Spark in ink", _bg("vivid", True), _keyai(INK), keyai_mono),
-    "keyai_soft": ("Soft (today's colours)", key_bg, _keyai(TEAL), keyai_mono),
-    "keyai_vivid": ("Vivid", _bg("vivid", False), _keyai(TEAL), keyai_mono),
-    "keyai_deep": ("Deep", _bg("deep", False), _keyai(TEAL), keyai_mono),
+    "keyai_soft": ("Soft (today's colours)", key_bg, _keyai("gradient"), keyai_mono),
+    "keyai_vivid": ("Vivid", _bg("vivid", False), _keyai("gradient"), keyai_mono),
+    "keyai_deep": ("Deep", _bg("deep", False), _keyai("gradient"), keyai_mono),
     "key": ("Keycap without the spark", _bg("vivid", True), key_fg, key_mono),
     "caret": ("B · Caret", caret_bg, caret_fg, caret_mono),
     "talk": ("C · Talk key", talk_bg, talk_fg, talk_mono),
