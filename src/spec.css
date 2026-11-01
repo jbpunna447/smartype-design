@@ -291,3 +291,27 @@
   justify-content: space-between; padding: 0 12px; font: 400 14px/20px var(--font-sans); }
 .s-osnack b { color: var(--inverse-primary); font: 500 14px/20px var(--font-sans); }
 .s-list-note { padding: 0 16px; font: 400 16px/26px var(--font-sans); }
+
+/* More panel (⋯): labelled tiles in named groups; Edit lives in the header. */
+.s-more { flex: 1 1 auto; min-height: 0; overflow: hidden; padding: 4px 12px 0; position: relative; }
+.s-more::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 24px; background: linear-gradient(transparent, var(--kb-bg)); }
+.s-more .g { font: 500 12px/16px var(--font-sans); color: var(--kb-on-var); padding: 8px 4px 4px; }
+.s-tiles { display: grid; grid-template-columns: repeat(4, 1fr); }
+.s-tile { height: 68px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding-top: 4px; color: var(--kb-on); }
+.s-tile .c { width: 56px; height: 36px; border-radius: 18px; display: grid; place-items: center; background: var(--kb-key); color: var(--kb-on-var); }
+.s-tile.on .c { background: var(--kb-primary); color: var(--kb-on-primary); }
+.s-tile span { font: 500 12px/16px var(--font-sans); text-align: center; max-width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.s-ptext { height: 48px; padding: 0 12px; display: grid; place-items: center; font: 500 14px/20px var(--font-sans); color: var(--kb-primary); }
+.s-erow { height: 48px; display: flex; align-items: center; gap: 12px; padding: 0 4px; font: 400 15px/20px var(--font-sans); color: var(--kb-on); }
+.s-erow .n { flex: 1 1 auto; }
+.s-erow .s-ic:first-child { color: var(--kb-on-var); }
+.s-ehint { font: 400 13px/18px var(--font-sans); color: var(--kb-on-var); padding: 4px 4px 0; }
+/* Long-press name: a plain tooltip above the button. */
+.s-tip { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); height: 32px; padding: 0 12px; border-radius: 8px; display: grid; place-items: center;
+  background: var(--kb-on); color: var(--kb-bg); font: 500 13px/16px var(--font-sans); white-space: nowrap; z-index: 4; }
+/* Autocorrect: the original word sits first in the suggestion row, marked as "undo". */
+.s-sugg .orig { display: inline-flex; align-items: center; gap: 4px; color: var(--kb-on-var); }
+.s-sugg .orig s { text-decoration: none; border-bottom: 1.5px dotted currentColor; }
+/* TalkBack focus order: numbered markers drawn on the spec screens by spec.js (not part of the UI). */
+.s-dev .s-fo { position: absolute; z-index: 15; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; transform: translate(-11px, -11px);
+  background: #c2185b; color: #fff; font: 700 10.5px/18px var(--font-sans); text-align: center; box-shadow: 0 0 0 2px #fff; pointer-events: none; }

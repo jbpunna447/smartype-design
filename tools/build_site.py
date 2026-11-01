@@ -208,7 +208,7 @@ def review_findings():
     return out
 
 
-BACKLOG = ["A8", "K1", "K4"]
+BACKLOG = []
 
 
 def backlog_page():
@@ -222,7 +222,9 @@ def backlog_page():
         rows.append(f'<div class="bl">{shot}<div><div class="tags">{tag("id", fid)}{tag("later", r["sev"])}</div>'
                     f'<h3 style="margin-top:10px">{E(r["title"])}</h3><p><b>What happens.</b> {E(r["what"])}</p>'
                     f'<p><b>Direction.</b> {E(r["fix"])}</p></div></div>')
-    body = ('<h1>Backlog</h1><p class="lede">What\'s left from the UX review: each needs a check on a device or a small design. Every other finding is covered by a flow.</p>' + "".join(rows))
+    lede = ("What's left from the UX review: each needs a check on a device or a small design. Every other finding is covered by a flow." if rows else
+            "Nothing left: every finding from the UX review is covered by a flow. The last three became Autocorrect (K1), the More panel in The bar above the keys (K4) and TalkBack and screen readers (A8).")
+    body = f'<h1>Backlog</h1><p class="lede">{E(lede)}</p>' + "".join(rows)
     return page("backlog.html", "Backlog · SmarType", body, current="backlog.html")
 
 
@@ -267,7 +269,9 @@ ICON_USES = [
     ("Search", "search", ""), ("Row opens a screen", "chevron_right", ""), ("Dropdown", "arrow_drop_down", ""),
     ("Info banner", "info", ""), ("Warning banner", "warning", ""), ("Error banner", "error", ""), ("Settings", "settings", ""),
     ("Keyboard", "keyboard", ""), ("Close", "close", ""), ("Numbered list", "format_list_numbered", ""), ("Table", "table", ""),
-    ("Summarise", "summarize", ""), ("Password fields", "lock", ""), ("Google sign-in", "google", "Google's brand mark (ic_google_g_icon)"),
+    ("Summarise", "summarize", ""), ("Password fields", "lock", ""), ("Redo", "redo", ""), ("Cut", "content_cut", ""),
+    ("Select all", "select_all", ""), ("Move cursor", "arrow_range", "Replaces the four-way arrows"), ("Autocorrect", "spellcheck", "Filled when on"),
+    ("One-handed", "front_hand", "Filled when on"), ("Incognito", "domino_mask", "Filled when on"), ("Google sign-in", "google", "Google's brand mark (ic_google_g_icon)"),
 ]
 
 

@@ -12,6 +12,13 @@ TAPS = {
         ("Paste something you copied", "Pad icon → Clipboard (chooser) → the clip: 3 taps", "Clipboard → the clip: 2 taps", "None"),
         ("Pick a suggestion", "Suggestions sometimes replace the buttons", "The suggestion row is always in the same place: 1 tap", "Typing"),
         ("Reach a setting", "⋯ grid with unlabelled icons", "⋯ → a labelled item: 2 taps", "None"),
+        ("Turn autocorrect off", "⋯ → guess which icon: 2 taps", "⋯ → Autocorrect (named, shows on): 2 taps", "None"),
+        ("Reorder More", "⋯ → Reorder (covering a row) → drag", "⋯ → Edit → drag → Done", "None"),
+        ("Find out what an icon does", "Not possible", "Long-press it: 1 press", "None"),
+    ],
+    "autocorrect": [
+        ("Fix a typo", "Tap the suggestion: 1 tap, if noticed", "Nothing: it's corrected on space", "Typing"),
+        ("Undo a wrong correction", "Backspace, if the user knows it", "Tap the put-back word: 1 tap (or Backspace)", "None"),
     ],
     "ai-rewrite": [
         ("Fix a message and send it (Premium)", "✦, pick a style, Rewrite, Replace: 4 taps", "✦, Replace: 2 taps", "Typing the message"),
@@ -46,6 +53,11 @@ TAPS = {
     "errors": [
         ("Find out why Premium isn't available", "Upgrade → error page → Retry (fails again): 3+ taps, no answer", "Read the banner on Home: 0 taps", "None"),
         ("After signing in", "Dismiss a wrong \"Sign in\" toast", "Nothing to do: a confirmation shows and goes", "None"),
+    ],
+    "talkback": [
+        ("Type a word", "Likely not possible", "Per letter: slide to the key, lift", "Typing by touch"),
+        ("Rewrite a message", "Not checked", "Find Rewrite, double-tap; find Replace, double-tap", "None"),
+        ("Hear what changed", "Nothing", "Spoken automatically", "None"),
     ],
     "settings": [
         ("Change the keyboard's height", "Settings → guess between Keyboard and Typing (no summaries) → …", "Settings → Keyboard (its summary says Height): 2 taps; or search \"height\": 1 tap + typing", "Typing, only for search"),

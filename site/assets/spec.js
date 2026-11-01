@@ -44,6 +44,22 @@
     });
   }
 
+  // TalkBack focus order: data-focus on a screen is a JSON list of [selector, label]; each gets a numbered marker.
+  function focusBadges() {
+    document.querySelectorAll('.s-dev[data-focus]').forEach(function (dev) {
+      var list; try { list = JSON.parse(dev.dataset.focus); } catch (e) { return; }
+      list.forEach(function (f) {
+        var el = dev.querySelector(f[0]); if (!el) return;
+        var x = 0, y = 0, e = el;
+        while (e && e !== dev) { x += e.offsetLeft; y += e.offsetTop; e = e.offsetParent; }
+        var b = document.createElement('span');
+        b.className = 's-fo'; b.textContent = f[1];
+        b.style.left = Math.max(x, 12) + 'px'; b.style.top = Math.max(y, 12) + 'px';
+        dev.appendChild(b);
+      });
+    });
+  }
+
   function store(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 
@@ -63,6 +79,7 @@
       on = !on; mt.setAttribute('aria-pressed', String(on)); overlay(on);
     });
     fillTables();
+    focusBadges();
     if (mt && /[?&]measure=1/.test(location.search)) mt.click();
     var t; window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(function () { if (on) overlay(true); }, 150); });
   });

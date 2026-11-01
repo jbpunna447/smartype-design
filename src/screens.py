@@ -275,3 +275,67 @@ S["st-home"] = device(appbar("SmarType", back=False) + '<div class="s-scroll">' 
           lrow("Languages", "English, हिन्दी", ic("chevron_right")), lrow("Settings", None, ic("chevron_right"), one=True)) +
     '<div class="s-sech">Help</div>' + group(lrow("Guides", None, ic("chevron_right"), one=True), lrow("Contact support", None, ic("chevron_right"), one=True),
           lrow("Share SmarType", None, ic("chevron_right"), one=True), annotate=False) + "</div>", app=True)
+
+# ---------- More panel (⋯), long-press names ----------
+def _tile(icon, label, on=False, a=""):
+    return f'<div class="s-tile{" on" if on else ""}"{a}><div class="c">{ic(icon, fill=on, size=20)}</div><span>{esc(label)}</span></div>'
+
+
+_more = ('<div class="s-more">'
+         f'<div class="g"{ann("Group label", "label-small 12/16 sp; 8 dp above, 4 dp below; read by TalkBack as a heading", "keyboard on-surface-variant")}>Editing</div><div class="s-tiles">' +
+         _tile("undo", "Undo", a=ann("Action tile", "84 × 68 dp cell (4 columns at 360 dp); pill 56 × 36 dp, radius 18 dp; icon 20 dp; label 12/16 sp, one line", "pill keyboard key surface; icon on-surface-variant; label on-background", "undo")) +
+         _tile("redo", "Redo") + _tile("select_all", "Select all") + _tile("arrow_range", "Move cursor") +
+         _tile("content_copy", "Copy") + _tile("content_cut", "Cut") + _tile("content_paste", "Paste") + '</div>'
+         '<div class="g">Keyboard</div><div class="s-tiles">' +
+         _tile("spellcheck", "Autocorrect", on=True, a=ann("Toggle tile, on", "Same size; filled pill and filled icon when on; TalkBack says \"Autocorrect, switch, on\"", "pill keyboard primary; icon on-primary", "spellcheck")) +
+         _tile("front_hand", "One-handed") + _tile("domino_mask", "Incognito") + _tile("language", "Language") + '</div>'
+         '<div class="g">Go to</div><div class="s-tiles">' + _tile("mood", "Emoji") + _tile("settings", "Settings") + '</div></div>')
+_edit_btn = f'<div class="s-ptext"{ann("Edit (was the floating Reorder button)", "Text button in the header; 48 dp tall; label-large 14 sp", "keyboard primary")}>Edit</div>'
+S["kb-more"] = device(chat() + _kb(panel_html=panel("More", _more, action=_edit_btn)), ime=True)
+
+
+def _erow(icon, label, a=""):
+    return f'<div class="s-erow"{a}>{ic("drag_indicator")}{ic(icon, size=20)}<span class="n">{esc(label)}</span></div>'
+
+
+_edit = ('<div class="s-more">'
+         f'<div class="s-ehint">Drag to change the order. The smartbar\'s own buttons stay where they are.</div>'
+         '<div class="g">Editing</div>' +
+         _erow("undo", "Undo", ann("Reorder row", "48 dp; drag handle 24 dp; icon 20 dp; long-press anywhere on the row to drag; TalkBack actions Move up and Move down", "keyboard on-background; handle on-surface-variant", "drag_indicator")) +
+         _erow("redo", "Redo") + _erow("select_all", "Select all") + _erow("arrow_range", "Move cursor") + _erow("content_copy", "Copy") + '</div>')
+S["kb-more-edit"] = device(chat() + _kb(panel_html=panel("Edit More", _edit, action='<div class="s-ptext">Done</div>')), ime=True)
+
+_sb_tip = smartbar().replace('title="Format">', 'title="Format"><span class="s-tip"' +
+                             ann("Name on long-press", "32 dp tall; radius 8 dp; 12 dp side padding; 2 dp above the bar; shows while held, 1.5 s after release", "keyboard on-background fill; keyboard background text") + '>Format</span>', 1)
+S["kb-tip"] = device(chat(text="Running late for the meet") + ime(_sb_tip, suggestions(["meet", "meeting", "meetings"], annotate=False), keys(annotate=False)), ime=True)
+
+# ---------- autocorrect ----------
+_ac_row = ('<div class="s-row48 s-sugg"' + ann("Suggestion row after an autocorrect", "Same 48 dp row; the original word comes first with an undo arrow; tap it to put it back", "original word keyboard on-surface-variant, dotted underline") +
+           f'><span class="orig">{ic("undo", size=16)}<s>teh</s></span><span class="b">the</span><span>then</span></div>')
+S["ac-done"] = device(chat(text="See you at the ") + ime(smartbar(annotate=False), _ac_row, keys(annotate=False)), ime=True)
+
+
+# ---------- TalkBack focus order ----------
+def _focus(html, items):
+    """Adds numbered TalkBack focus markers (drawn by spec.js) to a screen. items: [(css selector, label)]."""
+    import json
+    data = json.dumps([[s, l] for s, l in items]).replace("'", "&#39;")
+    return html.replace('<div class="s-dev', f'<div data-focus=\'{data}\' class="s-dev', 1)
+
+
+_bar = ".s-ime > .s-row48:first-child > .s-btn"
+S["tb-keyboard"] = _focus(S["kb-typing"], [
+    (f"{_bar}:nth-child(1)", "1"), (f"{_bar}:nth-child(2)", "2"), (f"{_bar}:nth-child(3)", "3"), (f"{_bar}:nth-child(4)", "4"),
+    (f"{_bar}:nth-child(5)", "5"), (f"{_bar}:nth-child(6)", "6"), (f"{_bar}:nth-child(8)", "7"),
+    (".s-sugg span:nth-child(1)", "8"), (".s-sugg span:nth-child(2)", "9"), (".s-sugg span:nth-child(3)", "10"),
+    (".s-keys", "Keys: touch to explore, lift to type"),
+])
+S["tb-panel"] = _focus(S["ai-open"], [
+    (".s-phead .s-btn", "1"), (".s-phead .t", "2"), (".s-phead .s-badge", "3"),
+    (".s-chips .s-chip:nth-child(1)", "4"), (".s-chips .s-chip:nth-child(2)", "5"), (".s-chips .s-chip:nth-child(3)", "6"), (".s-chips .s-chip:nth-child(4)", "7"),
+    (".s-res", "8"), (".s-res .m span:nth-child(2)", "9"), (".s-dock .s-b:nth-child(1)", "10"), (".s-dock .s-b:nth-child(2)", "11"),
+])
+S["tb-more"] = _focus(S["kb-more"], [
+    (".s-phead .s-btn", "1"), (".s-phead .t", "2"), (".s-phead .s-ptext", "3"), (".s-more > .g", "4"),
+    (".s-more .s-tile:nth-child(1)", "5"), (".s-more .s-tile:nth-child(2)", "6"), (".s-more .s-tile:nth-child(3)", "7"), (".s-more .s-tile:nth-child(4)", "8"),
+])
