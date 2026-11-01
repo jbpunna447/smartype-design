@@ -33,6 +33,19 @@ def icon(name, cls="ic"):
     return f'<svg class="{cls}" viewBox="{view}" aria-hidden="true" fill="currentColor">{paths}</svg>'
 
 
+# The Google Play logo, so the button reads as Play at a glance (used as Google's brand guidelines allow, to point to the app).
+PLAY = ('<svg class="play" viewBox="0 0 24 24" aria-hidden="true">'
+        '<path fill="#00D7FE" d="M3.6 1.8 13.3 12 3.6 22.2c-.4-.2-.6-.6-.6-1.1V2.9c0-.5.2-.9.6-1.1z"/>'
+        '<path fill="#00F076" d="M16.6 8.6 13.3 12 3.6 1.8c.3-.2.8-.2 1.2 0z"/>'
+        '<path fill="#FFC900" d="M20.4 10.7c.8.4.8 1.6 0 2.1l-3.8 2.2-3.3-3 3.3-3.4z"/>'
+        '<path fill="#F7304B" d="M16.6 15.4 4.8 22.2c-.4.2-.9.2-1.2 0l9.7-10.2z"/></svg>')
+
+
+def play_button(label="Coming soon to Google Play", cls=""):
+    """The one call to action: a keycap with the Play logo. A span while the app isn't on Play; swap for a link later."""
+    return f'<span class="btn key {cls}" aria-disabled="true"><span class="play-chip">{PLAY}</span>{E(label)}</span>'
+
+
 def art(name, size, cls=""):
     """An illustration that switches to its dark version with the system theme."""
     return (f'<picture class="art {cls}"><source media="(prefers-color-scheme: dark)" srcset="assets/art/{name}-dark.svg">'
@@ -58,7 +71,7 @@ def page(name, title, description, body, current=None, extra=""):
 <body><a class="skip" href="#main">Skip to content</a>
 <header class="top"><div class="wrap top-in"><a class="brand" href="index.html" aria-label="SmarType home">
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/lockup-porcelain.svg"><img src="assets/lockup-ink.svg" alt="SmarType" height="30"></picture></a>
-<nav aria-label="Main">{links}</nav><span class="soon">Coming soon</span></div></header>
+<nav aria-label="Main">{links}</nav>{play_button("Coming soon", "sm")}</div></header>
 <main id="main">{body}</main>
 <footer class="foot"><div class="wrap foot-in">
 <div><picture><source media="(prefers-color-scheme: dark)" srcset="assets/lockup-porcelain.svg"><img src="assets/lockup-ink.svg" alt="SmarType" height="26"></picture>
@@ -158,7 +171,7 @@ def home():
 <p class="kicker" data-reveal>The AI keyboard for Android</p>
 <h1 data-type="hero">Type it.<br>Say it.<br><em>Get it right.</em></h1>
 <p class="lede" data-reveal>SmarType fixes, translates and tidies your words, right where you type, in every app.</p>
-<div class="cta" data-reveal><span class="btn primary magnetic" aria-disabled="true">Coming soon to Google Play</span><a class="btn ghost magnetic" href="#features">See it work</a></div></div>
+<div class="cta" data-reveal>{play_button()}<a class="btn key alt" href="#features">See it work</a></div></div>
 <div class="hero2-stage">{floats}<div class="hero2-art" data-depth=".12">{art("art_welcome", 360)}</div>{composer}</div></div>
 <a class="scroll-cue" href="#features" aria-label="Scroll to the story"><span></span></a></section>
 
@@ -208,7 +221,7 @@ def home():
 <div class="wrap split"><div class="close-art" data-reveal>{art("art_signin", 320)}</div><div>
 <h2 data-type>Try the AI <em>for free.</em></h2>
 <p class="lede" data-reveal>Sign in with Google to get free AI tries. Typing, suggestions and voice work without an account.</p>
-<div class="cta" data-reveal><span class="btn primary magnetic" aria-disabled="true">Coming soon to Google Play</span></div></div></div>
+<div class="cta" data-reveal>{play_button()}</div></div></div>
 </section>
 """
     scripts = ('<script src="assets/js/gsap.min.js" defer></script><script src="assets/js/ScrollTrigger.min.js" defer></script>'

@@ -20,6 +20,13 @@ OUT = os.path.join(ROOT, "site")
 sys.path.insert(0, SRC)
 
 import components  # noqa: E402
+
+
+def _store_src(name):
+    """A store image's link with a version from its contents, so a browser never shows an old render."""
+    import hashlib
+    with open(os.path.join(ROOT, "assets", "store", "en", name), "rb") as fh:
+        return f"assets/store/en/{name}?v={hashlib.sha1(fh.read()).hexdigest()[:8]}"
 from edges import EDGES  # noqa: E402
 from taps import TAPS  # noqa: E402
 from flows import BUILD_ORDER, FLOWS, RISK, RULES  # noqa: E402
@@ -248,7 +255,7 @@ def store_feature_page(fn):
 
 def store_page():
     shots = "".join(
-        f'<figure class="pl-card"><img src="assets/store/en/{i + 1:02d}-{f["sid"]}.png" alt="{E(f["alt"])}" width="270" height="480" loading="lazy">'
+        f'<figure class="pl-card"><img src="{_store_src(f"{i + 1:02d}-" + f["sid"] + ".png")}" alt="{E(f["alt"])}" width="270" height="480" loading="lazy">'
         f'<figcaption><b>{i + 1}. {E(re.sub("<[^>]+>", "", f["head"]))}</b><br><span>Alt text: {E(f["alt"])}</span></figcaption></figure>'
         for i, f in enumerate(store.FRAMES))
     rules = [
@@ -275,7 +282,7 @@ def store_page():
             '(each experiment compares the current listing with a few variants on a share of visitors, for at least a week), and keep the winner. '
             'Rotate seasonally or with releases, for example Every language around Indian festivals. Upload a new one in Store presence → Main store listing → Graphics.</div>'
             '<div class="pl-features">' + "".join(
-                f'<figure class="pl-feature"><img src="assets/store/en/feature-{key}.png" alt="{E(alt)}" width="1024" height="500"><figcaption><b>{E(title)}</b> · {E(desc)}</figcaption></figure>'
+                f'<figure class="pl-feature"><img src="{_store_src(f"feature-{key}.png")}" alt="{E(alt)}" width="1024" height="500"><figcaption><b>{E(title)}</b> · {E(desc)}</figcaption></figure>'
                 for key, title, desc, fn, alt in store.FEATURES) + '</div>'
             '<h2>Screenshots</h2><div class="pl-grid">' + shots + '</div>'
             '<h2>Rules</h2><div class="tbl"><table><thead><tr><th>Rule</th><th>Spec</th></tr></thead><tbody>' +

@@ -11,6 +11,12 @@
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   const seg = window.Intl && Intl.Segmenter ? new Intl.Segmenter(undefined, { granularity: "grapheme" }) : null;
   const graphemes = (t) => (seg ? [...seg.segment(t)].map((x) => x.segment) : Array.from(t));
+  // One-shot "when it scrolls into view": IntersectionObserver, which stays right when content above changes height
+  // (the accordion and the stacking cards do), unlike positions measured once.
+  const whenSeen = (el, fn, margin = "0px 0px -10% 0px") => {
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { io.disconnect(); fn(); } }), { rootMargin: margin });
+    io.observe(el);
+  };
   const onScreen = (el, fn) => ScrollTrigger.create({ trigger: el, start: "top bottom", end: "bottom top", onToggle: (s) => fn(s.isActive) });
 
   // ---------- typing ----------
@@ -81,23 +87,23 @@
   $$("[data-type]").forEach((el) => {
     const play = prepareHeading(el);
     if (el.dataset.type === "hero") play({ speed: 48, pause: 320 });
-    else ScrollTrigger.create({ trigger: el, start: "top 92%", once: true, onEnter: () => play() });
+    else whenSeen(el, () => play(), "0px 0px -8% 0px");
   });
   $$("[data-typeon]").forEach((el) => {
     const text = el.textContent;
     el.textContent = "";
-    ScrollTrigger.create({ trigger: el, start: "top 88%", once: true, onEnter: () => {
+    whenSeen(el, () => {
       const i = $$("[data-typeon]", el.parentElement).indexOf(el);
       setTimeout(() => retype(el, text, { speed: 26 }), 250 + i * 400);
-    } });
+    }, "0px 0px -12% 0px");
   });
 
   // ---------- reveals ----------
   gsap.to(".hero2 [data-reveal]", { opacity: 1, y: 0, duration: 1, ease: "expo.out", stagger: 0.12, delay: 0.2 });
-  ScrollTrigger.batch(".hero2 ~ section [data-reveal]", {
-    start: "top 92%", once: true,
-    onEnter: (els) => gsap.to(els, { opacity: 1, y: 0, duration: 0.8, ease: "expo.out", stagger: 0.07 }),
-  });
+  $$(".hero2 ~ section [data-reveal]").forEach((el) => whenSeen(el, () => {
+    const sibs = $$("[data-reveal]", el.parentElement);
+    gsap.to(el, { opacity: 1, y: 0, duration: 0.8, ease: "expo.out", delay: Math.max(0, sibs.indexOf(el)) * 0.07 });
+  }, "0px 0px -8% 0px"));
 
   // ---------- hero ----------
   gsap.from(".float", { scale: 0.5, opacity: 0, duration: 1.1, ease: "back.out(1.7)", stagger: 0.12, delay: 0.4 });
@@ -143,15 +149,6 @@
   $$(".glow").forEach((el) => gsap.to(el, { yPercent: -40 * (+el.dataset.depth || 0.3), ease: "none",
     scrollTrigger: { trigger: el.closest("section"), start: "top top", end: "bottom top", scrub: true } }));
 
-  $$(".magnetic").forEach((b) => {
-    const x = gsap.quickTo(b, "x", { duration: 0.4, ease: "power3.out" }), y = gsap.quickTo(b, "y", { duration: 0.4, ease: "power3.out" });
-    b.addEventListener("pointermove", (e) => {
-      const r = b.getBoundingClientRect();
-      x((e.clientX - r.left - r.width / 2) * 0.2); y((e.clientY - r.top - r.height / 2) * 0.3);
-    });
-    b.addEventListener("pointerleave", () => gsap.to(b, { x: 0, y: 0, duration: 0.9, ease: "elastic.out(1, .4)" }));
-  });
-
   // ---------- story: auto-advancing accordion demo ----------
   const field = $(".field-text"), states = $$(".field .st").map((s) => ({ text: s.textContent, typo: s.dataset.typo }));
   const keys = $$(".phone-keys i"), pbs = $$(".pb[data-for]");
@@ -176,6 +173,7 @@
       item.setAttribute("aria-selected", j === i ? "true" : "false");
     });
     pbs.forEach((p) => p.classList.toggle("lit", p.dataset.for === String(i)));
+    setTimeout(() => ScrollTrigger.refresh(), 400);
     tapKeys(i === 0);
     if (i === 3) field.textContent = "";
     const done = await retype(field, states[i].text, { speed: i === 0 ? 55 : 24 });
@@ -256,14 +254,17 @@
     if (s.isActive && !userPicked) toneTimer = setInterval(() => pickTone((toneIdx + 1) % chips.length), 4500);
   } });
 
-  // ---------- stacking cards: each one sinks back as the next arrives ----------
-  const cards = $$(".card");
+  // ---------- stacking cards: every card that arrives pushes all the cards under it back one equal step ----------
+  // Card i's scale is 1 - STEP x (how many later cards have arrived), so in the finished stack each card is one step
+  // smaller than the one above it, and the visible edges are equally spaced (the sticky tops are 16 px apart).
+  const cards = $$(".card"), STEP = 0.035, arrived = cards.map(() => 0);
+  const setScale = cards.map((c) => gsap.quickSetter(c, "scale"));
+  const restack = () => cards.forEach((c, i) => setScale[i](1 - STEP * arrived.slice(i + 1).reduce((a, b) => a + b, 0)));
   cards.forEach((c, i) => {
     c.style.setProperty("--i", i);
-    const next = cards[i + 1];
-    if (!next) return;
-    gsap.to(c, { scale: 0.94 + i * 0.012, ease: "none",
-      scrollTrigger: { trigger: next, start: "top bottom", end: () => `top ${parseFloat(getComputedStyle(next).top)}px`, scrub: true } });
+    if (i === 0) return;
+    ScrollTrigger.create({ trigger: c, start: "top bottom", end: () => `top ${parseFloat(getComputedStyle(c).top)}px`,
+      onUpdate: (st) => { arrived[i] = st.progress; restack(); } });
   });
 
   // ---------- voice: an equalizer that moves like speech (words, then pauses), with the words as they are heard ----------

@@ -38,52 +38,57 @@ def _bubble(text, cls="", style=""):
 SQUIGGLE = ('<svg class="sq" viewBox="0 0 120 8" preserveAspectRatio="none" aria-hidden="true"><path d="M0 4 q5 -5 10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0" '
             'fill="none" stroke="#E5395B" stroke-width="2.5"/></svg>')
 
-# Each frame: screen id, theme, headline (with one <em> accent), crop (y0, y1 in dp), UI scale, slab top (px),
+# Each frame: screen id, theme, headline (with one <em> accent), crop (y0, y1 in dp: the content plus 24 dp of air on top,
+# down to the keyboard's bottom edge, never the nav bar; the slab sits flush with the frame's bottom edge),
 # extras (HTML placed absolutely), alt text (<= 140 characters).
 FRAMES = [
-    dict(sid="ai-open", theme="light", head="Fix any message <em>in one tap</em>", crop=(360, 800), k=2.5, top=820,
-         extras=(_bubble('im <span class="typo">runing' + SQUIGGLE + '</span> late sry', "before", "left:290px;top:520px;transform:rotate(-3deg)") +
-                 f'<div class="pl-arrow" style="left:560px;top:668px">↓</div>' +
-                 f'<div style="position:absolute;left:66px;top:560px">{_key("surprised", 230, (.04, -.02))}</div>' +
+    dict(sid="ai-open", theme="light", head="Fix any message <em>in one tap</em>", crop=(332, 776),
+         extras=(_bubble('im <span class="typo">runing' + SQUIGGLE + '</span> late sry', "before", "left:290px;top:500px;transform:rotate(-3deg)") +
+                 f'<div class="pl-arrow" style="left:560px;top:640px">↓</div>' +
+                 f'<div style="position:absolute;left:66px;top:510px">{_key("surprised", 230, (.04, -.02))}</div>' +
                  f'<div style="position:absolute;left:830px;top:470px">{_sparkle(120)}</div>'),
          alt="SmarType fixing a typo-filled message, im runing late sry, into I'm running late for the meeting, sorry."),
-    dict(sid="tr-open", theme="light", head="Type in English. <em>Send it in Hindi.</em>", crop=(360, 800), k=2.5, top=820,
+    dict(sid="tr-open", theme="light", head="Type in English. <em>Send it in Hindi.</em>", crop=(332, 776),
          extras=(_bubble("Running late, sorry!", "", "left:80px;top:470px") +
                  f'<div class="pl-badge" style="left:700px;top:470px">文A</div>' +
                  _bubble("देर हो रही है, माफ़ करना!", "ai", "right:80px;top:640px")),
          alt="SmarType translating Running late, sorry from English into Hindi, with English, Hindi and Telugu to choose from"),
-    dict(sid="vo-listen", theme="dark", head="Just speak. <em>It's tidied up.</em>", crop=(400, 800), k=2.5, top=900,
-         extras=(_bubble("um so like I'm on my way, be there in ten", "raw", "left:80px;top:500px") +
-                 f'<div class="pl-arrow dark" style="left:500px;top:610px">↓</div>' +
-                 _bubble("On my way, be there in 10!", "ai", "right:80px;top:700px") +
-                 f'<div style="position:absolute;left:70px;top:640px">{_key("asleep", 200)}</div>'),
+    dict(sid="vo-listen", theme="dark", head="Just speak. <em>It's tidied up.</em>", crop=(332, 776),
+         extras=(_bubble("um so like I'm on my way, be there in ten", "raw", "left:80px;top:420px;max-width:920px") +
+                 f'<div class="pl-arrow dark" style="left:620px;top:545px">↓</div>' +
+                 _bubble("On my way, be there in 10!", "ai", "right:80px;top:625px") +
+                 f'<div style="position:absolute;left:70px;top:570px">{_key("asleep", 170)}</div>'),
          alt="Voice typing in SmarType: rambling speech turned into a clean message, On my way, be there in 10!"),
-    dict(sid="fm-open", theme="light", head="Rough notes, <em>neat lists</em>", crop=(320, 800), k=2.3, top=800,
+    dict(sid="fm-open", theme="light", head="Rough notes, <em>neat lists</em>", crop=(356, 776),
          extras=(_bubble("need: tickets, hotel for 2 nights, cab, dinner sat", "note", "left:70px;top:470px;transform:rotate(-2deg)") +
                  f'<div style="position:absolute;right:70px;top:440px">{_key("happy", 190)}</div>'),
          alt="SmarType turning a run-on list into tidy bullet points: train tickets, hotel for 2 nights, cab, dinner"),
-    dict(sid="nt-changed", theme="light", head="Notes that <em>AI can polish</em>", crop=(36, 500), k=2.3, top=760,
-         extras=(_bubble("add that I'll pay the rent on Friday", "ask", "left:80px;top:470px;max-width:600px") +
-                 f'<div style="position:absolute;right:80px;top:440px">{_key("focus", 190, (-.03, .02))}</div>'),
+    dict(sid="nt-changed", theme="light", head="Notes that <em>AI can polish</em>", crop=(24, 520),
+         extras=(_bubble("add that I'll pay the rent on Friday", "ask", "left:80px;top:430px;max-width:600px") +
+                 f'<div style="position:absolute;right:80px;top:410px">{_key("focus", 190, (-.03, .02))}</div>'),
          alt="A SmarType note changed by AI after asking, add that I'll pay the rent on Friday, with Undo and Insert"),
-    dict(sid="cb-open", theme="light", head="Copied it? <em>Paste in one tap.</em>", crop=(360, 800), k=2.5, top=820,
+    dict(sid="cb-open", theme="light", head="Copied it? <em>Paste in one tap.</em>", crop=(332, 776),
          extras=(_bubble("Order #48213 confirmed for Friday", "", "left:80px;top:480px;transform:rotate(-2deg);max-width:600px") +
                  f'<div style="position:absolute;right:90px;top:470px">{_key("watch", 190, (-.04, .03))}</div>'),
          alt="The SmarType clipboard in the keyboard with pinned and recent clips, ready to paste"),
-    dict(sid="lg-globe", theme="dark", head="English and Hindi, <em>one key apart</em>", crop=(405, 800), k=2.5, top=840,
-         extras=(_bubble("See you tomorrow", "", "left:80px;top:480px") + _bubble("कल मिलते हैं", "ai", "right:80px;top:660px") +
-                 '<div class="pl-globe" style="left:420px;top:640px"><svg aria-hidden="true"><use href="#ms-language"/></svg></div>'),
+    dict(sid="lg-globe", theme="dark", head="English and Hindi, <em>one key apart</em>", crop=(332, 776),
+         extras=(_bubble("See you tomorrow", "", "left:80px;top:460px") + _bubble("कल मिलते हैं", "ai", "right:80px;top:610px") +
+                 '<div class="pl-globe" style="left:420px;top:590px"><svg aria-hidden="true"><use href="#ms-language"/></svg></div>'),
          alt="Switching the SmarType keyboard between English and Hindi with the globe key"),
     dict(sid="privacy", theme="dark", head="Your typing <em>stays on your phone</em>", graphic=True,
-         extras=(f'<div style="position:absolute;left:250px;top:430px">{_key("happy", 250)}</div>'
-                 '<div class="pl-lock" style="left:560px;top:470px"><svg aria-hidden="true"><use href="#ms-lock"/></svg></div>'
-                 + "".join(f'<div class="pl-promise" style="top:{770 + i * 300}px"><div class="ic"><svg aria-hidden="true"><use href="#{ref}"/></svg></div>'
+         extras=(f'<div style="position:absolute;left:250px;top:470px">{_key("happy", 250)}</div>'
+                 '<div class="pl-lock" style="left:560px;top:490px"><svg aria-hidden="true"><use href="#ms-lock"/></svg></div>'
+                 + "".join(f'<div class="pl-promise" style="top:{860 + i * 330}px"><div class="ic"><svg aria-hidden="true"><use href="#{ref}"/></svg></div>'
                            f'<div><b>{t}</b><span>{d}</span></div></div>'
                            for i, (ref, t, d) in enumerate([("ms-keyboard", "Typing stays on your phone", "Suggestions are learned on the device"),
                                                             ("br-spark", "AI sees only what you send", "Only when you tap Rewrite, Translate or Format"),
                                                             ("ms-lock", "Passwords stay private", "No AI, no voice, nothing learned in password fields")]))),
          alt="SmarType privacy: typing stays on the phone, AI sees only what you send, password fields stay private"),
 ]
+
+
+# Every UI slab uses the same scale, so text in the app reads the same size in each screenshot.
+SLAB_K = 2.6
 
 
 def _backdrop(i, theme):
@@ -107,8 +112,9 @@ def frame_html(i, root=""):
     slab = ""
     if not f.get("graphic"):
         y0, y1 = f["crop"]
-        k = f["k"]
+        k = SLAB_K
         sw, sh = 360 * k, (y1 - y0) * k
+        f = dict(f, top=round(H - sh))  # flush with the bottom edge; only the top corners are rounded
         dev = S[f["sid"]].replace("{root}", root)
         slab = (f'<div class="pl-slab" style="left:{(W - sw) / 2:.0f}px;top:{f["top"]}px;width:{sw:.0f}px;height:{sh:.0f}px">'
                 f'<div class="pl-dev" style="transform: translateY({-y0 * k:.0f}px) scale({k})">{dev}</div></div>')
@@ -127,7 +133,7 @@ STYLE = f"""
 .pl.dark .pl-head {{ color: #F2F8F9; }}
 .pl-head em {{ font-style: normal; background: linear-gradient(120deg, {_stops(SPARK_STOPS)}); -webkit-background-clip: text; background-clip: text; color: transparent; }}
 .pl.dark .pl-head em {{ background-image: linear-gradient(120deg, {_stops(AI)}); }}
-.pl-slab {{ position: absolute; overflow: hidden; border-radius: 56px; box-shadow: 0 40px 90px rgba(8,50,59,.22), 0 0 0 1px rgba(8,50,59,.06); }}
+.pl-slab {{ position: absolute; overflow: hidden; border-radius: 56px 56px 0 0; box-shadow: 0 40px 90px rgba(8,50,59,.22), 0 0 0 1px rgba(8,50,59,.06); }}
 .pl.dark .pl-slab {{ box-shadow: 0 40px 90px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.08); }}
 .pl-dev {{ width: 360px; transform-origin: 0 0; }}
 .pl .s-dev {{ border-radius: 0; box-shadow: none; }}
@@ -150,7 +156,7 @@ STYLE = f"""
 .pl-lock {{ position: absolute; z-index: 3; width: 210px; height: 210px; border-radius: 105px; display: grid; place-items: center;
   background: linear-gradient(135deg, {_stops(AI)}); color: {INK}; box-shadow: 0 24px 60px rgba(0,0,0,.45); }}
 .pl-lock svg {{ width: 120px; height: 120px; fill: currentColor; }}
-.pl-promise {{ position: absolute; left: 72px; right: 72px; height: 250px; box-sizing: border-box; display: flex; align-items: center; gap: 40px; padding: 0 48px;
+.pl-promise {{ position: absolute; left: 72px; right: 72px; height: 280px; box-sizing: border-box; display: flex; align-items: center; gap: 40px; padding: 0 48px;
   border-radius: 48px; background: rgba(255,255,255,.07); border: 2px solid rgba(255,255,255,.12); color: #F2F8F9; }}
 .pl-promise .ic {{ flex: 0 0 140px; height: 140px; border-radius: 40px; display: grid; place-items: center; background: linear-gradient(135deg, {_stops(AI)}); color: {INK}; }}
 .pl-promise .ic svg {{ width: 76px; height: 76px; fill: currentColor; }}
