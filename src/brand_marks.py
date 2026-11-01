@@ -153,6 +153,35 @@ def _voice_mask(gid, cx, cy, h, style):
     return f'<mask id="{gid}v"><rect width="108" height="108" fill="#fff"/>{_voice_cuts(cx, cy, h, style)}</mask>'
 
 
+# The logo's voice bars: four slots of equal width with equal bars between them, cut only inside the stroke. A rim
+# of EDGE units is left along the S's outline, so the letter keeps its shape and the tip has no thin slivers.
+EDGE = .9
+SLOT = 1.1
+
+
+def _inner_mask(gid, key, cx, cy, h):
+    """White where the S is at least EDGE inside its outline."""
+    from brand_glyphs import GLYPH_S
+    w, gh, d = GLYPH_S[key]
+    k = h / gh
+    t = f'translate({cx - w * k / 2:.2f} {cy - h / 2:.2f}) scale({k:.5f})'
+    return (f'<mask id="{gid}i"><g transform="{t}"><path fill="#fff" d="{d}"/>'
+            f'<path fill="none" stroke="#000" stroke-width="{2 * EDGE / k:.1f}" stroke-linejoin="round" d="{d}"/></g></mask>')
+
+
+def _bars(cx, cy, h, fill):
+    w = h * .75
+    return "".join(f'<rect x="{cx - w / 2 + .4 + i * 2 * SLOT:.2f}" y="{cy + h * .1:.2f}" width="{SLOT}" height="{h / 2:.2f}" fill="{fill}"/>' for i in range(4))
+
+
+def _s_voice(gid, cx, cy, h, fill):
+    """The logo S with its voice bars."""
+    key = "w700r100"
+    return (_inner_mask(gid, key, cx, cy, h) +
+            f'<mask id="{gid}v"><rect width="108" height="108" fill="#fff"/><g mask="url(#{gid}i)">{_bars(cx, cy, h, "#000")}</g></mask>' +
+            f'<g mask="url(#{gid}v)">' + _sfont(key, cx, cy, h, fill) + "</g>")
+
+
 def _keyfont(key, spark_fill=None, voice=False):
     def fg(gid):
         out = _keycap(gid)
@@ -175,15 +204,15 @@ def _keyfont_mono(key):
 def _keyai(spark_fill):
     """The chosen logo: the key, the S with its tail fading into sound, and the spark."""
     def fg(gid):
-        return (_keycap(gid) + _voice_mask(gid, KS_CX, KS_CY, KS_H, "fade") +
-                f'<g mask="url(#{gid}v)">' + _s(KS_CX, KS_CY, KS_H, INK) + "</g>" + _spark(spark_fill, gid))
+        return _keycap(gid) + _s_voice(gid, KS_CX, KS_CY, KS_H, INK) + _spark(spark_fill, gid)
     return fg
 
 
 def keyai_mono(gid):
     """Themed icon: the key's silhouette with the S, its voice cuts and the spark cut out."""
-    return ('<mask id="%sm"><rect width="108" height="108" fill="#000"/><rect x="31" y="29" width="46" height="48.5" rx="11" fill="#fff"/>' % gid +
-            _s(KS_CX, KS_CY, KS_H, "#000") + _voice_cuts(KS_CX, KS_CY, KS_H, "fade", "#fff") + _spark("#000") +
+    return (_inner_mask(gid, "w700r100", KS_CX, KS_CY, KS_H) +
+            '<mask id="%sm"><rect width="108" height="108" fill="#000"/><rect x="31" y="29" width="46" height="48.5" rx="11" fill="#fff"/>' % gid +
+            _s(KS_CX, KS_CY, KS_H, "#000") + f'<g mask="url(#{gid}i)">' + _bars(KS_CX, KS_CY, KS_H, "#fff") + "</g>" + _spark("#000") +
             '</mask><rect width="108" height="108" fill="MONO" mask="url(#%sm)"/>' % gid)
 
 

@@ -74,7 +74,7 @@ def _s_compare():
     voice = ('<h3 style="margin-top:22px">The voice bars</h3><div class="bk-row">' + "".join(
         f'<div class="bk-sz">{icon(k, 104, "circle")}{icon(k, 48, "circle")}<span>{lbl}</span></div>' for k, lbl in
         [("keyai", "Tail as voice bars (chosen)"), ("f700bars", "Lower half as a level meter"), ("f700", "Solid")]) + "</div>"
-        '<p>Chosen: the S\'s tail breaks into four even bars, like a voice level meter, so the mark says typing, voice and AI. '
+        '<p>Chosen: four slots of equal width cut inside the S\'s tail, with equal bars between them, like a voice level meter. A thin rim is left along the S\'s outline, so the letter keeps its shape, so the mark says typing, voice and AI. '
         'The cuts read from 48 px up; the 24 dp status-bar icon uses the solid S, where the cuts would vanish. In motion, the bars can pulse in the splash and the voice bar.</p>')
     return figs + weights + voice
 
@@ -101,7 +101,7 @@ def brand_body(root):
     sparks = (f'<div class="bk-sparks"><div>{STAR.format(s=56, c=SEAGLASS)}<span>App icon star</span></div><div>{AI_LOGO.format(s=56)}<span>AI logo</span></div>'
               f'<div>{SPARK.format(s=56, c="#0b727b")}<span>Smartbar spark</span></div><div><img src="{root}assets/art/logo.png" alt="" width="56" height="56" style="border-radius:12px"><span>Keycap glow star</span></div></div>')
     dirs = (_direction("keyai", "A key: the S is its legend, the spark is its second function.",
-                       "A white keycap with a thin light grey lip; the S (Google Sans Flex 700, round) has a tail cut into voice bars on a vivid blue → cyan → mint gradient with a soft light from the top left. On real keys the small symbol in the top corner is what a long-press gives you; here it's the AI spark, in a deeper version of the background's gradient, up in the key's top-right corner, so the icon says \"keyboard with AI built in\" in a keyboard's own language.",
+                       "A white keycap with a thin light grey lip; the S (Google Sans Flex 700, round) has voice bars cut inside its tail on a vivid blue → cyan → mint gradient with a soft light from the top left. On real keys the small symbol in the top corner is what a long-press gives you; here it's the AI spark, in a deeper version of the background's gradient, up in the key's top-right corner, so the icon says \"keyboard with AI built in\" in a keyboard's own language.",
                        ["Says \"keyboard\" at any size, and \"AI\" from 48 px up", "The spark is part of the key, not a sticker: different from the floating sparkles other AI apps use", "Written backwards, the S ends at its top tip and flows on into the spark: one movement, typing becoming AI", "The S's tail turns into voice bars: typing, voice and AI in one mark", "Simple vector; the themed icon is the key's silhouette with the S, its voice cuts and the spark cut out"],
                        ["Below 32 px the spark becomes a dot and the voice cuts close up; the status-bar icon uses the solid S", "Teal backgrounds are common for productivity apps"], pick=True) +
             _direction("caret", "The S, just typed: a text cursor after it.",
