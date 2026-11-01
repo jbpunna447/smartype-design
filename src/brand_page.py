@@ -60,7 +60,7 @@ def brand_body(root):
     sparks = (f'<div class="bk-sparks"><div>{STAR.format(s=56, c=SEAGLASS)}<span>App icon star</span></div><div>{AI_LOGO.format(s=56)}<span>AI logo</span></div>'
               f'<div>{SPARK.format(s=56, c="#0b727b")}<span>Smartbar spark</span></div><div><img src="{root}assets/art/logo.png" alt="" width="56" height="56" style="border-radius:12px"><span>Keycap glow star</span></div></div>')
     dirs = (_direction("keyai", "A key: the S is its legend, the spark is its second function.",
-                       "A white keycap with a light grey lip on the brand gradient. On real keys the small symbol in the top corner is what a long-press gives you; here it's the AI spark, in teal, so the icon says \"keyboard with AI built in\" in a keyboard's own language.",
+                       "A white keycap with a light grey lip on a strong blue → cyan → mint gradient. On real keys the small symbol in the top corner is what a long-press gives you; here it's the AI spark, in teal, so the icon says \"keyboard with AI built in\" in a keyboard's own language.",
                        ["Says \"keyboard\" at any size, and \"AI\" from 48 px up", "The spark is part of the key, not a sticker: different from the floating sparkles other AI apps use", "Two colours on the key: ink for typing, teal for AI, the same split as the smartbar", "Simple vector; the themed icon is the key's silhouette with the S and spark cut out"],
                        ["Below 32 px the spark becomes a dot; the S and the key still read", "Teal backgrounds are common for productivity apps"], pick=True) +
             _direction("caret", "The S, just typed: a text cursor after it.",
@@ -97,13 +97,23 @@ def brand_body(root):
         '</tbody></table></div>'
         '<h2>Three directions</h2><p>Same colours and the same S for all three, so the comparison is about the idea. Shown at real launcher sizes, as themed icons and in the status bar.</p>' + dirs +
         '<h2>The spark on the key</h2>' + variants +
+        '<h2>The background gradient</h2><div class="bk-row">' + "".join(
+            f'<div class="bk-sz">{icon(k, 112, "circle")}{icon(k, 48, "circle")}<span>{lbl}</span></div>' for k, lbl in
+            [("keyai_soft", "Soft: today's Glacier → Seaglass"), ("keyai_vivid", "Vivid"), ("keyai_vivid_glow", "Vivid with light"), ("keyai", "Deep (recommended)")]) + "</div>"
+        '<p>Today\'s soft gradient reads as one flat colour. A wider shift, blue to cyan to mint, is how people recognise AI now, and it makes the white key stand out more, on light and dark home screens. The added light looks glossy next to a flat key, so it\'s left out.</p>'
+        '<div class="tbl"><table><thead><tr><th>Stop</th><th>Colour</th></tr></thead><tbody>'
+        '<tr><td>0% (top left)</td><td><code>#1663B8</code></td></tr><tr><td>50%</td><td><code>#1BAFC8</code></td></tr><tr><td>100% (bottom right)</td><td><code>#40D9A0</code></td></tr>'
+        '</tbody></table></div>'
+        '<div class="note" style="margin-top:16px"><b>Everything is vector.</b> The key, its lip, the S, the spark and the gradients are vector paths (SVG here; Android vector drawables in the app), so they stay sharp at every size. The S is the drawn monogram from today\'s icon (ic_smartype_foreground.xml), not a font. Only the 512 px Play Store icon and store art are exported as PNG, from these vectors. The 3D keycap from the earlier kit and the illustrations are the only raster art; the keycap is retired.</div>'
         '<h2>One spark for AI</h2>' + sparks +
         '<p>Keep one spark: the two curved stars already on the smartbar\'s AI buttons. It appears in two places only: as the corner legend on the logo\'s key, and on AI actions in the app (Rewrite, Translate, Format, voice tidy-up, Premium). Retire the three-star circle (ic_ai_logo) and the straight star on today\'s icon, so there is one spark, and it always means AI.</p>'
-        '<h2>Colour</h2><p>Keep the shipped family. The brand gradient runs Glacier → Seaglass; Ink sits on it. In the app, the teal tokens stay as they are.</p>' + colour +
+        '<h2>Colour</h2><p>Keep the shipped family. The icon, splash and store art use the deep gradient above. Inside the app, the AI buttons keep the lighter Glacier → Seaglass gradient with Ink icons, which reads better at 36 dp; the teal tokens stay as they are.</p>' + colour +
         '<h2>Wordmark</h2><p>Set in Google Sans Flex, the typeface these designs use. The app still bundles DM Sans (res/font), so the switch the earlier kit proposed is part of this decision. The name\'s capital T is shared by \"Smart\" and \"Type\"; colouring it is optional.</p>' + word +
         '<h2>Your call</h2><div class="tbl"><table><thead><tr><th>Decision</th><th>Recommendation</th></tr></thead><tbody>'
         '<tr><td>Logo direction</td><td>A · Keycap with the AI spark</td></tr>'
         '<tr><td>Spark colour on the key</td><td>Teal (#0B727B), with the S in ink</td></tr>'
+        '<tr><td>Icon background</td><td>Deep gradient: #1663B8 → #1BAFC8 → #40D9A0</td></tr>'
+        '<tr><td>AI buttons in the app</td><td>Keep the lighter Glacier → Seaglass gradient; the deep one is for the icon and brand art</td></tr>'
         '<tr><td>Wordmark: plain or the T in the gradient</td><td>The gradient T for the website and store art; plain for small sizes and in the app</td></tr>'
         '<tr><td>One spark, AI only</td><td>Yes: the smartbar spark, on the logo\'s key and on AI actions; nothing else uses a spark</td></tr>'
         '<tr><td>Colours</td><td>Keep the cyan–teal family; drop the earlier move to blue</td></tr>'

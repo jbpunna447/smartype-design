@@ -56,6 +56,28 @@ def key_bg(gid):
     return f'<defs>{_grad(gid)}</defs><rect width="108" height="108" fill="url(#{gid})"/>'
 
 
+# Stronger icon backgrounds: a wider hue shift (blue → cyan → mint) in the same family, with an optional soft light.
+BG_STOPS = {
+    "soft": [(0, GLACIER), (1, SEAGLASS)],
+    "vivid": [(0, "#1E9BD7"), (.5, "#22C3CF"), (1, "#4BDCA4")],
+    "deep": [(0, "#1663B8"), (.5, "#1BAFC8"), (1, "#40D9A0")],
+}
+
+
+def _bg(stops, glow):
+    def bg(gid):
+        st = "".join(f'<stop offset="{o}" stop-color="{c}"/>' for o, c in BG_STOPS[stops])
+        out = (f'<defs><linearGradient id="{gid}" x1="18" y1="18" x2="90" y2="90" gradientUnits="userSpaceOnUse">{st}</linearGradient>')
+        if glow:
+            out += (f'<radialGradient id="{gid}r" cx="34" cy="26" r="46" gradientUnits="userSpaceOnUse">'
+                    '<stop stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>')
+        out += f'</defs><rect width="108" height="108" fill="url(#{gid})"/>'
+        if glow:
+            out += f'<rect width="108" height="108" fill="url(#{gid}r)"/>'
+        return out
+    return bg
+
+
 def _keycap(gid):
     return (f'<defs><linearGradient id="{gid}k" x1="0" y1="28" x2="0" y2="74" gradientUnits="userSpaceOnUse">'
             f'<stop stop-color="#FFFFFF"/><stop offset="1" stop-color="#EDF3F5"/></linearGradient></defs>'
@@ -127,9 +149,12 @@ def talk_mono(gid):
 
 DIRECTIONS = {
     "today": ("Today", today_bg, today_fg, today_mono),
-    "keyai": ("A · Keycap with the AI spark", key_bg, _keyai(TEAL), keyai_mono),
-    "keyai_ink": ("Spark in ink", key_bg, _keyai(INK), keyai_mono),
-    "key": ("Keycap without the spark", key_bg, key_fg, key_mono),
+    "keyai": ("A · Keycap with the AI spark", _bg("deep", False), _keyai(TEAL), keyai_mono),
+    "keyai_ink": ("Spark in ink", _bg("deep", False), _keyai(INK), keyai_mono),
+    "keyai_soft": ("Soft (today's colours)", key_bg, _keyai(TEAL), keyai_mono),
+    "keyai_vivid": ("Vivid", _bg("vivid", False), _keyai(TEAL), keyai_mono),
+    "keyai_vivid_glow": ("Vivid with light", _bg("vivid", True), _keyai(TEAL), keyai_mono),
+    "key": ("Keycap without the spark", _bg("deep", False), key_fg, key_mono),
     "caret": ("B · Caret", caret_bg, caret_fg, caret_mono),
     "talk": ("C · Talk key", talk_bg, talk_fg, talk_mono),
 }
