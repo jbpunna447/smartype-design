@@ -60,7 +60,7 @@ STILL = "@media (prefers-reduced-motion: reduce) {{ .{p} * {{ animation: none !i
 
 def _svg(p, style, body, size, label):
     return (f'<svg class="{p}" width="{size}" height="{size}" viewBox="0 0 200 200" role="img" aria-label="{label}">'
-            f'<style>.{p} * {{ transform-box: fill-box; transform-origin: center; }} {style} {STILL.format(p=p)}</style>{body}</svg>')
+            f'<style>.{p} [class] {{ transform-box: fill-box; transform-origin: center; }} {style} {STILL.format(p=p)}</style>{body}</svg>')
 
 
 # ---------- A · Moments ----------

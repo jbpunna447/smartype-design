@@ -26,6 +26,7 @@ from flows import BUILD_ORDER, FLOWS, RISK, RULES  # noqa: E402
 from screens import S  # noqa: E402
 from brand_page import brand_body  # noqa: E402
 from illustration_concepts import CONCEPTS  # noqa: E402
+from illustration_merge import SCENES  # noqa: E402
 
 E = html.escape
 DS = os.path.join(SRC, "design-system")
@@ -216,10 +217,25 @@ def illustrations_page():
             f'<div class="bk-body"><h3>{E(title)}</h3><p>{E(idea)}</p><div class="bk-pc"><div><h4>Works</h4><ul>' +
             "".join(f"<li>{E(x)}</li>" for x in good) + '</ul></div><div><h4>Watch out</h4><ul>' + "".join(f"<li>{E(x)}</li>" for x in risks) + "</ul></div></div></div></section>")
     need = "".join(f"<tr><td>{E(a)}</td><td>{E(b)}</td><td>{E(c)}</td></tr>" for a, b, c in ART_NEEDED)
-    body = ('<h1>Illustrations</h1><p class="lede">Three directions for the art in onboarding, Premium and empty states. Each is drawn here as the Welcome illustration, animated, on light and dark.</p>'
+    scenes = "".join(
+        f'<figure class="ill-scene" id="{key}"><div class="ill-pair"><div class="ill-light">{fn(240)}</div><div class="ill-dark">{fn(240)}</div></div>'
+        f'<figcaption><b>{E(title)}</b> · <span>{E(where)}</span><br>{E(text)}</figcaption></figure>' for key, title, fn, where, text in SCENES)
+    body = ('<h1>Illustrations</h1><p class="lede">The key, alive and in action: the brand key is the character, and it does what SmarType does. Animated here on light and dark.</p>'
+            '<h2>Proposed: the key, in action</h2><p>A merge of two concepts below: the character from <a href="#alive">The key, alive</a> performs the product scenes from <a href="#moments">Moments</a>. '
+            'It starts as the app icon: the S squashes down into its smile, so the character is the logo come to life. Then it fixes, translates and listens. '
+            'Every illustration in the set is one of these moments or a pose of the same character (holding a note for Notes, searching for no results, asleep for an empty list).</p>'
+            '<div class="ill-scenes">' + scenes + '</div>'
+            '<div class="tbl" style="margin-top:16px"><table><thead><tr><th>Rule</th><th>Spec</th></tr></thead><tbody>'
+            '<tr><td>Character</td><td>The brand key (white face, light lip). Face: two Ink eyes and a smile, mint cheeks. No arms, no legs, no S while it\'s a character</td></tr>'
+            '<tr><td>Where it comes from</td><td>The app icon: the S squashes into the smile and the spark jumps up as its idea; the reverse plays back to the logo</td></tr>'
+            '<tr><td>The spark</td><td>Its idea and its tool: it throws the spark to fix things. Always the brand spark, deep gradient</td></tr>'
+            '<tr><td>Motion</td><td>Springy: squash and stretch on hops, a blink every few seconds, loops of 4–6 s. Lottie in the app, a still frame for reduced motion</td></tr>'
+            '<tr><td>Words in scenes</td><td>Short and localised: one short message per bubble</td></tr>'
+            '</tbody></table></div>'
+
             '<h2>Why a new set</h2><p>Today\'s four illustrations are 3D clay renders of a graphite key with a puffy star: they match neither the new white key nor the brand spark, and they\'re images, not vectors. '
             'A first flat-vector try with the brand\'s shapes was clean but read as large icons, with no story and no life. Strong onboarding art (Duolingo, Headspace, Google\'s Material 3 Expressive) gets its life from a story, a character or motion.</p>'
-            '<h2>Three concepts</h2>' + "".join(cards) +
+            + '<h2>Earlier concepts</h2>' + "".join(cards) +
             '<h2>Where art is needed</h2><div class="tbl"><table><thead><tr><th>Illustration</th><th>Screen</th><th>Size</th></tr></thead><tbody>' + need + "</tbody></table></div>"
             '<p>Inside the keyboard stays icon-only. All art is vector: SVG for the site and store, Lottie for motion in the app, with a still frame for reduced motion.</p>'
             '<p style="font-size:13.5px;color:var(--on-surface-variant)">References: '
