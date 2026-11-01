@@ -1,0 +1,112 @@
+"""The brand review page: today's marks, three logo directions, one spark, colour and the wordmark."""
+import html
+
+from brand_marks import DIRECTIONS, GLACIER, GRAPHITE, INK, PORCELAIN, SEAGLASS, icon, notification
+
+E = html.escape
+
+AI_LOGO = ('<svg width="{s}" height="{s}" viewBox="0 0 24 24" aria-label="AI logo today"><defs><linearGradient id="ail{s}" x2="24" y2="24" gradientUnits="userSpaceOnUse">'
+           '<stop stop-color="#67CEE5"/><stop offset="1" stop-color="#69D4BD"/></linearGradient></defs><circle cx="12" cy="12" r="12" fill="url(#ail{s})"/>'
+           '<path fill="#08323B" d="M11.55 10.18 14.88 12l-3.33 1.83-1.82 3.33-1.83-3.33L4.57 12l3.33-1.82 1.83-3.33 1.82 3.33Z'
+           'M16.16 6.59l1.69.93-1.69.93-.93 1.69-.92-1.69-1.7-.93 1.7-.93.92-1.69.93 1.69Z'
+           'M16.16 15.56l1.69.92-1.69.93-.93 1.7-.92-1.7-1.7-.93 1.7-.92.92-1.7.93 1.7Z"/></svg>')
+SPARK = ('<svg width="{s}" height="{s}" viewBox="0 0 24 24" fill="{c}" aria-label="Spark"><path d="M10.5 4c.55 4.3 2.7 6.45 7 7-4.3.55-6.45 2.7-7 7-.55-4.3-2.7-6.45-7-7 4.3-.55 6.45-2.7 7-7Z"/>'
+         '<path d="M18.5 2c.28 1.75 1.13 2.6 2.88 2.88-1.75.28-2.6 1.13-2.88 2.88-.28-1.75-1.13-2.6-2.88-2.88C17.37 4.6 18.22 3.75 18.5 2Z"/></svg>')
+STAR = '<svg width="{s}" height="{s}" viewBox="64 13 20 20" aria-label="Star in the app icon"><path fill="{c}" d="M74,13 L77,20 L84,23 L77,26 L74,33 L71,26 L64,23 L71,20 Z"/></svg>'
+
+
+def _fig(inner, cap):
+    return f'<figure class="bk-fig"><div class="bk-art">{inner}</div><figcaption>{cap}</figcaption></figure>'
+
+
+def _home(key, dark):
+    """A home-screen row: the icon among neutral placeholders, at launcher size (56 px icon in a 72 px cell)."""
+    others = [("Phone", "#5f8f6b"), ("Photos", "#c98b53"), ("Camera", "#6b7a8c")]
+    cells = [f'<div class="bk-app">{icon(key, 56, "circle")}<span>SmarType</span></div>']
+    cells += [f'<div class="bk-app"><i style="background:{c}"></i><span>{n}</span></div>' for n, c in others]
+    return f'<div class="bk-home{" dark" if dark else ""}">' + "".join(cells) + "</div>"
+
+
+def _direction(key, title, idea, good, risks, pick=False):
+    name = DIRECTIONS[key][0]
+    sizes = "".join(f'<div class="bk-sz">{icon(key, s, m)}<span>{lbl}</span></div>' for s, m, lbl in
+                    [(96, "squircle", "Samsung"), (96, "rounded", "Rounded"), (48, "circle", "48 dp"), (32, "circle", "32"), (24, "circle", "24")])
+    themed = (f'<div class="bk-sz">{icon(key, 56, "circle", mono=True)}<span>Themed, light</span></div>'
+              f'<div class="bk-sz">{icon(key, 56, "circle", mono=True, mono_bg="#1E2B2E", mono_fg="#A9D7DE")}<span>Themed, dark</span></div>'
+              f'<div class="bk-sz"><span class="bk-status">{notification(key, 24)}{notification(key, 18)}</span><span>Status bar</span></div>')
+    badge = ' <span class="tag ready">Recommended</span>' if pick else ""
+    return (f'<section class="bk-dir{" pick" if pick else ""}" id="dir-{key}"><div class="bk-hero">{icon(key, 192, "circle")}</div><div class="bk-body">'
+            f'<h3>{E(name)}{badge}</h3><p class="bk-idea">{E(title)}</p><p>{E(idea)}</p>'
+            f'<div class="bk-row">{sizes}</div><div class="bk-row">{themed}</div><div class="bk-homes">{_home(key, False)}{_home(key, True)}</div>'
+            '<div class="bk-pc"><div><h4>Works</h4><ul>' + "".join(f"<li>{E(x)}</li>" for x in good) + '</ul></div><div><h4>Watch out</h4><ul>' +
+            "".join(f"<li>{E(x)}</li>" for x in risks) + "</ul></div></div></div></section>")
+
+
+def _swatch(name, hexv, use, dark_text=False):
+    return (f'<div class="bk-sw"><i style="background:{hexv}"></i><b>{E(name)}</b><code>{hexv}</code><span>{E(use)}</span></div>')
+
+
+def _wordmark(tshare=False, size=44, color=INK):
+    t = f'<span class="bk-t">T</span>' if tshare else "T"
+    return f'<span class="bk-wm" style="font-size:{size}px;color:{color}">Smar{t}ype</span>'
+
+
+def brand_body(root):
+    keycap = f'<img src="{root}assets/art/logo.png" alt="3D keycap logo from the earlier kit" width="140" height="140" style="border-radius:28px">'
+    today = (_fig(icon("today", 140, "circle"), "<b>App icon today.</b> White S and a small star on graphite. Clean, but a plain S in a circle is a common look, nothing says keyboard, and the star disappears below 48 px.") +
+             _fig(keycap, "<b>3D keycap, earlier kit.</b> Says keyboard, but it's a raster render: glow, gloss and the striped S turn to noise at 48 px, and the themed-icon tracing is broken.") +
+             _fig(AI_LOGO.format(s=140), "<b>AI logo in the app.</b> Three straight stars in a gradient circle (ic_ai_logo).") +
+             _fig(SPARK.format(s=140, c="#0b727b"), "<b>Spark on the smartbar.</b> Two curved stars: the AI buttons in the new designs."))
+    sparks = (f'<div class="bk-sparks"><div>{STAR.format(s=56, c=SEAGLASS)}<span>App icon star</span></div><div>{AI_LOGO.format(s=56)}<span>AI logo</span></div>'
+              f'<div>{SPARK.format(s=56, c="#0b727b")}<span>Smartbar spark</span></div><div><img src="{root}assets/art/logo.png" alt="" width="56" height="56" style="border-radius:12px"><span>Keycap glow star</span></div></div>')
+    dirs = (_direction("key", "A key, and the S is its legend.",
+                       "A flat porcelain keycap with a darker lip, the S printed on it, on the brand gradient. No spark: the spark belongs to AI actions inside the app.",
+                       ["Says \"keyboard\" at any size, even 24 px", "Different from messaging apps and from the S-in-a-circle look", "Simple vector: two shapes and the S; the themed icon is the key's silhouette", "The key shape carries into the splash, the website and store art"],
+                       ["The tile inside a circle is a little busy on circle launchers; the lip keeps it a key", "Teal backgrounds are common for productivity apps"], pick=True) +
+            _direction("caret", "The S, just typed: a text cursor after it.",
+                       "Keeps today's graphite and white S, and replaces the floating star with a text cursor in the brand gradient.",
+                       ["Keeps what people may already know from today's icon", "The cursor says typing; it can blink in the splash and on the website", "Strong contrast, reads well in a dark row of icons"],
+                       ["At 24–32 px, S and cursor can read as \"SI\" or \"S1\"", "Still mostly a letter: says less about a keyboard than A"]) +
+            _direction("talk", "A key that speaks: typing and voice in one shape.",
+                       "The keycap gets a speech tail, for typing and speaking.",
+                       ["Tells the voice story at a glance", "Friendly, distinct colour"],
+                       ["A speech bubble reads as a messaging app (chat apps use bubbles)", "People may expect to send messages from it"]))
+    colour = ('<div class="bk-sws">' +
+              _swatch("Glacier", GLACIER, "Gradient start: icon background, AI actions") + _swatch("Seaglass", SEAGLASS, "Gradient end") +
+              _swatch("Ink", INK, "Text on the gradient; the S on the key") + _swatch("Porcelain", PORCELAIN, "The key; light surfaces") +
+              _swatch("Graphite", GRAPHITE, "Dark surfaces, dark splash") + _swatch("Teal (UI primary)", "#0B727B", "Buttons and links in the app, light theme") + "</div>")
+    word = (f'<div class="bk-words"><div class="bk-wcard">{_wordmark()}<span>Plain: Google Sans Flex 600</span></div>'
+            f'<div class="bk-wcard">{_wordmark(True)}<span>The T in the gradient: one letter shared by Smart and Type</span></div>'
+            f'<div class="bk-wcard dark">{_wordmark(True, color=PORCELAIN)}<span>On graphite</span></div>'
+            f'<div class="bk-wcard"><span class="bk-lock">{icon("key", 48, "squircle")}{_wordmark(False, 30)}</span><span>Lockup with icon A: icon height = 1.6 × the cap height; gap = half the icon</span></div></div>')
+    return (
+        '<h1>Brand review</h1><p class="lede">One SmarType mark that works from the Play Store down to the status bar, one spark for AI, and colours that match what the app already uses.</p>'
+        '<h2>What we have today</h2><div class="bk-figs">' + today + '</div>'
+        '<div class="note" style="margin-top:16px"><b>The problem.</b> Three different marks and four different sparks. The icon a user taps is not the logo in the brand kit, and neither looks like the AI symbol inside the app. The earlier kit also proposed moving the app to blue, but the shipped icon, the AI gradient and the app\'s teal are already one cyan–teal family; the blue keycap is the odd one out.</div>'
+        '<h2>Where the mark has to work</h2><div class="tbl"><table><thead><tr><th>Place</th><th>Size</th><th>What it needs</th></tr></thead><tbody>'
+        '<tr><td>Play Store listing</td><td>512 × 512 px</td><td>Recognisable next to Gboard, SwiftKey and Grammarly</td></tr>'
+        '<tr><td>Home screen and app drawer</td><td>48–56 dp, any launcher shape</td><td>Survives circle, squircle and rounded masks</td></tr>'
+        '<tr><td>Themed icons (Android 13+)</td><td>48 dp, one colour</td><td>A clear silhouette</td></tr>'
+        '<tr><td>Keyboard picker and settings rows</td><td>24–32 dp</td><td>Still readable when small</td></tr>'
+        '<tr><td>Status bar (voice, notes bubble)</td><td>24 dp, white only</td><td>A solid shape, no thin lines</td></tr>'
+        '<tr><td>Splash, website, store art</td><td>Large</td><td>Room for motion (a key press, a blinking cursor)</td></tr>'
+        '</tbody></table></div>'
+        '<h2>Three directions</h2><p>Same colours and the same S for all three, so the comparison is about the idea. Shown at real launcher sizes, as themed icons and in the status bar.</p>' + dirs +
+        '<h2>One spark for AI</h2>' + sparks +
+        '<p>Keep one spark: the two curved stars already on the smartbar\'s AI buttons. Use it only on AI actions (Rewrite, Translate, Format, voice tidy-up, Premium), filled with the gradient or in ink on the gradient. Retire the three-star circle (ic_ai_logo) and take the star off the app icon, so the logo means SmarType and the spark means AI.</p>'
+        '<h2>Colour</h2><p>Keep the shipped family. The brand gradient runs Glacier → Seaglass; Ink sits on it. In the app, the teal tokens stay as they are.</p>' + colour +
+        '<h2>Wordmark</h2><p>Set in Google Sans Flex, the typeface these designs use. The app still bundles DM Sans (res/font), so the switch the earlier kit proposed is part of this decision. The name\'s capital T is shared by \"Smart\" and \"Type\"; colouring it is optional.</p>' + word +
+        '<h2>Your call</h2><div class="tbl"><table><thead><tr><th>Decision</th><th>Recommendation</th></tr></thead><tbody>'
+        '<tr><td>Logo direction</td><td>A · Keycap</td></tr>'
+        '<tr><td>Wordmark: plain or the T in the gradient</td><td>The gradient T for the website and store art; plain for small sizes and in the app</td></tr>'
+        '<tr><td>One spark, AI only</td><td>Yes: the smartbar spark everywhere AI appears; no spark in the logo</td></tr>'
+        '<tr><td>Colours</td><td>Keep the cyan–teal family; drop the earlier move to blue</td></tr>'
+        '<tr><td>Typeface</td><td>Google Sans Flex for the wordmark and the app, replacing DM Sans (open licence, one variable file)</td></tr>'
+        '</tbody></table></div>'
+        '<h2>After you choose</h2><ul class="check">'
+        '<li>Final vector icon: adaptive foreground, background and monochrome layers, legacy icons, 512 px Play icon, debug and beta badges.</li>'
+        '<li>Notification icon, splash (with the key press or cursor animation), favicon and social image.</li>'
+        '<li>Wordmark and lockup files (SVG, PNG), clear space and minimum sizes.</li>'
+        '<li>A short brand page in the design system: logo, spark, colour, type, do and don\'t.</li>'
+        '<li>Then the illustrations, store screenshots, feature graphic and website use it.</li></ul>'
+    )

@@ -24,6 +24,7 @@ from edges import EDGES  # noqa: E402
 from taps import TAPS  # noqa: E402
 from flows import BUILD_ORDER, FLOWS, RISK, RULES  # noqa: E402
 from screens import S  # noqa: E402
+from brand_page import brand_body  # noqa: E402
 
 E = html.escape
 DS = os.path.join(SRC, "design-system")
@@ -68,7 +69,7 @@ def tokens_css():
             f":root[data-theme=amoled]{{{block(themes['amoled'])}}}\n")
 
 
-NAV = [("index.html#flows", "Flows"), ("backlog.html", "Backlog"), ("design-system/index.html", "Design system"),
+NAV = [("index.html#flows", "Flows"), ("brand.html", "Brand"), ("backlog.html", "Backlog"), ("design-system/index.html", "Design system"),
        ("design-system/icons.html", "Icons"), ("downloads.html", "Downloads")]
 
 
@@ -427,6 +428,7 @@ def main():
     write("backlog.html", backlog_page())
     design_system()
     write("downloads.html", downloads_page())
+    write("brand.html", page("brand.html", "Brand review · SmarType", brand_body(""), current="brand.html"))
     with open(os.path.join(OUT, "vercel.json"), "w") as fh:
         json.dump({"cleanUrls": False, "trailingSlash": False}, fh, indent=2)
         fh.write("\n")
