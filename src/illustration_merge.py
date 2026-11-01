@@ -70,8 +70,11 @@ def hello(size=240):
         f" 20%,92% {{ transform: translate({tx - c0x:.1f}px,{ty - c0y:.1f}px) scale({f:.3f}); opacity: 0; }} 93% {{ opacity: 1; }} 100% {{ transform: none; opacity: 1; }} }}"
         f" @keyframes {p}bub {{ 0%,6% {{ transform: scale(.3); opacity: 0; }} 12%,88% {{ transform: scale(1); opacity: 1; }} 94%,100% {{ transform: scale(.6); opacity: 0; }} }}"
         # typing: the text is revealed letter by letter with a caret
-        f" @keyframes {p}type {{ 0%,19% {{ transform: scaleX({1 / n:.3f}); }} 56%,100% {{ transform: scaleX(1); }} }}"
-        f" @keyframes {p}caret {{ 0%,19% {{ transform: translateX(0); opacity: 1; }} 56% {{ transform: translateX({(n - 1) / n * 112:.1f}px); opacity: 1; }} 57%,100% {{ opacity: 0; }} }}"
+        # the field is empty (a blinking caret) until the logo's S lands; then the S is the first letter
+        f" @keyframes {p}type {{ 0%,19.4% {{ transform: scaleX(0); }} 19.5% {{ transform: scaleX({1 / n:.3f}); }} 56%,100% {{ transform: scaleX(1); }} }}"
+        f" @keyframes {p}caret {{ 0% {{ transform: translateX(-{112 / n:.1f}px); opacity: 1; }} 4% {{ opacity: 0; }} 8% {{ opacity: 1; }} 12% {{ opacity: 0; }}"
+        f" 16%,19.4% {{ transform: translateX(-{112 / n:.1f}px); opacity: 1; }} 19.5% {{ transform: translateX(0); opacity: 1; }}"
+        f" 56% {{ transform: translateX({(n - 1) / n * 112:.1f}px); opacity: 1; }} 57%,100% {{ opacity: 0; }} }}"
         f" @keyframes {p}typo {{ 0%,57% {{ opacity: 0; }} 59%,74% {{ opacity: 1; }} 75%,100% {{ opacity: 0; }} }}"
         f" @keyframes {p}old {{ 0%,74% {{ opacity: 1; }} 76%,100% {{ opacity: 0; }} }} @keyframes {p}new {{ 0%,75% {{ opacity: 0; }} 78%,88% {{ opacity: 1; }} 94%,100% {{ opacity: 0; }} }}"
         # the face: wakes, watches the caret, notices, frowns, cheers
@@ -85,7 +88,7 @@ def hello(size=240):
         f" @keyframes {p}br {{ 0%,64% {{ transform: none; }} 66%,74% {{ transform: rotate(-14deg); }} 77%,100% {{ transform: none; }} }}"
         f" @keyframes {p}smile {{ 0%,57% {{ opacity: 1; transform: none; }} 59%,74% {{ opacity: 0; }} 77% {{ opacity: 1; transform: scale(1.35,1.5); }} 90% {{ transform: scale(1.35,1.5); }} 100% {{ transform: none; }} }}"
         f" @keyframes {p}oh {{ 0%,57% {{ opacity: 0; }} 59%,64% {{ opacity: 1; }} 66%,100% {{ opacity: 0; }} }}"
-        f" @keyframes {p}body {{ 0%,57%,100% {{ transform: none; }} 60%,64% {{ transform: rotate(-6deg) translateY(-2px); }} 67% {{ transform: translateY(3px) scale(1.05,.93); }}"
+        f" @keyframes {p}body {{ 0%,5%,11%,57%,100% {{ transform: none; }} 8% {{ transform: translateY(3px) scale(1.02,.92); }} 60%,64% {{ transform: rotate(-6deg) translateY(-2px); }} 67% {{ transform: translateY(3px) scale(1.05,.93); }}"
         f" 71% {{ transform: translateY(-6px) rotate(3deg); }} 75% {{ transform: none; }} 80% {{ transform: translateY(2px) scale(1.05,.94); }} 84% {{ transform: translateY(-12px); }} 88% {{ transform: none; }} }}"
         # the spark: corner of the logo → above its head → onto the typo
         f" @keyframes {p}sp {{ 0%,17% {{ transform: none; opacity: 1; }} 24%,66% {{ transform: translate(14px,-30px) scale(1.2); opacity: 1; }} 67%,92% {{ opacity: 0; transform: translate(14px,-30px); }} 96%,100% {{ transform: none; opacity: 1; }} }}"
