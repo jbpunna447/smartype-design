@@ -343,7 +343,7 @@ def privacy():
         ("changes", "Changes and contact", f"<p>We'll update this page when how we handle data changes, and change the date at the top. Questions: <a href=\"mailto:{SUPPORT}\">{SUPPORT}</a>.</p>"),
     ]
     return doc("privacy.html", "Privacy policy · SmarType", "How SmarType handles your data: typing stays on your phone; text is sent only when you use AI.",
-               "Privacy policy", "1 November 2026", s, draft=True)
+               "Privacy policy", "1 November 2026", s)
 
 
 def terms():
