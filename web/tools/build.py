@@ -302,15 +302,11 @@ def home():
                 body, extra=scripts)
 
 
-DRAFT = ('<div class="draft"><b>Draft.</b> This text was drafted from how the app works today and has not been approved yet. '
-         "It must be reviewed by SmarType (and a lawyer) before the app is published.</div>")
-
-
-def doc(name, title, description, h1, updated, sections, draft=False):
+def doc(name, title, description, h1, updated, sections):
     toc = "".join(f'<li><a href="#{E(sid)}">{E(t)}</a></li>' for sid, t, _ in sections)
     body = "".join(f'<section id="{E(sid)}"><h2>{E(t)}</h2>{content}</section>' for sid, t, content in sections)
     return page(name, title, description,
-                f'<div class="wrap doc">{DRAFT if draft else ""}<h1>{E(h1)}</h1><p class="meta">Last updated: {E(updated)}</p>'
+                f'<div class="wrap doc"><h1>{E(h1)}</h1><p class="meta">Last updated: {E(updated)}</p>'
                 f'<nav class="toc" aria-label="On this page"><ol>{toc}</ol></nav>{body}</div>')
 
 
@@ -358,7 +354,7 @@ def terms():
         ("liability", "Liability", "<p>To the extent the law allows, SmarType is provided as is, and we aren't liable for indirect losses from using it.</p>"),
         ("changes", "Changes and contact", f"<p>We may update these terms and will change the date at the top. Questions: <a href=\"mailto:{SUPPORT}\">{SUPPORT}</a>.</p>"),
     ]
-    return doc("terms.html", "Terms · SmarType", "The terms for using the SmarType keyboard and its AI features.", "Terms of use", "1 November 2026", s, draft=True)
+    return doc("terms.html", "Terms · SmarType", "The terms for using the SmarType keyboard and its AI features.", "Terms of use", "1 November 2026", s)
 
 
 FAQ = [

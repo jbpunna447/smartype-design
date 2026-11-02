@@ -99,8 +99,6 @@ a.btn.key { cursor: pointer; }
 .doc p, .doc li { color: var(--on-2); } .doc li { margin: 6px 0; }
 .toc { margin: 24px 0 8px; padding: 16px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); }
 .toc ol { margin: 0; padding-left: 20px; columns: 2; } .toc a { text-decoration: none; }
-.draft { margin-bottom: 24px; padding: 14px 18px; border-radius: var(--r-md); background: #FBF0D9; color: #4D3800; font-size: 15px; }
-@media (prefers-color-scheme: dark) { .draft { background: #3A2F12; color: #F3E3B5; } }
 details { border-bottom: 1px solid var(--line); padding: 14px 0; }
 summary { cursor: pointer; font-weight: 600; font-size: 18px; color: var(--on); }
 details p { margin: 10px 0 2px; }
