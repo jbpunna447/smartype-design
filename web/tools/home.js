@@ -1,25 +1,89 @@
-/* SmarType home: the story's motion, with GSAP + ScrollTrigger and native scrolling. Headings are typed over their own
-   faint outline as they come into view. With reduced motion, or if a library fails to load, the page stays as written. */
+/* SmarType home: the story's motion (GSAP + ScrollTrigger, native scrolling) and its interactions.
+   One section moves at a time: the one crossing the middle of the screen; the others wait. Headings are typed over
+   their own faint outline as they come into view. The steps, the styles and the privacy promises still switch on a tap
+   with reduced motion, which shows each final state at once; without JavaScript the page shows everything as written. */
 (() => {
   const root = document.documentElement;
-  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reduce || !window.gsap || !window.ScrollTrigger) return;
+  const motion = !matchMedia("(prefers-reduced-motion: reduce)").matches && !!(window.gsap && window.ScrollTrigger);
   root.classList.add("js");
-  gsap.registerPlugin(ScrollTrigger);
+  if (motion) {
+    root.classList.add("motion");
+    gsap.registerPlugin(ScrollTrigger);
+  }
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   const seg = window.Intl && Intl.Segmenter ? new Intl.Segmenter(undefined, { granularity: "grapheme" }) : null;
   const graphemes = (t) => (seg ? [...seg.segment(t)].map((x) => x.segment) : Array.from(t));
-  // One-shot "when it scrolls into view": IntersectionObserver, which stays right when content above changes height
-  // (the accordion and the stacking cards do), unlike positions measured once.
+  // One-shot "when it scrolls into view": IntersectionObserver stays right when content above changes height.
   const whenSeen = (el, fn, margin = "0px 0px -10% 0px") => {
     const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { io.disconnect(); fn(); } }), { rootMargin: margin });
     io.observe(el);
   };
-  const onScreen = (el, fn) => ScrollTrigger.create({ trigger: el, start: "top bottom", end: "bottom top", onToggle: (s) => fn(s.isActive) });
+  const press = (el, ms = 160) => {
+    if (!el) return;
+    el.classList.add("tap");
+    setTimeout(() => el.classList.remove("tap"), ms);
+  };
 
-  // ---------- typing ----------
+  // ---------- focus: only the part crossing the middle of the screen plays ----------
+  const watchers = new Map();
+  const band = new IntersectionObserver((es) => es.forEach((e) => {
+    e.target.classList.toggle("is-focus", e.isIntersecting);
+    (watchers.get(e.target) || []).forEach((fn) => fn(e.isIntersecting));
+  }), { rootMargin: "-45% 0px -45% 0px" });
+  const onFocus = (el, fn) => {
+    if (!watchers.has(el)) { watchers.set(el, []); band.observe(el); }
+    watchers.get(el).push(fn);
+  };
+
+  // A scene plays one sequence at a time: starting a new one ends the old one, and the scene can pause.
+  function scene() {
+    let run = 0;
+    const s = {
+      paused: false,
+      start: () => ++run,
+      // Waits ms of unpaused time; false once a newer sequence has started.
+      async hold(id, ms) {
+        while (ms > 0) {
+          if (id !== run) return false;
+          const t = Math.min(ms, 40);
+          await wait(t);
+          if (!s.paused) ms -= t;
+        }
+        return id === run;
+      },
+    };
+    return s;
+  }
+
+  // Types into a plain-text element, first deleting back to what the old and new text share.
+  async function typeTo(el, text, { speed = 30, del = 12, hold = (ms) => wait(ms).then(() => true), onChar } = {}) {
+    const now = graphemes(el.textContent), next = graphemes(text);
+    let same = 0;
+    while (same < now.length && same < next.length && now[same] === next[same]) same++;
+    for (let i = now.length; i > same; i--) {
+      if (!(await hold(del))) return false;
+      el.textContent = now.slice(0, i - 1).join("");
+    }
+    for (let i = same; i < next.length; i++) {
+      if (!(await hold(speed + Math.random() * 24))) return false;
+      el.textContent = next.slice(0, i + 1).join("");
+      if (onChar) onChar(next[i]);
+    }
+    return true;
+  }
+  // Underlines a misspelt word, as the keyboard does.
+  const markTypo = (el, word) => {
+    const t = el.textContent, at = t.indexOf(word);
+    if (!word || at < 0) return;
+    const span = document.createElement("span");
+    span.className = "typo";
+    span.textContent = word;
+    el.replaceChildren(t.slice(0, at), span, t.slice(at + word.length));
+  };
+
+  // ---------- headings: typed over their own faint outline ----------
   // A heading keeps its text, faint, as the layout and for screen readers; a copy on top is typed in over it, keeping
   // its <em> and <br>, then removed. Prepared up front so a heading never jumps from full to empty.
   function prepareHeading(el) {
@@ -54,325 +118,366 @@
           await wait(/[.!?,]/.test(ch) ? pause : speed + Math.random() * 18);
         }
       }
-      await wait(700);
-      while (src.firstChild) el.insertBefore(src.firstChild, src);
-      src.remove(); out.remove();
+      setTimeout(() => {
+        while (src.firstChild) el.insertBefore(src.firstChild, src);
+        src.remove();
+        out.remove();
+      }, 700);
     };
   }
 
-  // Types into a plain-text element, first deleting back to what the old and new text share.
-  const jobs = new WeakMap();
-  async function retype(el, text, { speed = 30, del = 12 } = {}) {
-    const job = {};
-    jobs.set(el, job);
-    const now = graphemes(el.textContent), next = graphemes(text);
-    let same = 0;
-    while (same < now.length && same < next.length && now[same] === next[same]) same++;
-    for (let i = now.length; i > same; i--) {
-      if (jobs.get(el) !== job) return false;
-      el.textContent = now.slice(0, i - 1).join("");
-      await wait(del);
+  if (motion) {
+    let heroTyped = Promise.resolve();
+    $$("[data-type]").forEach((el) => {
+      const play = prepareHeading(el);
+      if (el.dataset.type === "hero") heroTyped = play({ speed: 30, pause: 180 });
+      else whenSeen(el, () => play(), "0px 0px -8% 0px");
+    });
+    $$("[data-typeon]").forEach((el) => {
+      const text = el.textContent;
+      el.textContent = "";
+      whenSeen(el, () => {
+        const i = $$("[data-typeon]", el.parentElement).indexOf(el);
+        setTimeout(() => typeTo(el, text, { speed: 26 }), 250 + i * 400);
+      }, "0px 0px -12% 0px");
+    });
+
+    // ---------- reveals: the hero's words at once, its picture once the heading is typed ----------
+    gsap.to(".hero2 [data-reveal]", { opacity: 1, y: 0, duration: 1, ease: "expo.out", stagger: 0.1, delay: 0.15 });
+    Promise.race([heroTyped, wait(2400)]).then(() => gsap.to(".hero2-art", { opacity: 1, duration: 0.9, ease: "power2.out" }));
+    $$(".hero2 ~ section [data-reveal]").forEach((el) => whenSeen(el, () => {
+      const sibs = $$("[data-reveal]", el.parentElement);
+      gsap.to(el, { opacity: 1, y: 0, duration: 0.8, ease: "expo.out", delay: Math.max(0, sibs.indexOf(el)) * 0.07 });
+    }, "0px 0px -8% 0px"));
+    // The glows drift a little with the scroll; nothing moves on its own.
+    $$(".glow").forEach((el) => gsap.to(el, { yPercent: -40 * (+el.dataset.depth || 0.3), ease: "none",
+      scrollTrigger: { trigger: el.closest("section"), start: "top top", end: "bottom top", scrub: true } }));
+  }
+
+  // ---------- how it works: each step plays on the phone ----------
+  const story = $("#how"), acc = $(".accordion");
+  if (story && acc) {
+    const items = $$(".acc-item"), heads = $$(".acc-head"), fills = $$(".acc-fill");
+    const ph = $(".phone", story), field = $(".field-text", story), ime = $(".ime", story), sugg = $$(".ime-sugg span", story);
+    const T = { rough: ph.dataset.rough, fixed: ph.dataset.fixed, hindi: ph.dataset.hindi, spoken: ph.dataset.spoken };
+    const keys = new Map($$(".krow i[data-c]", ime).map((k) => [k.dataset.c, k]));
+    const keyFor = (ch) => keys.get(ch.toLowerCase()) || (/[,.!?]/.test(ch) ? keys.get(".") : null);
+    const bar = (k) => $(`.ime-bar .sb[data-k="${k}"]`, ime);
+    const result = (k) => $(`.ip-${k} .ip-text`, ime);
+    const replace = (k) => $(`.ip-${k} .ip-btn.ai`, ime);
+    const recT = $(".rec-t", ime), eq = $$(".veq i", ime);
+    const SUGG = { great: ["great", "Great", "greatly"], can: ["can", "can't", "call"], u: ["u", "you", "us"],
+      send: ["send", "sending", "sent"], the: ["the", "them", "they"], adress: ["adress", "address", "addresses"] };
+    const DUR = [5, 6.8, 6.6, 7];
+    const sc = scene();
+    let step = 0, auto = true, inView = false, hovering = false, listening = false, started = false;
+    const setSugg = (w) => sugg.forEach((s, i) => (s.textContent = w[i] || ""));
+    const setField = (text, typo) => { field.textContent = text; if (typo) markTypo(field, typo); };
+    const closeAll = () => { ime.dataset.open = ""; ime.classList.remove("voice", "tidy"); listening = false; };
+
+    // Where each step starts, so any step can play on its own, and where it ends (shown at once with reduced motion).
+    function begin(i) {
+      closeAll();
+      result("fix").textContent = ""; result("tr").textContent = "";
+      if (i === 0) { setField(""); setSugg(["I", "Great", "The"]); }
+      if (i === 1) { setField(T.rough, "adress"); setSugg(SUGG.adress); }
+      if (i === 2) { setField(T.fixed); setSugg(["Thanks", "Sure", "See"]); }
+      if (i === 3) { setField(""); setSugg(["I", "Can't", "See"]); }
     }
-    for (let i = same; i < next.length; i++) {
-      if (jobs.get(el) !== job) return false;
-      el.textContent = next.slice(0, i + 1).join("");
-      await wait(speed + Math.random() * 24);
+    function end(i) {
+      begin(i);
+      result("fix").textContent = T.fixed; result("tr").textContent = T.hindi;
+      if (i === 0) setField(T.rough, "adress");
+      if (i === 1) setField(T.fixed);
+      if (i === 2) setField(T.hindi);
+      if (i === 3) setField(T.spoken);
     }
-    return true;
-  }
-  const markTypo = (el, word) => {
-    if (word && el.textContent.includes(word)) el.innerHTML = el.textContent.replace(word, `<span class="typo">${word}</span>`);
-  };
 
-  $$("[data-type]").forEach((el) => {
-    const play = prepareHeading(el);
-    if (el.dataset.type === "hero") play({ speed: 48, pause: 320 });
-    else whenSeen(el, () => play(), "0px 0px -8% 0px");
-  });
-  $$("[data-typeon]").forEach((el) => {
-    const text = el.textContent;
-    el.textContent = "";
-    whenSeen(el, () => {
-      const i = $$("[data-typeon]", el.parentElement).indexOf(el);
-      setTimeout(() => retype(el, text, { speed: 26 }), 250 + i * 400);
-    }, "0px 0px -12% 0px");
-  });
-
-  // ---------- reveals ----------
-  gsap.to(".hero2 [data-reveal]", { opacity: 1, y: 0, duration: 1, ease: "expo.out", stagger: 0.12, delay: 0.2 });
-  $$(".hero2 ~ section [data-reveal]").forEach((el) => whenSeen(el, () => {
-    const sibs = $$("[data-reveal]", el.parentElement);
-    gsap.to(el, { opacity: 1, y: 0, duration: 0.8, ease: "expo.out", delay: Math.max(0, sibs.indexOf(el)) * 0.07 });
-  }, "0px 0px -8% 0px"));
-
-  // ---------- hero ----------
-  gsap.from(".float", { scale: 0.5, opacity: 0, duration: 1.1, ease: "back.out(1.7)", stagger: 0.12, delay: 0.4 });
-  gsap.from(".composer", { y: 50, opacity: 0, duration: 1.1, ease: "expo.out", delay: 0.3 });
-  gsap.from(".hero2-art", { scale: 0.8, opacity: 0, duration: 1.2, ease: "back.out(1.4)", delay: 0.1 });
-
-  // The composer shows three different moments: a typo fixed, a tone changed, a message translated.
-  const cm = $(".cm-text"), cmAi = $(".cm-ai"), chip = (k) => $(`.cm-chip[data-k="${k}"]`);
-  const moments = [
-    { typed: "can we resceduel to friday", typo: "resceduel", button: cmAi, result: "Can we reschedule to Friday?" },
-    { typed: "send me the report today", button: chip("pro"), result: "Could you send me the report by the end of today?" },
-    { typed: "Thank you so much!", button: chip("hi"), result: "बहुत-बहुत धन्यवाद!" },
-  ];
-  let heroOn = true;
-  onScreen(".hero2", (on) => (heroOn = on));
-  (async function loop() {
-    cm.textContent = "";
-    await wait(1400);
-    for (let i = 0; ; i = (i + 1) % moments.length) {
-      while (!heroOn) await wait(400);
-      const m = moments[i];
-      await retype(cm, m.typed, { speed: 55 });
-      markTypo(cm, m.typo);
-      await wait(800);
-      m.button.classList.add("lit");
-      await wait(600);
-      cm.textContent = m.typed;
-      await retype(cm, m.result, { speed: 24 });
-      await wait(400);
-      m.button.classList.remove("lit");
-      await wait(2200);
-      await retype(cm, "", { del: 8 });
-      await wait(400);
-    }
-  })();
-
-  // Gentle parallax: the hero's bubbles follow the pointer a little; glows drift with the scroll.
-  $$(".hero2 .float, .hero2 .composer").forEach((el) => {
-    const d = +el.dataset.depth || 0.3;
-    const x = gsap.quickTo(el, "x", { duration: 1.4, ease: "power3.out" }), y = gsap.quickTo(el, "y", { duration: 1.4, ease: "power3.out" });
-    addEventListener("pointermove", (e) => { x((e.clientX / innerWidth - 0.5) * 36 * d); y((e.clientY / innerHeight - 0.5) * 24 * d); });
-  });
-  $$(".glow").forEach((el) => gsap.to(el, { yPercent: -40 * (+el.dataset.depth || 0.3), ease: "none",
-    scrollTrigger: { trigger: el.closest("section"), start: "top top", end: "bottom top", scrub: true } }));
-
-  // ---------- story: auto-advancing accordion demo ----------
-  const field = $(".field-text"), states = $$(".field .st").map((s) => ({ text: s.textContent, typo: s.dataset.typo }));
-  const keys = $$(".phone-keys i"), pbs = $$(".pb[data-for]");
-  const items = $$(".acc-item"), fills = $$(".acc-fill");
-  let currentStep = -1, tapping = null, progressTween = null, isPaused = false, storyInView = false;
-  const STEP_DURATION = 4.8;
-
-  function tapKeys(on) {
-    clearInterval(tapping);
-    keys.forEach((k) => k.classList.remove("tap"));
-    if (on) tapping = setInterval(() => {
-      const k = keys[(Math.random() * keys.length) | 0];
-      k.classList.add("tap"); setTimeout(() => k.classList.remove("tap"), 110);
-    }, 95);
-  }
-
-  async function show(i) {
-    if (i === currentStep) return;
-    currentStep = i;
-    items.forEach((item, j) => {
-      item.classList.toggle("on", j === i);
-      item.setAttribute("aria-selected", j === i ? "true" : "false");
-    });
-    pbs.forEach((p) => p.classList.toggle("lit", p.dataset.for === String(i)));
-    setTimeout(() => ScrollTrigger.refresh(), 400);
-    tapKeys(i === 0);
-    if (i === 3) field.textContent = "";
-    const done = await retype(field, states[i].text, { speed: i === 0 ? 55 : 24 });
-    tapKeys(false);
-    if (done) markTypo(field, states[i].typo);
-  }
-
-  function startStep(i) {
-    if (progressTween) progressTween.kill();
-    fills.forEach((f, j) => gsap.set(f, { scaleX: 0 }));
-    show(i);
-    progressTween = gsap.to(fills[i], {
-      scaleX: 1,
-      duration: STEP_DURATION,
-      ease: "none",
-      onComplete: () => {
-        if (!isPaused && storyInView) {
-          startStep((currentStep + 1) % items.length);
-        }
-      }
-    });
-    if (!storyInView || isPaused) progressTween.pause();
-  }
-
-  items.forEach((item, i) => {
-    item.addEventListener("click", () => startStep(i));
-    item.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        startStep(i);
-      }
-    });
-  });
-
-  const acc = $(".accordion");
-  if (acc) {
-    acc.addEventListener("pointerenter", () => {
-      isPaused = true;
-      if (progressTween) progressTween.pause();
-    });
-    acc.addEventListener("pointerleave", () => {
-      isPaused = false;
-      if (storyInView && progressTween) progressTween.resume();
-    });
-  }
-
-  ScrollTrigger.create({
-    trigger: ".story",
-    start: "top 75%",
-    end: "bottom 20%",
-    onToggle: (self) => {
-      storyInView = self.isActive;
-      if (self.isActive) {
-        if (currentStep === -1) startStep(0);
-        else if (progressTween && !isPaused) progressTween.resume();
+    async function play(i) {
+      const id = sc.start(), hold = (ms) => sc.hold(id, ms);
+      begin(i);
+      if (i === 0) {
+        if (!(await hold(500))) return;
+        let word = "";
+        const done = await typeTo(field, T.rough, { speed: 62, hold, onChar: (ch) => {
+          press(keyFor(ch), 130);
+          word = /[a-z]/i.test(ch) ? word + ch.toLowerCase() : "";
+          const w = word && Object.keys(SUGG).find((k) => k.startsWith(word));
+          if (w) setSugg(SUGG[w]);
+        } });
+        if (done) markTypo(field, "adress");
+      } else if (i === 1 || i === 2) {
+        // Tap Rewrite or Translate: its panel takes the keyboard's place; Replace puts the result in the message.
+        const k = i === 1 ? "fix" : "tr", out = i === 1 ? T.fixed : T.hindi, r = result(k);
+        if (!(await hold(700))) return;
+        press(bar(k), 260);
+        if (!(await hold(320))) return;
+        ime.dataset.open = k;
+        r.classList.add("wait");
+        if (!(await hold(1000))) { r.classList.remove("wait"); return; }
+        r.classList.remove("wait");
+        if (!(await typeTo(r, out, { speed: 14, hold }))) return;
+        if (!(await hold(900))) return;
+        press(replace(k), 260);
+        if (!(await hold(380))) return;
+        ime.dataset.open = "";
+        setField(out);
       } else {
-        if (progressTween) progressTween.pause();
-      }
-    }
-  });
-
-  // ---------- tones: a sliding pill and the text retyped ----------
-  const chips = $$(".chip"), pill = $(".chip-pill"), toneText = $(".tone-words");
-  let toneIdx = 0, toneTimer, userPicked = false;
-  const placePill = (c, instant) => gsap.to(pill, { x: c.offsetLeft, y: c.offsetTop, width: c.offsetWidth, height: c.offsetHeight,
-    duration: instant ? 0 : 0.6, ease: "back.out(1.6)" });
-  function pickTone(i, instant) {
-    toneIdx = i;
-    chips.forEach((c, j) => { c.classList.toggle("on", j === i); c.setAttribute("aria-pressed", j === i); });
-    placePill(chips[i], instant);
-    if (!instant) retype(toneText, chips[i].dataset.tone, { speed: 16, del: 5 });
-  }
-  pickTone(0, true);
-  addEventListener("resize", () => placePill(chips[toneIdx], true));
-  chips.forEach((c, i) => c.addEventListener("click", () => { userPicked = true; clearInterval(toneTimer); pickTone(i); }));
-  ScrollTrigger.create({ trigger: ".tone", start: "top 60%", end: "bottom 30%", onToggle: (s) => {
-    clearInterval(toneTimer);
-    if (s.isActive && !userPicked) toneTimer = setInterval(() => pickTone((toneIdx + 1) % chips.length), 4500);
-  } });
-
-  // ---------- stacking cards: every card that arrives pushes all the cards under it back one equal step ----------
-  // Card i's scale is 1 - STEP x (how many later cards have arrived), so in the finished stack each card is one step
-  // smaller than the one above it, and the visible edges are equally spaced (the sticky tops are 16 px apart).
-  const cards = $$(".card"), STEP = 0.035, arrived = cards.map(() => 0);
-  const setScale = cards.map((c) => gsap.quickSetter(c, "scale"));
-  const restack = () => cards.forEach((c, i) => setScale[i](1 - STEP * arrived.slice(i + 1).reduce((a, b) => a + b, 0)));
-  cards.forEach((c, i) => {
-    c.style.setProperty("--i", i);
-    if (i === 0) return;
-    ScrollTrigger.create({ trigger: c, start: "top bottom", end: () => `top ${parseFloat(getComputedStyle(c).top)}px`,
-      onUpdate: (st) => { arrived[i] = st.progress; restack(); } });
-  });
-
-  // ---------- voice: an equalizer that moves like speech (words, then pauses), with the words as they are heard ----------
-  const voice = $(".mini.voice");
-  if (voice) {
-    const bars = $$(".eq i", voice), raw = $(".raw", voice), out = $(".mb.out", voice);
-    const heard = raw.textContent.split(" "), tidy = out.textContent;
-    let voiceOn = false, level = 0, target = 0;
-    onScreen(voice, (on) => (voiceOn = on));
-    raw.textContent = ""; out.textContent = "";
-    out.style.visibility = "hidden";
-    // Each bar has its own frequency band: the middle ones carry more of the voice.
-    const weight = bars.map((_, i) => 0.45 + 0.55 * Math.sin((i / (bars.length - 1)) * Math.PI));
-    const noise = bars.map(() => Math.random());
-    gsap.ticker.add(() => {
-      if (!voiceOn) return;
-      level += (target - level) * 0.35;
-      bars.forEach((b, i) => {
-        noise[i] += (Math.random() - noise[i]) * 0.45;
-        const h = 0.08 + level * weight[i] * (0.35 + 0.65 * noise[i]);
-        b.style.transform = `scaleY(${Math.min(1, h).toFixed(3)})`;
-      });
-    });
-    (async function speak() {
-      for (;;) {
-        while (!voiceOn) await wait(400);
-        raw.textContent = ""; out.textContent = ""; out.style.visibility = "hidden";
-        await wait(700);
-        for (const w of heard) {
-          // A word: a few syllables of varying loudness, then a short gap; fillers are quieter and longer.
-          const filler = /^(uh|um,?)$/.test(w);
-          const syllables = filler ? 1 : Math.max(1, Math.round(w.length / 3));
-          for (let k = 0; k < syllables; k++) {
-            target = (filler ? 0.35 : 0.6) + Math.random() * 0.4;
-            await wait(filler ? 260 : 90 + Math.random() * 90);
-            target = 0.25 + Math.random() * 0.15;
-            await wait(40 + Math.random() * 40);
-          }
-          raw.textContent += (raw.textContent ? " " : "") + w;
-          target = 0.02;
-          await wait(w.endsWith(",") ? 320 : 70 + Math.random() * 120);
+        // Speak: the voice bar takes the smartbar's place; the words are tidied up and land in the message.
+        if (!(await hold(600))) return;
+        press(bar("mic"), 260);
+        if (!(await hold(300))) return;
+        ime.classList.add("voice");
+        listening = true;
+        for (let t = 0; t <= 3; t++) {
+          recT.textContent = `0:0${t}`;
+          if (!(await hold(t === 3 ? 400 : 900))) return;
         }
-        target = 0;
-        await wait(700);
-        out.style.visibility = "";
-        await retype(out, tidy, { speed: 22 });
-        await wait(3200);
+        listening = false;
+        ime.classList.add("tidy");
+        if (!(await hold(1100))) return;
+        ime.classList.remove("voice", "tidy");
+        await typeTo(field, T.spoken, { speed: 18, hold });
       }
-    })();
+    }
+
+    // The equalizer moves like speech: bursts of syllables of varying loudness, with short gaps between words.
+    if (motion) {
+      const weight = eq.map((_, i) => 0.45 + 0.55 * Math.sin((i / (eq.length - 1)) * Math.PI));
+      const noise = eq.map(() => Math.random());
+      let level = 0, target = 0, next = 0;
+      gsap.ticker.add(() => {
+        const live = listening && !sc.paused;
+        if (!live && level < 0.01) return;
+        const now = performance.now();
+        if (live && now > next) {
+          const gap = Math.random() < 0.18;
+          target = gap ? 0.04 : 0.45 + Math.random() * 0.55;
+          next = now + (gap ? 180 + Math.random() * 160 : 90 + Math.random() * 110);
+        }
+        if (!live) target = 0;
+        level += (target - level) * 0.3;
+        eq.forEach((b, i) => {
+          noise[i] += (Math.random() - noise[i]) * 0.45;
+          b.style.transform = `scaleY(${Math.min(1, 0.08 + level * weight[i] * (0.35 + 0.65 * noise[i])).toFixed(3)})`;
+        });
+      });
+    }
+
+    // Steps advance on their own, with the bar filling, until you pick one; then that step stays.
+    function select(i, user) {
+      step = i;
+      if (user) auto = false;
+      items.forEach((it, j) => {
+        it.classList.toggle("on", j === i);
+        heads[j].setAttribute("aria-expanded", String(j === i));
+      });
+      fills.forEach((f) => { f.classList.remove("run"); f.style.transform = ""; });
+      if (auto && motion) {
+        void fills[i].offsetWidth;
+        fills[i].style.setProperty("--dur", `${DUR[i]}s`);
+        fills[i].classList.add("run");
+      } else fills[i].style.transform = "scaleX(1)";
+      if (motion) play(i); else end(i);
+    }
+    fills.forEach((f, i) => f.addEventListener("animationend", () => { if (auto && i === step) select((i + 1) % items.length); }));
+    // A step you pick plays at once, also before the section reaches the middle of the screen.
+    heads.forEach((h, i) => h.addEventListener("click", () => { started = inView = true; sync(); select(i, true); }));
+    // Out of focus everything waits. A pointer resting on the steps only holds the bar, so the step being read stays
+    // while its phone plays on.
+    const sync = () => {
+      sc.paused = !inView;
+      acc.classList.toggle("paused", !inView || hovering);
+    };
+    acc.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") { hovering = true; sync(); } });
+    acc.addEventListener("pointerleave", () => { hovering = false; sync(); });
+    if (motion) {
+      begin(0);
+      onFocus(story, (on) => {
+        inView = on;
+        if (on && !started) { started = true; select(0); }
+        sync();
+      });
+    } else select(0);
   }
 
-  // ---------- languages: the globe key types one greeting at a time ----------
-  const word = $(".hello-word"), names = $$(".lang-names li"), globe = $(".globe");
-  let langsOn = false;
-  onScreen(".langs", (on) => (langsOn = on));
-  (async function greet() {
-    for (let i = 0; ; i = (i + 1) % names.length) {
-      while (!langsOn) await wait(400);
-      names.forEach((n, j) => n.classList.toggle("on", j === i));
-      gsap.fromTo(globe, { scale: 0.88 }, { scale: 1, duration: 0.5, ease: "back.out(3)" });
-      await retype(word, "", { del: 30 });
-      await retype(word, names[i].dataset.hello, { speed: 70 });
-      await wait(1700);
+  // ---------- styles: a sliding pill and the message retyped ----------
+  const toneSec = $("#styles");
+  if (toneSec) {
+    const chips = $$(".chip", toneSec), pill = $(".chip-pill", toneSec), words = $(".tone-words", toneSec), text = $(".tone-text", toneSec);
+    const ts = scene();
+    let idx = 0, picked = false, started = false;
+    const place = (instant) => {
+      const c = chips[idx];
+      if (instant) pill.style.transition = "none";
+      pill.style.width = `${c.offsetWidth}px`;
+      pill.style.height = `${c.offsetHeight}px`;
+      pill.style.transform = `translate(${c.offsetLeft}px, ${c.offsetTop}px)`;
+      if (instant) { void pill.offsetWidth; pill.style.transition = ""; }
+    };
+    // Until you pick one, each style is typed in, stays long enough to read and hands over to the next.
+    const READ = 2600;
+    async function pick(i) {
+      idx = i;
+      chips.forEach((c, j) => { c.classList.toggle("on", j === i); c.setAttribute("aria-pressed", String(j === i)); });
+      place();
+      if (!motion) { words.textContent = chips[i].dataset.tone; return; }
+      const id = ts.start(), hold = (ms) => ts.hold(id, ms);
+      if (!(await typeTo(words, chips[i].dataset.tone, { speed: 16, del: 5, hold }))) return;
+      if (!picked && (await hold(READ))) pick((i + 1) % chips.length);
     }
-  })();
-
-  // ---------- privacy: words drift inside the phone's ring and never get out ----------
-  const orbit = $(".orbit");
-  const words = $$(".kw").map((el) => ({ el, x: 0, y: 0, vx: 0, vy: 0, w: 0, h: 0 }));
-  let R = 0, cx = 0, cy = 0, inView = false;
-  function layout() {
-    const s = orbit.offsetWidth;
-    R = s / 2 - 8; cx = cy = s / 2;
-    words.forEach((w, i) => {
-      w.w = w.el.offsetWidth; w.h = w.el.offsetHeight;
-      if (!w.x) {
-        const a = (i / words.length) * Math.PI * 2, r = R * 0.62;
-        w.x = cx + Math.cos(a) * r; w.y = cy + Math.sin(a) * r;
-        w.vx = (Math.random() - 0.5) * 0.8; w.vy = (Math.random() - 0.5) * 0.8;
-      }
+    chips.forEach((c, i) => c.addEventListener("click", () => {
+      picked = true;
+      ts.paused = false;
+      text.setAttribute("aria-live", "polite");
+      pick(i);
+    }));
+    place(true);
+    addEventListener("resize", () => place(true));
+    if (document.fonts) document.fonts.ready.then(() => place(true));
+    if (motion) onFocus(toneSec, (on) => {
+      ts.paused = !on;
+      if (!on || started || picked) return;
+      started = true;
+      const id = ts.start();
+      ts.hold(id, READ).then((go) => { if (go && !picked) pick(1); });
     });
   }
-  root.classList.add("physics");
-  layout();
-  addEventListener("resize", layout);
-  onScreen(orbit, (on) => (inView = on));
-  const coreR = () => orbit.offsetWidth * 0.15 + 10;
-  gsap.ticker.add(() => {
-    if (!inView) return;
-    for (const w of words) {
-      const sp = Math.hypot(w.vx, w.vy);
-      if (sp < 0.3) { w.vx *= 1.05; w.vy *= 1.05; } else if (sp > 0.7) { w.vx *= 0.97; w.vy *= 0.97; }
-      w.x += w.vx; w.y += w.vy;
-      const dx = w.x - cx, dy = w.y - cy, d = Math.hypot(dx, dy), reach = Math.hypot(w.w, w.h) / 2;
-      if (d + reach > R) {
-        const nx = dx / d, ny = dy / d, dot = w.vx * nx + w.vy * ny;
-        if (dot > 0) { w.vx -= 2 * dot * nx; w.vy -= 2 * dot * ny; }
-        w.x = cx + nx * (R - reach); w.y = cy + ny * (R - reach);
-      }
-      const cr = coreR() + reach * 0.6;
-      if (d < cr) {
-        const nx = dx / (d || 1), ny = dy / (d || 1), dot = w.vx * nx + w.vy * ny;
-        if (dot < 0) { w.vx -= 2 * dot * nx; w.vy -= 2 * dot * ny; }
-        w.x = cx + nx * cr; w.y = cy + ny * cr;
-      }
-      w.el.style.transform = `translate(${w.x - w.w / 2}px, ${w.y - w.h / 2}px)`;
+
+  // ---------- everything around it: stacking cards ----------
+  const cards = $$(".card");
+  if (motion && cards.length) {
+    // Card i's scale is 1 - STEP x (how many later cards have arrived), so in the finished stack each card is one step
+    // smaller than the one above it, and the visible edges are equally spaced (the sticky tops are 16 px apart).
+    const STEP = 0.035, arrived = cards.map(() => 0);
+    const setScale = cards.map((c) => gsap.quickSetter(c, "scale"));
+    const restack = () => cards.forEach((c, i) => setScale[i](1 - STEP * arrived.slice(i + 1).reduce((a, b) => a + b, 0)));
+    cards.forEach((c, i) => {
+      c.style.setProperty("--i", i);
+      if (i === 0) return;
+      ScrollTrigger.create({ trigger: c, start: "top bottom", end: () => `top ${parseFloat(getComputedStyle(c).top)}px`,
+        onUpdate: (st) => { arrived[i] = st.progress; restack(); } });
+    });
+  } else cards.forEach((c, i) => c.style.setProperty("--i", i));
+
+  // The languages card types one greeting at a time while it is in front.
+  const langs = $(".c-langs");
+  if (langs) {
+    const word = $(".hello-word", langs), names = $$(".lang-names li", langs), globe = $(".globe", langs);
+    names[0].classList.add("on");
+    if (motion) {
+      const ls = scene();
+      let started = false;
+      const loop = async () => {
+        const id = ls.start(), hold = (ms) => ls.hold(id, ms);
+        for (let i = 1; ; i = (i + 1) % names.length) {
+          if (!(await hold(1600))) return;
+          names.forEach((n, j) => n.classList.toggle("on", j === i));
+          gsap.fromTo(globe, { scale: 0.86 }, { scale: 1, duration: 0.5, ease: "back.out(3)" });
+          if (!(await typeTo(word, "", { del: 28, hold }))) return;
+          if (!(await typeTo(word, names[i].dataset.hello, { speed: 70, hold }))) return;
+        }
+      };
+      onFocus(langs, (on) => {
+        ls.paused = !on;
+        if (on && !started) { started = true; loop(); }
+      });
     }
-  });
-  gsap.from(".ring", { scale: 0.8, opacity: 0, duration: 1.2, ease: "expo.out", stagger: 0.1, scrollTrigger: { trigger: orbit, start: "top 80%" } });
-  gsap.from(".off", { opacity: 0, x: -12, duration: 0.6, ease: "power3.out", stagger: 0.3, scrollTrigger: { trigger: ".pw", start: "top 85%" } });
+  }
+
+  // ---------- privacy: one promise at a time, shown as where your text goes ----------
+  const vault = $("#privacy"), seal = $(".seal");
+  if (vault && seal) {
+    const vows = $$(".vow", vault), btns = $$(".vow button", vault);
+    const text = $(".seal-text", seal), label = $(".seal-label", seal), badge = $(".seal-badge", seal), packet = $(".packet", seal);
+    const tag = $(".pipe-tag span", seal), ai = $(".seal-ai", seal), spark = $('.seal-bar .sb[data-k="fix"]', seal);
+    const S = { rough: seal.dataset.rough, fixed: seal.dataset.fixed, dots: "••••••••" };
+    const HEX = "0123456789abcdef";
+    const cipher = (n) => Array.from({ length: n }, () => HEX[(Math.random() * 16) | 0] + HEX[(Math.random() * 16) | 0]).join(" ");
+    const ps = scene();
+    let auto = true, started = false, scramble = null;
+    const stopScramble = () => { clearInterval(scramble); scramble = null; };
+
+    function state(i) {
+      stopScramble();
+      seal.classList.remove("p0", "p1", "p2", "pw");
+      seal.classList.add(`p${i}`);
+      seal.classList.toggle("pw", i === 2);
+      label.textContent = i === 2 ? "Password" : "Message";
+      badge.textContent = ["Stays here", "Sent on your tap", "Password field"][i];
+      tag.textContent = i === 1 ? "Encrypted" : "Nothing leaves";
+      packet.classList.remove("go");
+      ai.classList.remove("busy");
+      text.classList.remove("sel");
+    }
+    function end(i) {
+      state(i);
+      text.textContent = [S.rough, S.fixed, S.dots][i];
+      if (i === 1) { packet.textContent = cipher(3); packet.style.top = "50%"; packet.classList.add("go"); }
+    }
+    // Back on the phone the message is readable again: the code resolves into the fixed text, left to right.
+    async function decode(el, to, hold) {
+      const chars = graphemes(to);
+      for (let k = 0; k <= chars.length; k += 2) {
+        el.textContent = chars.slice(0, k).join("") + chars.slice(k).map((c) => (c === " " ? " " : HEX[(Math.random() * 16) | 0])).join("");
+        if (!(await hold(30))) return false;
+      }
+      el.textContent = to;
+      return true;
+    }
+    async function run(i) {
+      const id = ps.start(), hold = (ms) => ps.hold(id, ms);
+      state(i);
+      if (i === 0) {
+        text.textContent = "";
+        if (!(await hold(500))) return;
+        if (!(await typeTo(text, S.rough, { speed: 60, hold }))) return;
+      } else if (i === 1) {
+        text.textContent = S.rough;
+        if (!(await hold(700))) return;
+        press(spark, 260);
+        text.classList.add("sel");
+        if (!(await hold(450))) return;
+        // Only now does anything leave: sealed as code, down the line to AI and back.
+        packet.textContent = cipher(3);
+        scramble = setInterval(() => (packet.textContent = cipher(3)), 70);
+        packet.style.transition = "none";
+        packet.style.top = "0%";
+        void packet.offsetWidth;
+        packet.style.transition = "";
+        packet.classList.add("go");
+        packet.style.top = "100%";
+        if (!(await hold(950))) return;
+        ai.classList.add("busy");
+        if (!(await hold(800))) return;
+        ai.classList.remove("busy");
+        packet.style.top = "0%";
+        if (!(await hold(950))) return;
+        stopScramble();
+        packet.classList.remove("go");
+        text.classList.remove("sel");
+        if (!(await decode(text, S.fixed, hold))) return;
+      } else {
+        text.textContent = "";
+        if (!(await hold(500))) return;
+        if (!(await typeTo(text, S.dots, { speed: 110, hold }))) return;
+      }
+      if (!(await hold(i === 1 ? 1600 : 1900))) return;
+      if (auto) select((i + 1) % vows.length);
+    }
+    function select(i, user) {
+      if (user) auto = false;
+      vows.forEach((v, j) => { v.classList.toggle("on", j === i); btns[j].setAttribute("aria-pressed", String(j === i)); });
+      if (motion) run(i); else end(i);
+    }
+    btns.forEach((b, i) => b.addEventListener("click", () => { started = true; ps.paused = false; select(i, true); }));
+    if (motion) {
+      state(0);
+      text.textContent = "";
+      onFocus(vault, (on) => {
+        ps.paused = !on;
+        if (on && !started) { started = true; select(0); }
+      });
+    } else select(0);
+  }
 })();

@@ -42,180 +42,253 @@ PLAY = ('<svg class="play" viewBox="0 0 24 24" aria-hidden="true">'
 
 
 def play_button(label="Coming soon to Google Play", cls=""):
-    """The one call to action: a keycap with the Play logo. A span while the app isn't on Play; swap for a link later."""
+    """The one call to action: a flat button with the Play logo. A span while the app isn't on Play; swap for a link later."""
     return f'<span class="btn key {cls}" aria-disabled="true"><span class="play-chip">{PLAY}</span>{E(label)}</span>'
 
 
-def art(name, size, cls=""):
-    """An illustration that switches to its dark version with the system theme."""
-    return (f'<picture class="art {cls}"><source media="(prefers-color-scheme: dark)" srcset="assets/art/{name}-dark.svg">'
-            f'<img src="assets/art/{name}.svg" alt="" width="{size}" height="{size}" loading="lazy"></picture>')
+def ver(name):
+    """A version from the file's contents for its link, so a browser never keeps an old copy after a change."""
+    import hashlib
+    path = os.path.join(WEB, "tools", name) if os.path.exists(os.path.join(WEB, "tools", name)) else os.path.join(WEB, "tools/vendor", name)
+    with open(path, "rb") as fh:
+        return f"/assets/{'js/' if name.endswith('.js') else ''}{name}?v={hashlib.sha1(fh.read()).hexdigest()[:8]}"
+
+
+def art(name, size, cls="", eager=False):
+    """An illustration that switches to its dark version with the system theme. Above the fold it loads first."""
+    load = 'fetchpriority="high"' if eager else 'loading="lazy"'
+    return (f'<picture class="art {cls}"><source media="(prefers-color-scheme: dark)" srcset="/assets/art/{name}-dark.svg">'
+            f'<img src="/assets/art/{name}.svg" alt="" width="{size}" height="{size}" {load}></picture>')
+
+
+def not_looking():
+    """The brand key with its eyes squeezed shut, turning away from a message it can't read. The key, lip, ink and blush
+    colours are the illustration set's (design/src/illustration_set.py); the privacy section is always dark."""
+    ink, lip, mint = "#08323B", "#C3D5DA", "#4BDCA4"
+    x, y, k = 148, 80, 72
+    ex1, ex2, ey, rx, ry = x + .35 * k, x + .65 * k, y + .40 * k, .07 * k, .095 * k
+    eyes = (f'<path d="M{ex1 - rx:.1f} {ey - ry * .8:.1f} L{ex1 + rx:.1f} {ey:.1f} L{ex1 - rx:.1f} {ey + ry * .8:.1f}"/>'
+            f'<path d="M{ex2 + rx:.1f} {ey - ry * .8:.1f} L{ex2 - rx:.1f} {ey:.1f} L{ex2 + rx:.1f} {ey + ry * .8:.1f}"/>')
+    mx, my = x + .5 * k, y + .63 * k
+    lines = "".join(f'<rect x="28" y="{yy}" width="{w}" height="8" rx="4"/>' for yy, w in ((60, 92), (74, 104), (88, 60)))
+    return (f'<svg class="peek" viewBox="0 0 240 170" role="img" aria-label="The SmarType key with its eyes shut, not looking at your message">'
+            '<defs><filter id="peek-blur" x="-10%" y="-40%" width="120%" height="180%"><feGaussianBlur stdDeviation="2.6"/></filter>'
+            f'<linearGradient id="peek-key" x1="0" y1="{y}" x2="0" y2="{y + k}" gradientUnits="userSpaceOnUse"><stop stop-color="#FFFFFF"/><stop offset="1" stop-color="#EDF3F5"/></linearGradient></defs>'
+            # your message, too blurred to read
+            '<path class="peek-msg" d="M26 40 h96 a14 14 0 0 1 14 14 v42 a14 14 0 0 1 -14 14 H44 l-14 12 l2 -12 H26 a14 14 0 0 1 -14 -14 v-42 a14 14 0 0 1 14 -14 z"/>'
+            f'<g class="peek-words" filter="url(#peek-blur)">{lines}</g>'
+            # the key, turned away
+            f'<g class="peek-key"><rect x="{x}" y="{y + .06 * k:.1f}" width="{k}" height="{k}" rx="{.24 * k:.1f}" fill="{lip}"/>'
+            f'<rect x="{x}" y="{y}" width="{k}" height="{k}" rx="{.24 * k:.1f}" fill="url(#peek-key)"/>'
+            f'<g fill="none" stroke="{ink}" stroke-width="{.045 * k:.1f}" stroke-linecap="round" stroke-linejoin="round">{eyes}'
+            f'<path d="M{mx - .09 * k:.1f} {my:.1f} q{.045 * k:.1f} -{.04 * k:.1f} {.09 * k:.1f} 0 q{.045 * k:.1f} {.04 * k:.1f} {.09 * k:.1f} 0"/></g>'
+            + "".join(f'<ellipse cx="{cx:.1f}" cy="{y + .58 * k:.1f}" rx="{.07 * k:.1f}" ry="{.04 * k:.1f}" fill="{mint}" opacity=".55"/>' for cx in (x + .2 * k, x + .8 * k))
+            + '</g>'
+            # what it says
+            '<g class="peek-say"><path d="M150 26 h70 a12 12 0 0 1 12 12 v6 a12 12 0 0 1 -12 12 H204 l-6 9 l-2 -9 H150 a12 12 0 0 1 -12 -12 v-6 a12 12 0 0 1 12 -12 z" fill="#FFFFFF"/>'
+            f'<text x="185" y="45" text-anchor="middle" fill="{ink}" font-size="12.5" font-weight="700" font-family="\'Google Sans Flex\', system-ui, sans-serif">not looking!</text></g>'
+            '</svg>')
 
 
 # ---------- layout ----------
 
-NAV = [("index.html#features", "Features"), ("index.html#privacy", "Privacy"), ("help.html", "Help")]
+# The header links: sections of the home page, then pages. On the home page a section link only scrolls.
+NAV = [("how", "How it works"), ("features", "Features"), ("privacy", "Privacy"), ("/help.html", "Help")]
 
 
-def page(name, title, description, body, current=None, extra=""):
-    links = "".join(f'<a href="{h}"{" aria-current=page" if h == current else ""}>{E(l)}</a>' for h, l in NAV)
+def nav_links(name):
+    out = []
+    for h, label in NAV:
+        if h.startswith("/"):
+            out.append(f'<a href="{h}"{" aria-current=page" if h == "/" + name else ""}>{E(label)}</a>')
+        else:
+            out.append(f'<a href="{"" if name == "index.html" else "/"}#{h}" data-sec="{h}">{E(label)}</a>')
+    return "".join(out)
+
+
+def lockup(height):
+    return (f'<picture><source media="(prefers-color-scheme: dark)" srcset="/assets/lockup-porcelain.svg">'
+            f'<img src="/assets/lockup-ink.svg" alt="SmarType" height="{height}"></picture>')
+
+
+def page(name, title, description, body, extra=""):
+    """A page: the floating header (a pill; on phones a Menu sheet), the content and the footer. Links and assets
+    start at the site root, so the 404 page also works at any depth."""
+    links = nav_links(name)
+    url = "https://smartype.in/" + ("" if name == "index.html" else name.replace(".html", ""))
+    where = ('<meta name="robots" content="noindex">' if name == "404.html"
+             else f'<link rel="canonical" href="{url}"><meta property="og:url" content="{url}">')
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>{E(title)}</title><meta name="description" content="{E(description)}">
-<meta property="og:title" content="{E(title)}"><meta property="og:description" content="{E(description)}"><meta property="og:image" content="https://smartype.in/assets/og.png">
-<meta name="theme-color" content="#22C3CF">
-<link rel="icon" href="assets/favicon.svg" type="image/svg+xml"><link rel="icon" href="assets/favicon-32.png" sizes="32x32">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png"><link rel="manifest" href="assets/site.webmanifest">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="assets/site.css"></head>
+<title>{E(title)}</title><meta name="description" content="{E(description)}">{where}
+<meta property="og:type" content="website"><meta property="og:site_name" content="SmarType"><meta property="og:title" content="{E(title)}">
+<meta property="og:description" content="{E(description)}"><meta property="og:image" content="https://smartype.in/assets/og.png"><meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#F5FAFB" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0B1416" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="icon" href="/assets/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png"><link rel="manifest" href="/assets/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="{ver("site.css")}"></head>
 <body><a class="skip" href="#main">Skip to content</a>
-<header class="top"><div class="wrap top-in"><a class="brand" href="index.html" aria-label="SmarType home">
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/lockup-porcelain.svg"><img src="assets/lockup-ink.svg" alt="SmarType" height="30"></picture></a>
-<nav aria-label="Main">{links}</nav>{play_button("Coming soon", "sm")}</div></header>
+<header class="top"><div class="top-pill"><a class="brand" href="/" aria-label="SmarType home">{lockup(28)}</a>
+<nav class="top-nav" aria-label="Main"><span class="nav-hl" aria-hidden="true"></span>{links}</nav>{play_button("Coming soon", "sm")}
+<button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu">Menu</button></div>
+<nav class="menu" id="menu" aria-label="Menu" hidden>{links}{play_button()}</nav></header>
 <main id="main">{body}</main>
 <footer class="foot"><div class="wrap foot-in">
-<div><picture><source media="(prefers-color-scheme: dark)" srcset="assets/lockup-porcelain.svg"><img src="assets/lockup-ink.svg" alt="SmarType" height="26"></picture>
-<p>The Android keyboard that helps you type, speak and get it right.</p></div>
-<nav aria-label="Footer"><a href="help.html">Help</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy policy</a><a href="terms.html">Terms</a></nav>
-<p class="copy">© {YEAR} SmarType</p></div></footer>{extra}</body></html>
+<div>{lockup(26)}<p>The Android keyboard that helps you type, speak and get it right.</p></div>
+<nav aria-label="Footer"><a href="/help.html">Help</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy policy</a><a href="/terms.html">Terms</a></nav>
+<p class="copy">© {YEAR} SmarType</p></div></footer><script src="{ver("site.js")}" defer></script>{extra}</body></html>
 """
 
 
-# ---------- pages ----------
+# ---------- home ----------
 
-FEATURES = [
-    ("spark", "Fix a message in one tap", "Grammar, spelling and tone fixed right where you type. Pick Polite, Professional, Shorter or your own style."),
-    ("translate", "Type in English, send in Hindi", "Translate what you wrote before you send it: Hindi, Telugu, Tamil and more."),
-    ("mic", "Speak, and it's tidied up", "Dictate a message. SmarType adds the punctuation and drops the ums."),
-    ("format_list_bulleted", "Rough notes, neat lists", "Turn a run-on message into bullets, a numbered list or a table."),
-    ("sticky_note_2", "Notes on your keyboard", "Jot a list or keep something you copied. Ask AI to add to it or change its tone."),
-    ("content_paste", "Your copied text, one tap away", "Recent and pinned clips right above the keys."),
-]
+# The phone in How it works, as in the design system's keyboard mockups (design/src/components.py): the smartbar
+# (Rewrite, Translate, Format, Clipboard, Notes, More, then Voice), suggestions and four rows of keys. Its texts:
+ROUGH = "great, can u send the adress"
+FIXED = "Great! Can you send me the address?"
+HINDI = "बढ़िया! क्या तुम मुझे पता भेज सकते हो?"
+SPOKEN = "Can't wait, see you on Saturday!"
+
+
+def sb(name, k="", ai=True):
+    """A smartbar button: AI actions sit in a gradient circle."""
+    data = f' data-k="{k}"' if k else ""
+    inner = f"<span>{icon(name)}</span>" if ai else icon(name)
+    return f'<span class="sb{" ai" if ai else ""}"{data}>{inner}</span>'
+
+
+def keyboard():
+    letters = lambda row: "".join(f'<i data-c="{c}">{c}</i>' for c in row)
+    rows = [letters("qwertyuiop"), "<b></b>" + letters("asdfghjkl") + "<b></b>",
+            '<i class="fn k3">⇧</i>' + letters("zxcvbnm") + '<i class="fn k3">⌫</i>',
+            f'<i class="fn k3">?123</i><i class="fn">{icon("language", "ic sm")}</i><i class="space k10" data-c=" ">English</i>'
+            '<i class="fn" data-c=".">.</i><i class="ent k3">↵</i>']
+    bar = (sb("spark", "fix") + sb("translate", "tr") + sb("format_list_bulleted") + sb("content_paste", ai=False)
+           + sb("sticky_note_2", ai=False) + sb("more_horiz", ai=False) + '<span class="sp"></span>' + sb("mic", "mic"))
+    voice = (sb("delete", ai=False) + '<span class="rec"><i></i><span class="rec-t">0:00</span></span><span class="veq">'
+             + "<i></i>" * 18 + '</span><span class="vprog">Transcribing and tidying up…</span><span class="vlang">Auto</span>' + sb("check"))
+
+    def panel(k, title, chips, meta, text, lang=""):
+        ch = "".join(f'<span{" class=sel" if i == 0 else ""}{f" lang={l}" if l else ""}>{E(c)}</span>' for i, (c, l) in enumerate(chips))
+        return (f'<div class="ime-panel ip-{k}"><div class="ip-head">{sb("arrow_back", ai=False)}<span>{E(title)}</span></div>'
+                f'<div class="ip-body"><div class="ip-chips">{ch}</div><div class="ip-res"><div class="ip-meta">{E(meta)}</div>'
+                f'<div class="ip-text"{f" lang={lang}" if lang else ""}>{E(text)}</div></div>'
+                '<div class="ip-dock"><span class="ip-btn">Copy</span><span class="ip-btn ai">Replace</span></div></div></div>')
+
+    return (f'<div class="ime"><div class="ime-top"><div class="ime-bar">{bar}</div><div class="ime-voice">{voice}</div></div>'
+            '<div class="ime-sugg"><span>adress</span><span class="b">address</span><span>addresses</span></div>'
+            '<div class="ime-keys">' + "".join(f'<div class="krow">{r}</div>' for r in rows) + "</div>"
+            + panel("fix", "Rewrite", [("Grammar fix", ""), ("Professional", ""), ("Casual", ""), ("Polite", "")], "Grammar fix", FIXED)
+            + panel("tr", "Translate", [("हिन्दी", "hi"), ("Español", "es"), ("Français", "fr"), ("العربية", "ar")], "Hindi", HINDI, "hi")
+            + "</div>")
 
 
 def home():
-    """The home page: a story told as you scroll. Text is typed in as each part appears (home.js); without JavaScript,
-    or with reduced motion, every part shows its final text."""
-    bubbles = [("बहुत-बहुत धन्यवाद!", "b2 ai", 1.1),
-               ('<span class="wave"><i></i><i></i><i></i><i></i><i></i></span>Leaving now', "b3 dark", .8),
-               ("• Milk<br>• Bread", "b4 note", 1.4)]
-    floats = "".join(f'<div class="float {c}" data-depth="{d}" aria-hidden="true">{t}</div>' for t, c, d in bubbles)
-    composer = (f'<div class="composer" data-depth=".25" aria-hidden="true"><div class="cm-top"><span class="cm-dot"></span>Message</div>'
-                f'<div class="cm-field"><span class="cm-text">Can we reschedule to Friday?</span><i class="caret"></i></div>'
-                f'<div class="cm-bar"><span class="cm-ai">{icon("spark", "ic")}</span><span class="cm-chip" data-k="pro">Professional</span>'
-                f'<span class="cm-chip" data-k="hi">हिन्दी</span><span class="cm-chip">Shorter</span></div></div>')
+    """The home page, one idea per section: what it is, how it works, styles, everything around it, privacy, try it.
+    Text is typed in as each part appears and only the section in the middle of the screen moves (home.js); without
+    JavaScript, or with reduced motion, every part shows its final state and the steps still switch on a tap."""
     steps = [
-        ("Type", "Type the way you always do. SmarType learns your words on your phone.", "keyboard"),
-        ("Fix", "One tap on the spark fixes grammar, spelling and tone, right where you type.", "spark"),
-        ("Translate", "Send it in Hindi, Telugu, Tamil and more, before you hit send.", "translate"),
-        ("Speak", "Or just say it. It's tidied up, ready to send.", "mic"),
+        ("Type", "Type the way you always do. Suggestions learn your words, on your phone.", "keyboard",
+         '<span class="tag">' + icon("keyboard", "ic sm") + "Learns on your phone</span>"),
+        ("Fix", "Tap the spark. Grammar, spelling and tone are fixed right where you type.", "spark",
+         '<span class="diff"><s>u</s><b>you</b></span><span class="diff"><s>adress</s><b>address</b></span>'
+         '<span class="diff"><s>great,</s><b>Great!</b></span>'),
+        ("Translate", "Send it in Hindi, Spanish, French, Arabic and 16 more languages.", "translate",
+         '<span class="tag">English</span>' + icon("chevron_right", "ic sm") + '<span class="tag on" lang="hi">हिन्दी</span>'
+         '<span class="tag" lang="es">Español</span><span class="tag" lang="fr">Français</span>'),
+        ("Speak", "Or just say it. Speech becomes text on your phone, then it's tidied up.", "mic",
+         '<span class="tag on"><span class="wave"><i></i><i></i><i></i><i></i><i></i></span>Speech to text on your phone</span>'),
     ]
-    # What each step changed, shown under its text.
-    details = [
-        '<span class="tag">' + icon("keyboard", "ic sm") + 'Learns your words, on your phone</span>',
-        '<span class="diff"><s>u</s><b>you</b></span><span class="diff"><s>adress</s><b>address</b></span><span class="diff"><s>great,</s><b>Great!</b></span>',
-        '<span class="tag">English</span>' + icon("chevron_right", "ic sm") + '<span class="tag on">हिन्दी</span><span class="tag">తెలుగు</span><span class="tag">தமிழ்</span>',
-        '<span class="tag on"><span class="wave"><i></i><i></i><i></i><i></i><i></i></span>Speech to text, on your phone</span>',
-    ]
-    acc_html = "".join(f'<div class="acc-item{" on" if i == 0 else ""}" data-step="{i}" role="tab" tabindex="0" aria-selected="{"true" if i == 0 else "false"}">'
-                       f'<div class="acc-bar" aria-hidden="true"><i class="acc-fill"></i></div>'
-                       f'<div class="acc-head"><span class="acc-num">0{i + 1}</span>'
-                       f'<h3 class="acc-title">{E(t)}</h3>'
-                       f'<span class="acc-icon" aria-hidden="true">{icon(ic, "ic sm")}</span></div>'
-                       f'<div class="acc-body"><div class="acc-body-in"><p>{E(d)}</p>'
-                       f'<div class="step-detail">{details[i]}</div></div></div></div>' for i, (t, d, ic) in enumerate(steps))
-    states = [("great, can u send the adress", "adress"), ("Great! Can you send me the address?", ""),
-              ("बढ़िया! क्या तुम मुझे पता भेज सकते हो?", ""), ("Can't wait, see you on Saturday!", "")]
-    state_html = "".join(f'<span class="st" data-typo="{E(w)}" hidden>{E(t)}</span>' for t, w in states)
-    tones = {"Polite": "Would it be okay if I took Friday off? I'll make sure my work is covered.",
-             "Professional": "I'd like to request leave on Friday. My tasks will be handed over before then.",
-             "Casual": "Mind if I take Friday off? I'll sort my stuff before.",
-             "Shorter": "Can I take Friday off?"}
+    acc = "".join(
+        f'<li class="acc-item{" on" if i == 0 else ""}" data-step="{i}"><div class="acc-bar" aria-hidden="true"><i class="acc-fill"></i></div>'
+        f'<h3 class="acc-h"><button class="acc-head" type="button" id="acc-h{i}" aria-expanded="{"true" if i == 0 else "false"}" aria-controls="acc-b{i}">'
+        f'<span class="acc-num">0{i + 1}</span><span class="acc-title">{E(t)}</span><span class="acc-icon" aria-hidden="true">{icon(ic, "ic sm")}</span></button></h3>'
+        f'<div class="acc-body" id="acc-b{i}" role="region" aria-labelledby="acc-h{i}"><div class="acc-body-in"><div class="acc-pad"><p>{E(d)}</p>'
+        f'<div class="step-detail">{det}</div></div></div></div></li>' for i, (t, d, ic, det) in enumerate(steps))
+    phone = (f'<div class="phone" aria-hidden="true" data-rough="{E(ROUGH)}" data-fixed="{E(FIXED)}" data-hindi="{E(HINDI)}" data-spoken="{E(SPOKEN)}">'
+             '<div class="ph-screen"><div class="ph-chat"><div class="incoming">Party at our new place on Saturday!</div>'
+             f'<div class="ph-field"><span class="field-text">{E(FIXED)}</span><i class="caret dc"></i></div></div>{keyboard()}</div></div>')
+
+    # Real styles from the app (AiSuggestionStyle): it has more than 20, plus the user's own.
+    tones = {"Professional": "I'd like to request leave on Friday. I'll finish my work before then.",
+             "Casual": "Mind if I take Friday off? I'll wrap up my work before.",
+             "Polite": "Would it be okay if I took Friday off? I'll make sure my work is done first.",
+             "Simple": "Can I take Friday off? I'll finish my work first."}
     tone_chips = "".join(f'<button class="chip{" on" if i == 0 else ""}" type="button" aria-pressed="{"true" if i == 0 else "false"}" data-tone="{E(v)}">{E(k)}</button>'
                          for i, (k, v) in enumerate(tones.items()))
+
+    hellos = [("Hello", "English", "en"), ("नमस्ते", "Hindi", "hi"), ("నమస్కారం", "Telugu", "te"), ("வணக்கம்", "Tamil", "ta"),
+              ("নমস্কার", "Bengali", "bn"), ("Hola", "Spanish", "es"), ("Bonjour", "French", "fr")]
+    lang_names = "".join(f'<li data-hello="{E(h)}" data-lang="{l}">{E(n)}</li>' for h, n, l in hellos)
     cards = [
-        ("c-translate", "translate", "Type in English.<br><em>Send it in Hindi.</em>", "Pick a language from the chips above your keys. The translation replaces your text, or copy it.",
-         '<div class="mini"><div class="mb in">See you at dinner tonight!</div><div class="mb out" data-typeon>आज रात खाने पर मिलते हैं!</div>'
-         '<div class="mchips"><span>English</span><span class="on">हिन्दी</span><span>తెలుగు</span><span>தமிழ்</span></div></div>'),
-        ("c-voice", "mic", "Just speak.<br><em>It's tidied up.</em>", "Speech becomes text on your phone; SmarType adds the punctuation and drops the ums.",
-         '<div class="mini voice"><div class="eq">' + "".join("<i></i>" for _ in range(28)) + '</div>'
-         '<div class="raw">uh can you pick up, um, milk and bread on the way</div><div class="mb out">Can you pick up milk and bread on the way?</div></div>'),
         ("c-format", "format_list_bulleted", "Rough notes,<br><em>neat lists.</em>", "Bullets, numbered steps or a table, from whatever you typed.",
          '<div class="mini"><div class="raw">need tickets, hotel for 2 nights, cab from airport, dinner sat</div>'
-         '<ul class="list"><li data-typeon>Train tickets</li><li data-typeon>Hotel for 2 nights</li><li data-typeon>Cab from the airport</li><li data-typeon>Dinner on Saturday</li></ul></div>'),
+         '<ul class="list"><li data-typeon>Tickets</li><li data-typeon>Hotel for 2 nights</li><li data-typeon>Cab from the airport</li><li data-typeon>Dinner on Saturday</li></ul></div>'),
         ("c-notes", "sticky_note_2", "Notes that<br><em>AI can polish.</em>", "Jot a list or keep something you copied. Ask AI to add to it or change its tone; undo in one tap.",
          '<div class="mini"><div class="ask">' + icon("spark", "ic sm") + '<span data-typeon>add that I\'ll pay the rent on Friday</span></div>'
          '<div class="note">Hey Ravi, the tap\'s fixed, thanks a lot! <mark data-typeon>I\'ll pay the rent on Friday.</mark></div></div>'),
         ("c-clip", "content_paste", "Copied it?<br><em>Paste in one tap.</em>", "Recent and pinned clips sit right above your keys, and stay on your phone.",
          '<div class="mini"><div class="clip pin">Office Wi-Fi: Lake-5G ' + icon("keep", "ic sm") + '</div><div class="clip">Order #48213 confirmed for Friday</div>'
          '<div class="clip">maps.app/meet-point</div></div>'),
+        ("c-langs", "language", "Your languages,<br><em>one key apart.</em>", "Type in English, Hindi, Telugu, Tamil, Bengali and more. Switch with the globe key.",
+         '<div class="mini hello"><div class="hello-card" aria-hidden="true"><span class="hello-word">Hello</span><i class="caret dc"></i></div>'
+         f'<div class="hello-foot"><span class="globe" aria-hidden="true">{icon("language")}</span><ul class="lang-names">{lang_names}</ul></div></div>'),
     ]
     card_html = "".join(f'<article class="card {c}"><div class="card-copy"><div class="card-ic">{icon(i)}</div><h3>{h}</h3><p>{E(d)}</p></div>'
                         f'<div class="card-vis">{v}</div></article>' for c, i, h, d, v in cards)
-    hellos = [("Hello", "English"), ("नमस्ते", "Hindi"), ("నమస్కారం", "Telugu"), ("வணக்கம்", "Tamil"), ("নমস্কার", "Bengali"),
-              ("ನಮಸ್ಕಾರ", "Kannada"), ("നമസ്കാരം", "Malayalam"), ("નમસ્તે", "Gujarati"), ("ਸਤ ਸ੍ਰੀ ਅਕਾਲ", "Punjabi")]
-    lang_names = "".join(f'<li data-hello="{E(h)}">{E(n)}</li>' for h, n in hellos)
-    # Words that stay on the phone: they drift inside the ring and bounce off it (home.js).
-    kept = ["Hi Mom", "meet at 6?", "PIN", "address", "love you", "bank OTP", "••••••", "salary", "doctor 4 pm", "Wi-Fi code"]
-    kept_html = "".join(f'<span class="kw">{E(w)}</span>' for w in kept)
-    stats = [("0", "keystrokes sent anywhere while you type"), ("0", "seconds of your voice leave your phone"), ("0", "words learned in password fields")]
-    stat_html = "".join(f'<div class="stat" data-reveal><b>{n}</b><span>{E(t)}</span></div>' for n, t in stats)
-    pw_offs = "".join(f'<span class="off">{icon("check_circle", "ic sm")}{E(t)}</span>' for t in ("AI off", "Voice off", "Learning off"))
-    promises = [("keyboard", "Typing stays on your phone", "Suggestions, clipboard, notes and settings are stored only on your phone."),
-                ("spark", "AI sees only what you send", "Text leaves your phone only when you tap Rewrite, Translate or Format, or finish a voice message, and it travels encrypted."),
-                ("lock", "Never sold, never for ads", "We don't sell your data and we don't use what you type for advertising.")]
-    prom = "".join(f'<li data-reveal><span class="pk">{icon(i)}</span><div><h3>{E(t)}</h3><p>{E(d)}</p></div></li>' for i, t, d in promises)
+
+    # Privacy: three promises, and one picture of where text goes (home.js plays one promise at a time).
+    vows = [("keyboard", "Typing stays on your phone", "Suggestions are learned here. Your clipboard and notes stay here too."),
+            ("spark", "AI sees only what you send", "Text leaves only when you tap an AI button or finish a voice message, and it travels encrypted."),
+            ("lock", "Password fields switch it off", "No AI, no voice and no learning while you type a password.")]
+    vow_html = "".join(f'<li class="vow{" on" if i == 0 else ""}" data-phase="{i}"><button type="button" aria-pressed="{"true" if i == 0 else "false"}">'
+                       f'<span class="pk">{icon(ic)}</span><span class="vow-t"><b>{E(t)}</b><span>{E(d)}</span></span></button></li>'
+                       for i, (ic, t, d) in enumerate(vows))
+    offs = "".join(f'<span>{icon("check_circle", "ic sm")}{t}</span>' for t in ("AI off", "Voice off", "Learning off"))
+    seal = ('<div class="seal" aria-hidden="true" data-rough="hi mom ill be home by 6" data-fixed="Hi Mom, I\'ll be home by 6.">'
+            f'<div class="seal-phone"><div class="seal-head"><span class="seal-lock">{icon("lock", "ic sm")}</span>Your phone<span class="seal-badge">Stays here</span></div>'
+            '<div class="seal-field"><span class="seal-label">Message</span><span class="seal-text">Hi Mom, I\'ll be home by 6.</span><i class="caret dc"></i></div>'
+            f'<div class="seal-bar">{sb("spark", "fix")}{sb("translate")}{sb("format_list_bulleted")}<span class="sp"></span>{sb("mic")}</div>'
+            f'<div class="seal-offs">{offs}</div></div>'
+            f'<div class="seal-pipe"><i class="pipe"></i><span class="packet">a7 f3 0c</span><span class="pipe-tag">{icon("lock", "ic sm")}<span>Encrypted</span></span></div>'
+            f'<div class="seal-ai"><span class="ai-orb">{icon("spark", "ic sm")}</span>AI</div></div>')
+
     body = f"""
-<section class="hero2" id="top"><div class="glow g1" data-depth="-.3"></div><div class="glow g2" data-depth=".4"></div>
+<section class="hero2" id="top"><div class="glow g1" data-depth="-.25"></div>
 <div class="wrap hero2-in"><div class="hero2-copy">
 <p class="kicker" data-reveal>The AI keyboard for Android</p>
 <h1 data-type="hero">Type it.<br>Say it.<br><em>Get it right.</em></h1>
 <p class="lede" data-reveal>SmarType fixes, translates and tidies your words, right where you type, in every app.</p>
-<div class="cta" data-reveal>{play_button()}<a class="btn key alt" href="#features">See it work</a></div></div>
-<div class="hero2-stage">{floats}<div class="hero2-art" data-depth=".12">{art("art_welcome", 360)}</div>{composer}</div></div>
-<a class="scroll-cue" href="#features" aria-label="Scroll to the story"><span></span></a></section>
+<div class="cta" data-reveal>{play_button()}<a class="btn key alt" href="#how">See how it works</a></div>
+<p class="assure" data-reveal>{icon("lock", "ic sm")}Typing stays on your phone. No account needed to type.</p></div>
+<div class="hero2-art">{art("art_welcome", 480, eager=True)}</div></div></section>
 
-<section class="story" id="features"><div class="glow g-story" data-depth=".3"></div>
+<section class="story" id="how"><div class="glow g-story" data-depth=".3"></div>
 <div class="wrap story-head"><p class="kicker" data-reveal>How it works</p><h2 data-type>Watch it <em>work.</em></h2></div>
-<div class="wrap story-in"><div class="accordion" role="tablist" aria-label="How SmarType works">{acc_html}</div>
-<div class="story-stage" aria-hidden="true"><div class="phone"><div class="phone-chat"><div class="incoming">Party at our new place on Saturday!</div>
-<div class="field"><span class="field-text">Great! Can you send me the address?</span><i class="caret"></i>{state_html}</div></div>
-<div class="phone-bar"><span class="pb ai" data-for="1">{icon("spark", "ic")}</span><span class="pb ai" data-for="2">{icon("translate", "ic")}</span>
-<span class="pb">{icon("format_list_bulleted", "ic")}</span><span class="pb">{icon("content_paste", "ic")}</span><span class="sp"></span>
-<span class="pb ai" data-for="3">{icon("mic", "ic")}</span></div>
-<div class="phone-keys">{"".join("<i></i>" for _ in range(30))}</div></div></div></div>
-</section>
+<div class="wrap story-in"><ol class="accordion">{acc}</ol><div class="story-stage">{phone}</div></div></section>
 
-<section class="tone"><div class="glow g-tone" data-depth=".2"></div>
+<section class="tone" id="styles"><div class="glow g-tone" data-depth=".2"></div>
 <div class="wrap"><p class="kicker" data-reveal>Styles</p><h2 data-type>Say it <em>your way.</em></h2>
-<p class="lede" data-reveal>Same message, the tone you need. Tap a style, or make your own.</p>
-<div class="tone-box" data-reveal><div class="tone-chips" role="group" aria-label="Writing styles"><span class="chip-pill" aria-hidden="true"></span>{tone_chips}</div>
-<div class="tone-screen"><p class="tone-text" aria-live="polite"><span class="tone-words">{E(list(tones.values())[0])}</span><i class="caret" aria-hidden="true"></i></p></div></div>
+<p class="lede" data-reveal>Same message, the tone you need. Pick from more than 20 styles, or write your own.</p>
+<div class="tone-box" data-reveal><p class="tone-in"><span>You typed</span>can i take friday off? ill finish my work before</p>
+<div class="tone-chips" role="group" aria-label="Writing styles"><span class="chip-pill" aria-hidden="true"></span>{tone_chips}</div>
+<div class="tone-screen"><p class="tone-text"><span class="tone-words">{E(list(tones.values())[0])}</span><i class="caret dc" aria-hidden="true"></i></p></div></div>
 </div></section>
 
-<section class="stack"><div class="wrap"><p class="kicker" data-reveal>And more</p><h2 data-type>Everything <em>around it.</em></h2></div>
+<section class="stack" id="features"><div class="wrap"><p class="kicker" data-reveal>And more</p><h2 data-type>Everything <em>around it.</em></h2></div>
 <div class="wrap cards">{card_html}<div class="stack-end" aria-hidden="true"></div></div></section>
 
-<section class="langs"><div class="glow g-langs" data-depth=".25"></div>
-<div class="wrap langs-in"><div><p class="kicker" data-reveal>Languages</p><h2 data-type>Your languages, <em>one key apart.</em></h2>
-<p class="lede" data-reveal>Add the languages you type in and switch with the globe key.</p></div>
-<div class="hello" data-reveal><div class="hello-card" aria-hidden="true"><span class="hello-word">Hello</span><i class="caret"></i></div>
-<div class="hello-foot"><span class="globe" aria-hidden="true">{icon("language", "ic")}</span><ul class="lang-names">{lang_names}</ul></div></div></div>
-</section>
-
 <section class="vault" id="privacy"><div class="glow g3" data-depth=".25"></div>
-<div class="wrap vault-head"><p class="kicker" data-reveal>Privacy</p><h2 data-type>Private <em>by default.</em></h2>
-<p class="lede" data-reveal>A keyboard sees everything you type. SmarType is built so it doesn't have to keep any of it.</p></div>
-<div class="wrap vault-grid">
-<div class="orbit" aria-hidden="true"><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
-<div class="kept">{kept_html}</div><div class="core">{icon("lock")}<span>Your phone</span></div>
+<div class="wrap vault-grid"><div class="vault-copy"><p class="kicker" data-reveal>Privacy</p><h2 data-type>Private <em>by default.</em></h2>
+<p class="lede" data-reveal>A keyboard sees everything you type. SmarType keeps it on your phone, and sends text only when you ask.</p>
+<ol class="vows">{vow_html}</ol>
 </div>
-<div class="assure"><div class="stats">{stat_html}</div>
-<div class="pw" data-reveal><div class="pw-field"><span class="pw-label">Password</span><span class="pw-dots">••••••••••</span>{icon("lock", "ic sm")}</div>
-<div class="pw-offs">{pw_offs}</div><p>In password fields, SmarType turns itself down. Nothing is sent, spoken or learned.</p></div></div></div>
-<div class="wrap"><ul class="vows">{prom}</ul>
-<a class="link" href="privacy.html" data-reveal>Read the privacy policy {icon("chevron_right", "ic sm")}</a></div>
-</section>
+{seal}</div>
+<div class="wrap"><div class="peek-note" data-reveal>{not_looking()}<div><h3>We don't know what you type. Honestly.</h3>
+<p>Nothing in SmarType tracks your words. Sign in, and we know your name, email and Google photo, just so your free AI tries and Premium follow you to every phone. The "love you" you typed three times before sending? No idea. We never sell your data or use what you type for ads.</p>
+<a class="link" href="/privacy.html">Read the privacy policy {icon("chevron_right", "ic sm")}</a></div></div></div></section>
 
 <section class="closing2"><div class="glow g-close" data-depth=".2"></div>
 <div class="wrap split"><div class="close-art" data-reveal>{art("art_signin", 320)}</div><div>
@@ -224,8 +297,7 @@ def home():
 <div class="cta" data-reveal>{play_button()}</div></div></div>
 </section>
 """
-    scripts = ('<script src="assets/js/gsap.min.js" defer></script><script src="assets/js/ScrollTrigger.min.js" defer></script>'
-               '<script src="assets/js/home.js" defer></script>')
+    scripts = "".join(f'<script src="{ver(f)}" defer></script>' for f in ("gsap.min.js", "ScrollTrigger.min.js", "home.js"))
     return page("index.html", "SmarType: the AI keyboard for Android", "An Android keyboard with AI that fixes, translates and tidies your words, in every app.",
                 body, extra=scripts)
 
@@ -239,7 +311,7 @@ def doc(name, title, description, h1, updated, sections, draft=False):
     body = "".join(f'<section id="{E(sid)}"><h2>{E(t)}</h2>{content}</section>' for sid, t, content in sections)
     return page(name, title, description,
                 f'<div class="wrap doc">{DRAFT if draft else ""}<h1>{E(h1)}</h1><p class="meta">Last updated: {E(updated)}</p>'
-                f'<nav class="toc" aria-label="On this page"><ol>{toc}</ol></nav>{body}</div>', current=name)
+                f'<nav class="toc" aria-label="On this page"><ol>{toc}</ol></nav>{body}</div>')
 
 
 def privacy():
@@ -315,7 +387,7 @@ def help_page():
     groups = "".join(f'<section><h2>{E(g)}</h2>' + "".join(
         f'<details><summary>{E(q)}</summary><p>{E(a)}</p></details>' for q, a in items) + "</section>" for g, items in FAQ)
     return page("help.html", "Help · SmarType", "Answers about setting up SmarType, its AI features, languages, voice and your account.",
-                f'<div class="wrap doc"><h1>Help</h1><p class="lede">Quick answers. Still stuck? <a href="contact.html">Contact us</a>.</p>{groups}</div>', current="help.html")
+                f'<div class="wrap doc"><h1>Help</h1><p class="lede">Quick answers. Still stuck? <a href="/contact.html">Contact us</a>.</p>{groups}</div>')
 
 
 def contact():
@@ -327,7 +399,7 @@ def contact():
 
 def notfound():
     return page("404.html", "Page not found · SmarType", "This page doesn't exist.",
-                f'<div class="wrap doc contact">{art("art_empty_notes", 200)}<h1>Page not found</h1><p class="lede"><a href="index.html">Go to the home page</a>.</p></div>')
+                f'<div class="wrap doc contact">{art("art_empty_notes", 200)}<h1>Page not found</h1><p class="lede"><a href="/">Go to the home page</a>.</p></div>')
 
 
 # ---------- build ----------
@@ -350,7 +422,8 @@ def main():
     os.makedirs(os.path.join(OUT, "assets/js"))
     for f in ("gsap.min.js", "ScrollTrigger.min.js"):
         shutil.copy(os.path.join(WEB, "tools/vendor", f), os.path.join(OUT, "assets/js", f))
-    shutil.copy(os.path.join(WEB, "tools/home.js"), os.path.join(OUT, "assets/js/home.js"))
+    for f in ("site.js", "home.js"):
+        shutil.copy(os.path.join(WEB, "tools", f), os.path.join(OUT, "assets/js", f))
     pages = {"index.html": home(), "privacy.html": privacy(), "terms.html": terms(), "help.html": help_page(),
              "contact.html": contact(), "404.html": notfound()}
     for name, text in pages.items():
