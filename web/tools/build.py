@@ -287,7 +287,7 @@ def home():
 </div>
 {seal}</div>
 <div class="wrap"><div class="peek-note" data-reveal>{not_looking()}<div><h3>We don't know what you type. Honestly.</h3>
-<p>Nothing in SmarType tracks your words. Sign in, and we know your name, email and Google photo, just so your free AI tries and Premium follow you to every phone. The "love you" you typed three times before sending? No idea. We never sell your data or use what you type for ads.</p>
+<p>Nothing in SmarType tracks your words. If you sign in, we keep your name, email and Google photo, so your free AI tries and Premium can follow you to a new phone. What you write, rewrite and almost send is your business, not ours. We never sell your data or use what you type for ads.</p>
 <a class="link" href="/privacy.html">Read the privacy policy {icon("chevron_right", "ic sm")}</a></div></div></div></section>
 
 <section class="closing2"><div class="glow g-close" data-depth=".2"></div>
