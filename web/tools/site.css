@@ -22,8 +22,10 @@
     color-scheme: dark; }
 }
 * { box-sizing: border-box; }
+[id] { scroll-margin-top: 84px; }
 html, body { overflow-x: clip; }
 html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body { margin: 0; background: var(--bg); color: var(--on); font: 400 17px/1.6 "Google Sans Flex", "DM Sans", system-ui, sans-serif; }
 a { color: var(--accent); }
 img { max-width: 100%; height: auto; }
@@ -304,8 +306,8 @@ html:not(.js) .chip.on { background: var(--ai); }
 .vault-grid { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
 .vows { display: grid; gap: 6px; margin: 28px 0 0; padding: 0; list-style: none; }
 .vow button { display: flex; align-items: flex-start; gap: 16px; width: 100%; padding: 14px 16px; border: 0; border-radius: var(--r-md); background: none; color: inherit; font: inherit;
-  text-align: left; cursor: pointer; opacity: .55; transition: opacity .3s, background .3s; }
-.vow button:hover { opacity: .85; }
+  text-align: left; cursor: pointer; opacity: .75; transition: opacity .3s, background .3s; }
+.vow button:hover, .vow button:focus-visible { opacity: .92; }
 .vow.on button { opacity: 1; background: rgba(230,241,243,.05); }
 .vow button:focus-visible { outline-color: #5FD3DF; }
 html:not(.js) .vow button { opacity: 1; }

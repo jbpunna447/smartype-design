@@ -170,7 +170,7 @@
       send: ["send", "sending", "sent"], the: ["the", "them", "they"], adress: ["adress", "address", "addresses"] };
     const DUR = [5, 6.8, 6.6, 7];
     const sc = scene();
-    let step = 0, auto = true, inView = false, hovering = false, listening = false, started = false;
+    let step = 0, auto = true, inView = false, hovering = false, focused = false, listening = false, started = false;
     const setSugg = (w) => sugg.forEach((s, i) => (s.textContent = w[i] || ""));
     const setField = (text, typo) => { field.textContent = text; if (typo) markTypo(field, typo); };
     const closeAll = () => { ime.dataset.open = ""; ime.classList.remove("voice", "tidy"); listening = false; };
@@ -287,10 +287,12 @@
     // while its phone plays on.
     const sync = () => {
       sc.paused = !inView;
-      acc.classList.toggle("paused", !inView || hovering);
+      acc.classList.toggle("paused", !inView || hovering || focused);
     };
     acc.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") { hovering = true; sync(); } });
     acc.addEventListener("pointerleave", () => { hovering = false; sync(); });
+    acc.addEventListener("focusin", () => { focused = true; sync(); });
+    acc.addEventListener("focusout", (e) => { if (!acc.contains(e.relatedTarget)) { focused = false; sync(); } });
     if (motion) {
       begin(0);
       onFocus(story, (on) => {

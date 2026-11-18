@@ -27,7 +27,8 @@ def icon(name, cls="ic"):
         src = os.path.join(DESIGN, "icons/brand/spark.svg")
     else:
         src = os.path.join(DESIGN, "icons/material-symbols-rounded", f"{name}.svg")
-    s = open(src).read()
+    with open(src, encoding="utf-8") as fh:
+        s = fh.read()
     view = re.search(r'viewBox="([^"]+)"', s).group(1)
     paths = "".join(re.findall(r"<path[^>]*/>", s))
     return f'<svg class="{cls}" viewBox="{view}" aria-hidden="true" fill="currentColor">{paths}</svg>'
@@ -198,8 +199,8 @@ def home():
         ("Translate", "Send it in Hindi, Spanish, French, Arabic and 16 more languages.", "translate",
          '<span class="tag">English</span>' + icon("chevron_right", "ic sm") + '<span class="tag on" lang="hi">हिन्दी</span>'
          '<span class="tag" lang="es">Español</span><span class="tag" lang="fr">Français</span>'),
-        ("Speak", "Or just say it. Speech becomes text on your phone, then it's tidied up.", "mic",
-         '<span class="tag on"><span class="wave"><i></i><i></i><i></i><i></i><i></i></span>Speech to text on your phone</span>'),
+        ("Speak", "Or just say it. Tap the mic, speak for up to a minute, and tap Check for clean text.", "mic",
+         '<span class="tag on"><span class="wave"><i></i><i></i><i></i><i></i><i></i></span>Clean text on Check</span>'),
     ]
     acc = "".join(
         f'<li class="acc-item{" on" if i == 0 else ""}" data-step="{i}"><div class="acc-bar" aria-hidden="true"><i class="acc-fill"></i></div>'
@@ -241,7 +242,7 @@ def home():
 
     # Privacy: three promises, and one picture of where text goes (home.js plays one promise at a time).
     vows = [("keyboard", "Typing stays on your phone", "Suggestions are learned here. Your clipboard and notes stay here too."),
-            ("spark", "AI sees only what you send", "Text leaves only when you tap an AI button or finish a voice message, and it travels encrypted."),
+            ("spark", "AI sees only what you send", "SmarType sends text or AI voice audio encrypted only when you tap an AI button or Check. Offline or out of tries, system voice runs under its provider."),
             ("lock", "Password fields switch it off", "No AI, no voice and no learning while you type a password.")]
     vow_html = "".join(f'<li class="vow{" on" if i == 0 else ""}" data-phase="{i}"><button type="button" aria-pressed="{"true" if i == 0 else "false"}">'
                        f'<span class="pk">{icon(ic)}</span><span class="vow-t"><b>{E(t)}</b><span>{E(d)}</span></span></button></li>'
@@ -282,7 +283,7 @@ def home():
 
 <section class="vault" id="privacy"><div class="glow g3" data-depth=".25"></div>
 <div class="wrap vault-grid"><div class="vault-copy"><p class="kicker" data-reveal>Privacy</p><h2 data-type>Private <em>by default.</em></h2>
-<p class="lede" data-reveal>A keyboard sees everything you type. SmarType keeps it on your phone, and sends text only when you ask.</p>
+<p class="lede" data-reveal>A keyboard sees everything you type. SmarType keeps typing on your phone, and sends text or voice audio only when you ask.</p>
 <ol class="vows">{vow_html}</ol>
 </div>
 {seal}</div>
@@ -293,7 +294,7 @@ def home():
 <section class="closing2"><div class="glow g-close" data-depth=".2"></div>
 <div class="wrap split"><div class="close-art" data-reveal>{art("art_signin", 320)}</div><div>
 <h2 data-type>Try the AI <em>for free.</em></h2>
-<p class="lede" data-reveal>Sign in with Google to get free AI tries. Typing, suggestions and voice work without an account.</p>
+<p class="lede" data-reveal>Sign in with Google to get free AI tries for rewrite, translate, format and AI voice typing. Typing and suggestions work without an account.</p>
 <div class="cta" data-reveal>{play_button()}</div></div></div>
 </section>
 """
@@ -313,33 +314,37 @@ def doc(name, title, description, h1, updated, sections):
 def privacy():
     s = [
         ("summary", "In short", "<ul><li>What you type stays on your phone. Suggestions are learned on the device.</li>"
-         "<li>Text is sent only when you ask for AI: Rewrite, Translate, Format, Notes AI, or tidying up a voice message.</li>"
+         "<li>Text or voice audio is sent only when you ask for AI: Rewrite, Translate, Format, Notes AI, or voice typing.</li>"
          "<li>Nothing is learned or sent from password fields.</li>"
-         "<li>If you sign in, we keep your Google account's name, email, photo and sign-in dates, and how many AI tries you've used.</li>"
-         "<li>We don't sell your data and we don't use what you type for advertising.</li></ul>"),
+         "<li>If you sign in, we keep your Google account's ID, name, email, photo and sign-in dates, and how many AI tries you've used.</li>"
+         "<li>We don't sell your data and we don't use what you type or say for advertising.</li></ul>"),
         ("typing", "What stays on your phone", "<p>Your keystrokes, the words SmarType learns for suggestions, your clipboard history, your notes and your settings are stored only on your phone. "
          "They are not sent to us. Clipboard history skips content Android marks as sensitive. Uninstalling the app or clearing its data removes them.</p>"),
-        ("ai", "When you use AI", "<p>When you tap Rewrite, Translate or Format, ask AI to change a note, or finish a voice message, the text you chose is sent over an encrypted connection to SmarType's server (Google Firebase), "
+        ("ai", "When you use AI", "<p>When you tap Rewrite, Translate or Format, or ask AI to change a note, the text you chose is sent over an encrypted connection to SmarType's server (Google Firebase), "
          "which sends it to an AI model provider (currently Google's Gemini) to produce the result and returns it to you.</p>"
-         "<p>We use the text only to produce that result. We don't keep it after the request, and we don't use it to train models. "
-         "Our AI provider processes it under its terms for API customers. We count each use against your free tries or plan.</p>"
-         "<p>Voice: speech is turned into text on your phone. Only the text is sent, to tidy it up.</p>"),
+         "<p>Voice typing: after you accept the voice notice and microphone permission, SmarType records up to 60 seconds of speech in memory while you dictate. "
+         "If you cancel, the audio is deleted immediately on your phone. When you tap Check, the audio is sent over an encrypted connection to SmarType's server (Google Firebase) and Gemini to return clean text. "
+         "When you're offline or out of free AI tries, the microphone switches to Android's system voice input when available (processed by that provider under its own privacy terms), or shows a notice in the keyboard.</p>"
+         "<p>We use your text and voice audio only to produce that result. We don't store them after the request, and we don't use them to train models. "
+         "Our AI provider processes them under its terms for API customers. We count each completed use against your free tries or plan.</p>"),
         ("account", "Your account", "<p>Signing in is optional. If you sign in with Google, we store your account ID, name, email address, profile photo, and when you created the account and last signed in. "
          "We use them to give you free AI tries, keep Premium on all your phones and help you if you contact us.</p>"),
         ("payments", "Payments", "<p>Premium is bought through Google Play. Google handles payment details; we receive only whether your subscription is active and when it renews.</p>"),
         ("device", "Keeping the service safe", "<p>To stop abuse of the AI service, the app uses Firebase App Check with Google Play Integrity, which confirms requests come from a real copy of the app on a real device.</p>"),
         ("analytics", "Usage analytics", "<p>The app includes Google Analytics for Firebase, which collects basic, non-content information such as app opens, device model, Android version and approximate country. "
-         "It never receives what you type.</p>"),
+         "It never receives what you type or dictate.</p>"),
         ("sharing", "Who we share data with", "<p>Only the service providers that run SmarType: Google (Firebase, Gemini, Google Play) and, if you set one up yourself, the AI provider of your own key. "
          "We don't sell personal data. We may disclose data if the law requires it.</p>"),
-        ("choices", "Your choices", "<ul><li>Use SmarType without signing in: typing, suggestions and voice still work.</li>"
-         "<li>Turn off clipboard history in Settings.</li>"
-         f"<li>Delete your account and its data: write to <a href=\"mailto:{SUPPORT}\">{SUPPORT}</a>. We delete it within 30 days.</li></ul>"),
+        ("choices", "Your choices", "<ul><li>Use SmarType without signing in: typing and on-device suggestions work without an account.</li>"
+         "<li>Turn off clipboard history in Settings, or reset the voice typing notice in SmarType AI settings.</li>"
+         f"<li>Delete your SmarType account and its data: email <a href=\"mailto:{SUPPORT}\">{SUPPORT}</a> from the Google address you signed in with. "
+         "Within 30 days we delete your account ID, name, email address, profile photo, sign-in dates, AI usage count and subscription status from our servers. "
+         "Google Play keeps its own purchase records under Google's terms, and data stored only on your phone stays there until you clear app data or uninstall SmarType.</li></ul>"),
         ("children", "Children", "<p>SmarType isn't directed at children under 13 and we don't knowingly collect their data.</p>"),
         ("changes", "Changes and contact", f"<p>We'll update this page when how we handle data changes, and change the date at the top. Questions: <a href=\"mailto:{SUPPORT}\">{SUPPORT}</a>.</p>"),
     ]
-    return doc("privacy.html", "Privacy policy · SmarType", "How SmarType handles your data: typing stays on your phone; text is sent only when you use AI.",
-               "Privacy policy", "1 November 2026", s)
+    return doc("privacy.html", "Privacy policy · SmarType", "How SmarType handles your data: typing stays on your phone; text or voice audio is sent only when you use AI.",
+               "Privacy policy", "18 November 2026", s)
 
 
 def terms():
@@ -349,31 +354,31 @@ def terms():
         ("ai", "AI results", "<p>AI suggestions can be wrong or unsuitable. Read them before you send. You're responsible for what you send.</p>"),
         ("tries", "Free tries and Premium", "<p>Signed-in users get a number of free AI tries; this number can change. Premium is a subscription sold through Google Play; "
          "Google Play's terms cover billing, renewals, cancellations and refunds. You can cancel any time in Google Play.</p>"),
-        ("content", "Your content", "<p>What you write stays yours. You give us only the permission needed to process text you send to AI and return the result.</p>"),
+        ("content", "Your content", "<p>What you write or dictate stays yours. You give us only the permission needed to process text or voice audio you send to AI and return the result.</p>"),
         ("availability", "Availability", "<p>We work to keep SmarType running, but features can change and the AI service can be unavailable at times.</p>"),
         ("liability", "Liability", "<p>To the extent the law allows, SmarType is provided as is, and we aren't liable for indirect losses from using it.</p>"),
         ("changes", "Changes and contact", f"<p>We may update these terms and will change the date at the top. Questions: <a href=\"mailto:{SUPPORT}\">{SUPPORT}</a>.</p>"),
     ]
-    return doc("terms.html", "Terms · SmarType", "The terms for using the SmarType keyboard and its AI features.", "Terms of use", "1 November 2026", s)
+    return doc("terms.html", "Terms · SmarType", "The terms for using the SmarType keyboard and its AI features.", "Terms of use", "18 November 2026", s)
 
 
 FAQ = [
     ("Getting started", [
         ("How do I turn on SmarType?", "Open SmarType and follow the two steps: allow it in Android's keyboard settings, then choose it as your keyboard. The app moves on by itself when each step is done."),
         ("How do I switch back to my old keyboard?", "Long-press the globe key, or tap the keyboard icon in the navigation bar, and pick another keyboard."),
-        ("Do I need an account?", "No. Typing, suggestions and voice work without one. Sign in with Google only if you want free AI tries or Premium."),
+        ("Do I need an account?", "No. Typing and suggestions work without one. Sign in with Google if you want AI features (Rewrite, Translate, Format, Notes AI and AI voice typing) or Premium."),
     ]),
     ("AI features", [
-        ("What happens to the text I send to AI?", "It goes to our server and our AI provider only to produce your result, and isn't kept. See the privacy policy."),
+        ("What happens to the text or voice audio I send to AI?", "It goes over an encrypted connection to our server and our AI provider only to produce your result, and isn't stored after the request. See the privacy policy."),
         ("How many free tries do I get?", "Signed-in users get a set number of free AI tries; the app shows how many are left. Premium removes the limit."),
         ("Why doesn't AI work in password fields?", "On purpose: SmarType never sends or learns anything typed in a password field."),
     ]),
     ("Languages and voice", [
         ("Which languages can I type in?", "English and Indian languages including Hindi, Telugu, Tamil and Bengali. Add them in Languages and switch with the globe key."),
-        ("Does voice typing send my audio?", "No. Speech is turned into text on your phone; only the text is sent, to tidy it up."),
+        ("Does voice typing send my audio?", "SmarType sends audio only when you use SmarType AI voice typing and tap Check. SmarType records up to 60 seconds in memory, deletes the audio immediately if you cancel, and sends it over an encrypted connection to our server and Gemini only to return your text — it isn't stored after the request. When you're offline or out of free tries, SmarType switches to Android's system voice input when available (handled by that voice provider under its own privacy terms without SmarType's Check step), or shows a notice in the keyboard."),
     ]),
     ("Account and data", [
-        ("How do I delete my account?", f"Write to {SUPPORT} from your account's email address. We delete your account and its data within 30 days."),
+        ("How do I delete my account?", f"Write to {SUPPORT} from your Google sign-in email address. Within 30 days we delete your SmarType account profile, AI usage count and subscription status from our servers."),
         ("How do I cancel Premium?", "In Google Play: Profile → Payments and subscriptions → Subscriptions → SmarType → Cancel."),
     ]),
 ]
