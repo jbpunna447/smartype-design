@@ -74,6 +74,39 @@ class WebBuildPrivacyTests(unittest.TestCase):
         self.assertIn("Last updated: 18 November 2026", terms_html)
         self.assertIn("text or voice audio", terms_html.lower())
 
+    def test_play_buttons_link_to_play_store_without_coming_soon(self):
+        expected_url = "https://play.google.com/store/apps/details?id=bha.keys.smartype"
+        pages = {
+            "index.html": (build.home(), 4),
+            "privacy.html": (build.privacy(), 2),
+            "terms.html": (build.terms(), 2),
+            "help.html": (build.help_page(), 2),
+            "contact.html": (build.contact(), 2),
+            "404.html": (build.notfound(), 2),
+        }
+        anchor_re = re.compile(
+            r'<a\s+class="(?P<cls>btn key[^"]*)"\s+href="(?P<href>[^"]+)"[^>]*>(?P<body>.*?)</a>',
+            flags=re.DOTALL,
+        )
+        for name, (html_text, expected_count) in pages.items():
+            with self.subTest(page=name):
+                self.assertNotIn("coming soon", html_text.lower(), f"Unexpected 'coming soon' in {name}")
+                self.assertNotIn("aria-disabled", html_text.lower(), f"Unexpected 'aria-disabled' in {name}")
+                matches = [m for m in anchor_re.finditer(html_text) if "play-chip" in m.group("body")]
+                self.assertEqual(len(matches), expected_count)
+                for m in matches:
+                    self.assertEqual(m.group("href"), expected_url)
+                labels = [re.sub(r"<[^>]+>", "", m.group("body")).strip() for m in matches]
+                self.assertEqual(labels[0], "Google Play")
+                for full_label in labels[1:]:
+                    self.assertEqual(full_label, "Get it on Google Play")
+
+    def test_mobile_menu_nav_link_selector_excludes_play_button(self):
+        with open(os.path.join(TOOLS_DIR, "site.css"), encoding="utf-8") as css_fh:
+            css_text = css_fh.read()
+        self.assertIn(".menu a:not(.btn)", css_text)
+        self.assertNotRegex(css_text, r"\.menu\s+a\s*\{")
+
     def test_generated_site_matches_builder_and_contains_only_smartype_emails(self):
         expected_pages = {
             "index.html": build.home(),

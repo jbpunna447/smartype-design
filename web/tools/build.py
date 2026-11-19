@@ -16,6 +16,7 @@ OUT = os.path.join(WEB, "site")
 E = html.escape
 
 SUPPORT = "contact@smartype.in"
+PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=bha.keys.smartype"
 YEAR = 2026
 ILLUSTRATIONS = ["art_welcome", "art_signin", "art_ai", "art_premium", "art_empty_languages", "art_empty_notes", "art_done"]
 
@@ -42,9 +43,10 @@ PLAY = ('<svg class="play" viewBox="0 0 24 24" aria-hidden="true">'
         '<path fill="#F7304B" d="M16.6 15.4 4.8 22.2c-.4.2-.9.2-1.2 0l9.7-10.2z"/></svg>')
 
 
-def play_button(label="Coming soon to Google Play", cls=""):
-    """The one call to action: a flat button with the Play logo. A span while the app isn't on Play; swap for a link later."""
-    return f'<span class="btn key {cls}" aria-disabled="true"><span class="play-chip">{PLAY}</span>{E(label)}</span>'
+def play_button(label="Get it on Google Play", cls=""):
+    """The one call to action: a flat button with the Play logo linking to the Google Play listing."""
+    cls_attr = f"btn key {cls}".strip()
+    return f'<a class="{cls_attr}" href="{E(PLAY_STORE_URL)}"><span class="play-chip">{PLAY}</span>{E(label)}</a>'
 
 
 def ver(name):
@@ -132,7 +134,7 @@ def page(name, title, description, body, extra=""):
 <link rel="stylesheet" href="{ver("site.css")}"></head>
 <body><a class="skip" href="#main">Skip to content</a>
 <header class="top"><div class="top-pill"><a class="brand" href="/" aria-label="SmarType home">{lockup(28)}</a>
-<nav class="top-nav" aria-label="Main"><span class="nav-hl" aria-hidden="true"></span>{links}</nav>{play_button("Coming soon", "sm")}
+<nav class="top-nav" aria-label="Main"><span class="nav-hl" aria-hidden="true"></span>{links}</nav>{play_button("Google Play", "sm")}
 <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu">Menu</button></div>
 <nav class="menu" id="menu" aria-label="Menu" hidden>{links}{play_button()}</nav></header>
 <main id="main">{body}</main>
