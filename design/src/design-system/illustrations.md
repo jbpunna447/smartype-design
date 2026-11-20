@@ -49,6 +49,14 @@ Heroes are drawn for 200 dp, empty states for 160 dp. See the Illustrations page
 
 Anything drawn straight onto the background in Ink (voice bars, the magnifier) turns light (`#E3EEF0`); the spark switches to the AI gradient. Shapes on white cards and the key stay as they are. The `-dark` files already do this.
 
+## Modular story wardrobe
+
+Video and social studio reels and comic carousels use `src/mascot_cast.py` (`assets/illustrations-cast/`) to dress the brand key for short silent stories:
+
+- **Boundary:** in-app screens keep the armless key above, and `smartype-illustrations.zip` ships only `assets/illustrations/`.
+- **Snap-on slots:** 8 hair styles, 5 beard styles, 4 glasses styles, 6 collar or prop accessories, 6 expressions, and 6 poses with rubber-hose limbs (`var(--ill-ink)`).
+- **Parody safety:** characters use playful archetype titles (`Statesman Key`, `VIP Podium Key`, `Tech Founder Key`). Real names and handles of living public figures are blocked.
+
 ## Not illustrated
 
 Anything inside the keyboard (Clipboard empty, emoji history), settings rows, dialogs and banners. They keep icons.

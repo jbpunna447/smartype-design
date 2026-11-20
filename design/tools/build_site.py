@@ -34,6 +34,7 @@ from screens import S  # noqa: E402
 from brand_page import brand_body  # noqa: E402
 from illustration_merge import SCENES  # noqa: E402
 from illustration_set import SET as ILLUSTRATIONS  # noqa: E402
+from mascot_cast import CAST_PRESETS, render_mascot_svg  # noqa: E402
 import store  # noqa: E402
 
 E = html.escape
@@ -214,6 +215,12 @@ def illustrations_page():
     set_cells = "".join(
         f'<figure class="ill-item" id="{name}"><div class="ill-pair"><div class="ill-light sm">{fn(160)}</div><div class="ill-dark sm">{fn(160)}</div></div>'
         f'<figcaption><b>{E(title)}</b> · {E(where)} · {dp} dp<br><code>{name}</code></figcaption></figure>' for name, title, where, dp, fn, kind in ILLUSTRATIONS)
+    cast_cells = "".join(
+        f'<figure class="ill-item" id="cast-{slug}"><div class="ill-pair">'
+        f'<div class="ill-light sm">{render_mascot_svg(160, preset=slug, uid=f"cast-{slug}-l")}</div>'
+        f'<div class="ill-dark sm">{render_mascot_svg(160, preset=slug, uid=f"cast-{slug}-d")}</div></div>'
+        f'<figcaption><b>{E(title)}</b> · {E(sub)}<br><code>{slug}</code></figcaption></figure>'
+        for slug, title, sub, _spec, _still in CAST_PRESETS)
     rules = [
         ("Character", "The brand key: white face, light grey lip. Two Ink eyes with a white catchlight, a smile, mint cheeks. No arms, no legs, no S"),
         ("Where it comes from", "The app icon: the S lifts off the key and becomes the first letter typed, and the blank key wakes up. At the end the S flies home to the logo"),
@@ -231,7 +238,10 @@ def illustrations_page():
             '<h2>The character</h2><div class="tbl"><table><thead><tr><th>Rule</th><th>Spec</th></tr></thead><tbody>' +
             "".join(f"<tr><td>{E(a)}</td><td>{E(b)}</td></tr>" for a, b in rules) + "</tbody></table></div>"
             '<h2>More moments</h2><p>For tips, the store listing and the website: the same character translating and listening.</p>'
-            '<div class="ill-scenes">' + extra + '</div>')
+            '<div class="ill-scenes">' + extra + '</div>'
+            '<h2>Modular story wardrobe</h2><p>For Video &amp; Social Studio reels and carousels only (never inside the app UI or <code>smartype-illustrations.zip</code>): '
+            'snap-on hair, beards, glasses, collars, and rubber-hose limbs with parody-safe archetype titles in <code>assets/illustrations-cast/</code>.</p>'
+            '<div class="ill-grid">' + cast_cells + '</div>')
     return page("illustrations.html", "Illustrations · SmarType", body, current="illustrations.html")
 
 
@@ -539,6 +549,8 @@ def main():
         shutil.copy(os.path.join(ASSETS, "screens/today", f), os.path.join(OUT, "assets/today", f))
     for sub in ("svg", "still"):
         shutil.copytree(os.path.join(ASSETS, "illustrations", sub), os.path.join(OUT, "assets/illustrations", sub), dirs_exist_ok=True)
+        if os.path.isdir(os.path.join(ASSETS, "illustrations-cast", sub)):
+            shutil.copytree(os.path.join(ASSETS, "illustrations-cast", sub), os.path.join(OUT, "assets/illustrations-cast", sub), dirs_exist_ok=True)
     icons_zip()
     write("index.html", home_page())
     for i, f in enumerate(FLOWS):
