@@ -44,8 +44,8 @@ h3 { font-size: 20px; font-weight: 600; letter-spacing: -.01em; }
    Logo, links and the Play button in one capsule. The section you are in gets a soft pill that slides between the
    links (site.js), the same shape as the keyboard's chips. On phones the links move into a Menu sheet. */
 main { padding-top: 68px; }
-.top { position: fixed; inset: 0 0 auto; z-index: 30; padding: 12px 12px 0; pointer-events: none; }
-.top-pill { pointer-events: auto; position: relative; margin: 0 auto; width: fit-content; max-width: 100%; height: 56px; display: flex; align-items: center; gap: 22px;
+.top { position: fixed; inset: 0 0 auto; z-index: 30; padding: 12px max(20px, env(safe-area-inset-left, 0px)) 0; pointer-events: none; }
+.top-pill { pointer-events: auto; position: relative; margin: 0 auto; width: 100%; max-width: 1080px; height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 22px;
   padding: 0 8px 0 18px; border-radius: 999px; background: color-mix(in srgb, var(--surface) 78%, transparent);
   -webkit-backdrop-filter: blur(16px) saturate(1.5); backdrop-filter: blur(16px) saturate(1.5); border: 1px solid var(--edge); box-shadow: var(--elev-1);
   transition: background .3s, box-shadow .3s; }
@@ -76,8 +76,9 @@ html.scrolled .top-pill { background: color-mix(in srgb, var(--surface) 90%, tra
 /* footer */
 .foot { border-top: 1px solid var(--line); margin-top: 40px; padding: 40px 0 48px; color: var(--on-2); font-size: 15px; }
 .foot-in { display: grid; grid-template-columns: 1fr auto; gap: 18px 40px; align-items: start; }
-.foot img { display: block; height: 26px; width: auto; } .foot p { margin: 10px 0 0; max-width: 40ch; }
-.foot nav { display: flex; flex-wrap: wrap; gap: 10px 22px; } .foot nav a { color: var(--on-2); text-decoration: none; } .foot nav a:hover { color: var(--on); }
+.foot img { display: block; height: 26px; width: auto; } .foot p { margin: 10px 0 0; white-space: nowrap; }
+.foot nav { display: grid; grid-template-columns: repeat(3, auto); gap: 24px 56px; } .foot nav div { display: flex; flex-direction: column; gap: 10px; }
+.foot nav h2 { margin: 0 0 4px; font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--on); } .foot nav a { color: var(--on-2); text-decoration: none; } .foot nav a:hover { color: var(--on); }
 .copy { grid-column: 1 / -1; font-size: 13px; }
 
 /* buttons: one style everywhere, flat. Primary: the AI gradient, left to right. Alt: an outline on the page. */
@@ -94,7 +95,8 @@ a.btn.key { cursor: pointer; }
 .btn.key.sm .play-chip { width: 28px; height: 28px; margin-left: 0; border-radius: 50%; } .btn.key.sm .play { width: 15px; height: 15px; }
 
 /* documents */
-.doc { max-width: 760px; padding-top: 48px; padding-bottom: 24px; }
+.doc { padding-top: 48px; padding-bottom: 24px; }
+.doc p, .doc ul, .doc ol, .doc details { max-width: 80ch; } /* a readable line inside the full-width page */
 .doc h1 { font-size: clamp(36px, 5vw, 52px); }
 .doc h2 { font-size: 24px; margin: 36px 0 8px; }
 .doc .meta { color: var(--on-2); font-size: 14px; margin: 10px 0 0; }
@@ -104,7 +106,7 @@ a.btn.key { cursor: pointer; }
 details { border-bottom: 1px solid var(--line); padding: 14px 0; }
 summary { cursor: pointer; font-weight: 600; font-size: 18px; color: var(--on); }
 details p { margin: 10px 0 2px; }
-.contact { text-align: center; } .contact .art img { width: 200px; margin: 0 auto 8px; display: block; } .contact .lede { margin-left: auto; margin-right: auto; }
+.contact { text-align: center; } .contact p { margin-left: auto; margin-right: auto; } .contact .art img { width: 200px; margin: 0 auto 8px; display: block; } .contact .lede { margin-left: auto; margin-right: auto; }
 .page-wide { padding-top: 48px; padding-bottom: 32px; }
 .page-wide h1 { font-size: clamp(34px, 5vw, 54px); max-width: 24ch; }
 .page-wide h2 { font-size: clamp(24px, 3.4vw, 34px); margin: 44px 0 16px; }
@@ -126,6 +128,7 @@ details p { margin: 10px 0 2px; }
 .cta-strip { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; margin-top: 36px; padding: 24px 26px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); }
 .page-wide .cta-strip h2 { font-size: 20px; font-weight: 600; letter-spacing: -.01em; margin: 0; }
 .cta-strip p { margin: 6px 0 0; color: var(--on-2); font-size: 15.5px; }
+@media (max-width: 560px) { .foot-in { grid-template-columns: 1fr; } .foot p { white-space: normal; } .foot nav { grid-template-columns: repeat(2, auto); gap: 24px 32px; } .toc ol { columns: 1; } }
 .tool-card { margin: 28px 0; padding: 24px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--elev-2); }
 .tool-label { display: block; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0 0 8px; }
 .tool-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
@@ -151,9 +154,6 @@ details p { margin: 10px 0 2px; }
 .tool-dock strong { color: var(--on); }
 .tool-note { display: flex; align-items: center; gap: 8px; margin: 14px 0 0; color: var(--on-2); font-size: 14px; }
 .tool-note .ic { color: var(--accent); flex: 0 0 auto; }
-.foot-tools { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px 18px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 14px; }
-.foot-tools span { color: var(--on); font-weight: 600; }
-.foot-tools a { color: var(--on-2); text-decoration: none; } .foot-tools a:hover { color: var(--on); }
 @media (max-width: 560px) { .foot-in { grid-template-columns: 1fr; } .toc ol { columns: 1; } .tool-card { padding: 16px; } .tool-dock .btn { width: 100%; justify-content: center; } }
 
 /* ---------- home (motion in home.js) ---------- */
@@ -477,3 +477,11 @@ html:not(.js) .packet, .seal.p1 .packet.go { opacity: 1; }
   .caret, .wave i, .vprog::after, .ip-text.wait, .pipe, .ai-orb { animation: none !important; }
   .acc-body, .acc-body-in, .chip-pill, .nav-hl, .ime-panel, .ime-bar, .ime-voice, .packet, .tool-tab, .tool-chip { transition: none !important; }
 }
+
+/* The iPhone app badge: same size as the Play button, quiet, not a link. */
+.btn.soon { background: transparent; color: var(--on-2); border: 1.5px dashed var(--line); cursor: default; }
+.soon-t { display: flex; flex-direction: column; line-height: 1.15; }
+.soon-t small { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+.assure-link { margin: 14px 0 0; }
+.krow i .ic.key { width: 19px; height: 19px; vertical-align: 0; } /* Shift, Backspace and Enter at the app's 24 dp icon size, scaled to this phone */
+.btn.soon .apple { width: 24px; height: 24px; color: var(--on); flex: 0 0 auto; }
