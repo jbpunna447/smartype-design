@@ -460,10 +460,16 @@ class FastlaneMetadataTests(unittest.TestCase):
         with open(os.path.join(en_images, "featureGraphic.png"), "rb") as actual_fh, open(design_feature, "rb") as expected_fh:
             self.assertEqual(actual_fh.read(), expected_fh.read())
         screenshots_dir = os.path.join(en_images, "phoneScreenshots")
-        expected_shots = sorted(
-            fname for fname in os.listdir(os.path.join(REPO_DIR, "design", "assets", "store", "en"))
-            if re.match(r"^0[1-8]-.*\.png$", fname)
-        )
+        expected_shots = [
+            "01-ai-open.png",
+            "02-tr-open.png",
+            "03-vo-listen.png",
+            "05-nt-changed.png",
+            "06-cb-open.png",
+            "07-lg-globe.png",
+            "08-themes.png",
+            "09-privacy.png",
+        ]
         self.assertEqual(sorted(os.listdir(screenshots_dir)), expected_shots)
         for fname in expected_shots:
             src = os.path.join(REPO_DIR, "design", "assets", "store", "en", fname)
