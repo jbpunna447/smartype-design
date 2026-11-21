@@ -44,7 +44,7 @@ S["ai-replaced"] = device(chat(text="I'm running late for the meeting, sorry.") 
 
 # ---------- translate ----------
 S["tr-open"] = device(chat(text=TYPED) + _kb(panel_html=panel(
-    "Translate", chips(["English", ("Hindi", "sel"), "Telugu", ("+ More", "more")]) + result("English → Hindi", "माफ़ करना, मुझे मीटिंग के लिए देर हो रही है।"),
+    "Translate", chips(["English", ("Spanish", "sel"), "Hindi", ("+ More", "more")]) + result("English → Spanish", "Perdón, llego tarde a la reunión."),
     badge="4 left", dock=dock(("Copy", "q"), ("Replace", "ai")))), ime=True)
 _langs = "".join(
     f'<div class="s-item"{ann("Language row", "Radius 12 dp; tap translates; pin toggles a chip", "keyboard key surface", "keep") if i == 0 else ""}>'
@@ -167,7 +167,7 @@ S["lg-remove"] = device(appbar("Languages") + '<div class="s-scroll">' + _help +
                         '<p>You can add it again from Add language.</p><div class="acts"><span>Cancel</span><span class="danger">Remove</span></div></div></div>', app=True)
 S["lg-globe"] = device(chat(text="See you tomorrow") + ime(smartbar(annotate=False), suggestions(["tomorrow", "tomorrow!", "today"], annotate=False), keys(utility="language", space="English · हिन्दी", annotate=False)) +
                        f'<div class="s-pop"{ann("Language list", "Long-press on 🌐 or space. Width 200 dp; rows 48 dp; radius 16 dp", "keyboard popup surface")}>'
-                       '<div class="on">English (US) <span>✓</span></div><div>हिन्दी Hindi</div><div class="sep">Other keyboards…</div></div>', ime=True)
+                       '<div class="on">English (US) <span>✓</span></div><div>Español</div><div>हिन्दी Hindi</div><div>العربية</div><div class="sep">Other keyboards…</div></div>', ime=True)
 S["lg-hindi-v1"] = device(chat(text="kal milte") + ime(smartbar(annotate=False), suggestions(annotate=False), keys(utility="language", space="हिन्दी", deva=True, annotate=False)), ime=True)
 S["lg-layout-later"] = device(appbar("Add language") + '<div class="s-scroll"><div class="s-scrim"></div>' +
                               '<div class="s-sheet"><div class="s-handle"></div><h4>Hindi · choose a layout</h4><div class="sub">You can change this later.</div>'

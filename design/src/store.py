@@ -48,11 +48,13 @@ FRAMES = [
                  f'<div style="position:absolute;left:66px;top:510px">{_key("surprised", 230, (.04, -.02))}</div>' +
                  f'<div style="position:absolute;left:830px;top:470px">{_sparkle(120)}</div>'),
          alt="SmarType fixing a typo-filled message, im runing late sry, into I'm running late for the meeting, sorry."),
-    dict(sid="tr-open", theme="light", head="Type in English. <em>Send it in Hindi.</em>", crop=(332, 776),
-         extras=(_bubble("Running late, sorry!", "", "left:80px;top:470px") +
-                 f'<div class="pl-badge" style="left:700px;top:470px">文A</div>' +
-                 _bubble("देर हो रही है, माफ़ करना!", "ai", "right:80px;top:640px")),
-         alt="SmarType translating Running late, sorry from English into Hindi, with English, Hindi and Telugu to choose from"),
+    dict(sid="tr-open", theme="light", head="Write it once. <em>Send it in 21 languages.</em>", crop=(332, 776),
+         extras=(_bubble("Running late, sorry!", "", "left:80px;top:430px") +
+                 f'<div class="pl-badge" style="left:760px;top:420px">文A</div>' +
+                 _bubble("遅れてごめん！", "ai", "right:80px;top:545px;transform:rotate(2deg)") +
+                 _bubble("देर हो रही है, माफ़ करना!", "ai", "left:70px;top:655px;transform:rotate(-2deg)") +
+                 _bubble('<span dir="rtl">آسف، سأتأخر!</span>', "ai", "right:70px;top:660px")),
+         alt="SmarType translating Running late, sorry into Spanish, Japanese, Hindi and Arabic, four of 21 languages"),
     dict(sid="vo-listen", theme="dark", head="Just speak. <em>It's tidied up.</em>", crop=(332, 776),
          extras=(_bubble("um so like I'm on my way, be there in ten", "raw", "left:80px;top:420px;max-width:920px") +
                  f'<div class="pl-arrow dark" style="left:620px;top:545px">↓</div>' +
@@ -71,10 +73,12 @@ FRAMES = [
          extras=(_bubble("Order #48213 confirmed for Friday", "", "left:80px;top:480px;transform:rotate(-2deg);max-width:600px") +
                  f'<div style="position:absolute;right:90px;top:470px">{_key("watch", 190, (-.04, .03))}</div>'),
          alt="The SmarType clipboard in the keyboard with pinned and recent clips, ready to paste"),
-    dict(sid="lg-globe", theme="dark", head="English and Hindi, <em>one key apart</em>", crop=(332, 776),
-         extras=(_bubble("See you tomorrow", "", "left:80px;top:460px") + _bubble("कल मिलते हैं", "ai", "right:80px;top:610px") +
-                 '<div class="pl-globe" style="left:420px;top:590px"><svg aria-hidden="true"><use href="#ms-language"/></svg></div>'),
-         alt="Switching the SmarType keyboard between English and Hindi with the globe key"),
+    dict(sid="lg-globe", theme="dark", head="50+ languages, <em>one key apart</em>", crop=(332, 776),
+         extras=(_bubble("See you tomorrow", "", "left:70px;top:420px") + _bubble("Hasta mañana", "ai", "right:70px;top:420px") +
+                 _bubble("कल मिलते हैं", "ai", "left:150px;top:530px") + _bubble("До завтра", "ai", "right:150px;top:530px") +
+                 _bubble('<span dir="rtl">أراك غدًا</span>', "ai", "left:70px;top:640px") + _bubble("また明日", "ai", "right:70px;top:640px") +
+                 '<div class="pl-globe" style="left:475px;top:620px"><svg aria-hidden="true"><use href="#ms-language"/></svg></div>'),
+         alt="The SmarType globe key switching between English, Spanish, Hindi, Russian, Arabic and Japanese keyboards"),
     dict(sid="privacy", theme="dark", head="Your typing <em>stays on your phone</em>", graphic=True,
          extras=(f'<div style="position:absolute;left:250px;top:470px">{_key("happy", 250)}</div>'
                  '<div class="pl-lock" style="left:560px;top:490px"><svg aria-hidden="true"><use href="#ms-lock"/></svg></div>'
@@ -195,7 +199,7 @@ def _feature_a(root):
     return (f'<div class="fg" style="background:{bg}"><div class="fg-light"></div>'
             + _fb("im " + _typo("runing") + " late sry", "", "left:92px;top:96px;transform:rotate(-4deg)")
             + _fb("Running late, sorry!", "", "left:120px;top:190px;transform:rotate(2deg)")
-            + _fb("देर हो रही है", "", "right:96px;top:100px;transform:rotate(3deg)")
+            + _fb("遅れてごめん！", "", "right:96px;top:100px;transform:rotate(3deg)")
             + _voice("right:132px;top:186px")
             + f'<div class="fg-at" style="left:{FW / 2 - 90:.0f}px;top:52px">{_key("happy", 180)}</div><div class="fg-at" style="left:{FW / 2 + 66:.0f}px;top:30px">{_sparkle(60)}</div>'
             + '<h1 class="fg-head" style="top:280px">Type it. Say it. <em class="w">Get it right.</em></h1>'
@@ -208,7 +212,7 @@ def _feature_b(root):
             '<div class="fg-ring" style="left:332px;top:-28px;width:360px;height:360px"></div><div class="fg-ring" style="left:392px;top:32px;width:240px;height:240px;opacity:.5"></div>'
             + _fb("im " + _typo("runing") + " late sry", "glass trail-r", "left:96px;top:92px")
             + _fb("Running late, sorry!", "trail-r", "left:126px;top:196px")
-            + _fb("देर हो रही है", "trail-l", "right:110px;top:100px")
+            + _fb('<span dir="rtl">آسف، سأتأخر!</span>', "trail-l", "right:110px;top:100px")
             + _voice("right:140px;top:206px;background:#16262A")
             + f'<div class="fg-at" style="left:{FW / 2 - 85:.0f}px;top:58px">{_key("surprised", 170)}</div><div class="fg-at" style="left:{FW / 2 + 60:.0f}px;top:36px">{_sparkle(56, AI)}</div>'
             + '<h1 class="fg-head light" style="top:262px">Type it. Say it. <em class="g">Get it right.</em></h1>'
@@ -227,8 +231,8 @@ def _feature_c(root):
             + _logo(root, "on-gradient", f"left:{FW / 2 - 108:.0f}px;top:30px;height:40px")
             + '<h1 class="fg-head" style="top:82px;font-size:50px">Type it. Say it. <em class="w">Get it right.</em></h1>'
             + _fb("Running late, sorry!", "rise", "left:118px;top:186px;transform:rotate(-6deg)")
-            + _fb("On my way!", "rise", "right:150px;top:176px;transform:rotate(5deg)")
-            + _fb("कल मिलते हैं", "rise", "right:96px;top:262px;transform:rotate(-3deg)")
+            + _fb("¡Ya voy!", "rise", "right:150px;top:176px;transform:rotate(5deg)")
+            + _fb("また明日", "rise", "right:96px;top:262px;transform:rotate(-3deg)")
             + f'<div class="fg-at" style="left:{FW / 2 - 70:.0f}px;top:200px">{_key("happy", 140)}</div><div class="fg-at" style="left:{FW / 2 + 50:.0f}px;top:184px">{_sparkle(46)}</div>'
             + "</div>")
 
@@ -257,12 +261,12 @@ def _feature_e(root):
 
 
 FEATURES = [
-    ("a", "A · Moments", "The key in the centre, a typo fixed, Hindi and voice around it", _feature_a,
-     "The SmarType key fixing a typo, translating into Hindi and turning speech into text, on the brand gradient"),
+    ("a", "A · Moments", "The key in the centre, a typo fixed, Japanese and voice around it", _feature_a,
+     "The SmarType key fixing a typo, translating into Japanese and turning speech into text, on the brand gradient"),
     ("b", "B · Spotlight", "Dark and premium: the brand gradient glows behind the key; bubbles float in with soft trails", _feature_b,
-     "The SmarType key in a spotlight of the brand gradient, with a fixed typo, Hindi and voice floating around it"),
+     "The SmarType key in a spotlight of the brand gradient, with a fixed typo, Arabic and voice floating around it"),
     ("c", "C · Keyboard horizon", "A big keyboard sweeps across the bottom; the key stands on it as words rise off the keys", _feature_c,
-     "The SmarType key standing on a keyboard as messages in English and Hindi rise off the keys"),
+     "The SmarType key standing on a keyboard as messages in English, Spanish and Japanese rise off the keys"),
     ("d", "D · Before and after", "Grey on the left with the typo, vivid on the right with the fix; the key throws the spark across", _feature_d,
      "A typo on a grey half turned into a correct message on a bright half by the SmarType key"),
     ("e", "E · Every language", "Greetings in eight scripts burst around the key", _feature_e,
