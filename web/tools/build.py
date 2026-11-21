@@ -158,7 +158,7 @@ def page(name, title, description, body, extra="", schema=None):
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{E(title)}</title><meta name="description" content="{E(description)}">{where}
 <meta property="og:type" content="website"><meta property="og:site_name" content="SmarType"><meta property="og:title" content="{E(title)}">
-<meta property="og:description" content="{E(description)}"><meta property="og:locale" content="en_IN"><meta property="og:image" content="https://smartype.in/assets/og.png">
+<meta property="og:description" content="{E(description)}"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://smartype.in/assets/og.png">
 <meta property="og:image:width" content="1024"><meta property="og:image:height" content="500"><meta property="og:image:alt" content="SmarType, the AI keyboard for Android">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{E(title)}"><meta name="twitter:description" content="{E(description)}"><meta name="twitter:image" content="https://smartype.in/assets/og.png">
 <meta name="theme-color" content="#F5FAFB" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0B1416" media="(prefers-color-scheme: dark)">
