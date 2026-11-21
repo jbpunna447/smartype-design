@@ -112,6 +112,7 @@ class WebBuildPrivacyTests(unittest.TestCase):
         pages = {
             "index.html": (build.home(), 4),
             "compare.html": (build.compare(), 4),
+            "languages.html": (build.languages_page(), 4),
             "privacy-architecture.html": (build.privacy_architecture(), 4),
             "polite-whatsapp-rewriter.html": (build.polite_whatsapp_rewriter(), 4),
             "ai-tone-translator.html": (build.ai_tone_translator(), 4),
@@ -128,7 +129,12 @@ class WebBuildPrivacyTests(unittest.TestCase):
         )
         for name, (html_text, expected_count) in pages.items():
             with self.subTest(page=name):
-                self.assertNotIn("coming soon", html_text.lower(), f"Unexpected 'coming soon' in {name}")
+                # Google Play is live: no Play button may say "coming soon". Only the iPhone badge (not a link) may.
+                without_iphone_badge = re.sub(r'<span class="btn soon".*?</span></span>', "", html_text, flags=re.DOTALL)
+                self.assertNotIn("coming soon", without_iphone_badge.lower(), f"Unexpected 'coming soon' in {name}")
+                for badge in re.findall(r'<span class="btn soon".*?</span></span>', html_text, flags=re.DOTALL):
+                    self.assertIn("App Store for iPhone", badge)
+                    self.assertNotIn("href", badge)
                 self.assertNotIn("aria-disabled", html_text.lower(), f"Unexpected 'aria-disabled' in {name}")
                 matches = [m for m in anchor_re.finditer(html_text) if "play-chip" in m.group("body")]
                 self.assertEqual(len(matches), expected_count)
@@ -149,6 +155,7 @@ class WebBuildPrivacyTests(unittest.TestCase):
         expected_pages = {
             "index.html": build.home(),
             "compare.html": build.compare(),
+            "languages.html": build.languages_page(),
             "privacy-architecture.html": build.privacy_architecture(),
             "polite-whatsapp-rewriter.html": build.polite_whatsapp_rewriter(),
             "ai-tone-translator.html": build.ai_tone_translator(),
@@ -324,6 +331,7 @@ class WebBuildPrivacyTests(unittest.TestCase):
         for loc in (
             "https://smartype.in/",
             "https://smartype.in/compare",
+            "https://smartype.in/languages",
             "https://smartype.in/privacy-architecture",
             "https://smartype.in/polite-whatsapp-rewriter",
             "https://smartype.in/ai-tone-translator",
@@ -359,7 +367,7 @@ class WebBuildPrivacyTests(unittest.TestCase):
             "https://smartype.in/rough-notes-to-neat-list",
             "https://smartype.in/privacy",
             "22 built-in",
-            "21",
+            "31",
             "60 seconds",
             "Quick Notes",
             "password",
@@ -368,14 +376,16 @@ class WebBuildPrivacyTests(unittest.TestCase):
         for unshipped in ("friendly", "concise", "emoji search", "smartype pro"):
             self.assertNotIn(unshipped, llms_disk.lower())
         translate_line = next(line for line in llms_disk.splitlines() if "In-keyboard AI Translate" in line)
-        translate_outputs = translate_line.split("outputs 21 languages: ", 1)[1]
+        translate_outputs = translate_line.split("outputs 31 languages: ", 1)[1]
         for lang in (
             "Arabic", "Chinese (Simplified)", "Dutch", "English", "French", "German", "Greek",
             "Hebrew", "Hindi", "Indonesian", "Italian", "Japanese", "Korean", "Polish",
             "Portuguese", "Russian", "Spanish", "Swedish", "Thai", "Turkish", "Vietnamese",
+            # The Indian languages from SmarType issue 706 (owner decision 2026-11-21: the site lists them ahead of the app release).
+            "Telugu", "Tamil", "Kannada", "Malayalam", "Marathi", "Bengali", "Gujarati", "Punjabi", "Odia", "Urdu",
         ):
             self.assertIn(lang, translate_outputs)
-        for non_target in ("Bengali", "Ukrainian", "Urdu", "Telugu", "Tamil"):
+        for non_target in ("Ukrainian", "Nepali", "Sinhala"):
             self.assertNotIn(non_target, translate_outputs)
 
 

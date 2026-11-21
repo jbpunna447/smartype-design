@@ -283,7 +283,7 @@ def home():
 
     # Privacy: three promises, and one picture of where text goes (home.js plays one promise at a time).
     vows = [("keyboard", "Typing stays on your phone", "Suggestions are learned here. Your clipboard and notes stay here too."),
-            ("spark", "AI sees only what you send", "SmarType sends text or AI voice audio encrypted only when you tap an AI button or Check. Offline or out of tries, system voice runs under its provider."),
+            ("spark", "AI sees only what you send", "Text or voice is sent, encrypted, only when you tap an AI button or Check. If you're offline or out of tries, the mic uses your phone's system voice typing."),
             ("lock", "Password fields switch it off", "No AI, no voice and no learning while you type a password.")]
     vow_html = "".join(f'<li class="vow{" on" if i == 0 else ""}" data-phase="{i}"><button type="button" aria-pressed="{"true" if i == 0 else "false"}">'
                        f'<span class="pk">{icon(ic)}</span><span class="vow-t"><b>{E(t)}</b><span>{E(d)}</span></span></button></li>'
@@ -373,7 +373,7 @@ def privacy():
          "<li>We don't sell your data and we don't use what you type or say for advertising.</li></ul>"),
         ("typing", "What stays on your phone", "<p>Your keystrokes, glide trails, the words SmarType learns in memory for suggestions, your clipboard history and your Quick Notes text stay on your phone and are excluded from Android backup; your settings, custom styles, personal dictionary and custom themes (including any theme photo and installed keyboard extensions) also stay on your phone unless Android backup or device transfer is enabled on your phone (none are sent to SmarType's servers). "
          "Clipboard history masks items flagged sensitive by Android 13+ or copied/cut with SmarType in password or incognito fields, and periodically removes unpinned sensitive items older than 20 seconds by default. Uninstalling the app or clearing its data removes on-device data. "
-         "See <a href=\"/privacy-architecture.html\">Privacy architecture</a> for a full diagram of these boundaries.</p>"),
+         "See <a href=\"/privacy-architecture.html\">Privacy architecture</a> for a simple picture of where everything goes.</p>"),
         ("ai", "When you use AI", "<p>When you tap Rewrite, Translate or Format, or ask AI to change a note, the text you chose is sent over an encrypted connection to SmarType's server (Google Firebase), "
          "which sends it to an AI model provider (currently Google's Gemini) to produce the result and returns it to you.</p>"
          "<p>Voice typing: after you accept the voice notice and microphone permission, SmarType records up to 60 seconds of speech in memory while you dictate. "
@@ -418,7 +418,7 @@ def terms():
 
 FAQ = [
     ("Getting started", [
-        ("Is SmarType on iPhone?", "Not yet. SmarType is on Google Play for Android 8.0 and later, and the iPhone app is coming soon to the App Store."),
+        ("Is SmarType on iPhone?", "Not yet. SmarType is on Google Play for Android 8.0 and later, and we are working on the iPhone app for the App Store."),
         ("How do I turn on SmarType?", "Open SmarType and follow the two steps: allow it in Android's keyboard settings, then choose it as your keyboard. The app moves on by itself when each step is done."),
         ("How do I switch back to my old keyboard?", "Long-press the globe key, or tap the keyboard icon in the navigation bar, and pick another keyboard."),
         ("Do I need an account?", "No. Typing and suggestions work without one. Sign in with Google if you want AI features (Rewrite, Translate, Format, Notes AI and AI voice typing) or Premium."),
@@ -433,7 +433,7 @@ FAQ = [
         ("Which languages can Translate write in?", TRANSLATE_FAQ),
         ("How do I keep my languages in Translate?", "Open Translate, tap More, search for a language and add it. Added languages show as chips next to English, so they are one tap away next time."),
         ("What happens if I pause while speaking?", "Nothing: SmarType keeps listening and shows Still listening. Recording ends only when you tap Check, tap Delete or reach 60 seconds."),
-        ("Does voice typing send my audio?", "SmarType sends audio only when you use SmarType AI voice typing and tap Check. SmarType records up to 60 seconds in memory, deletes the audio immediately if you cancel, and sends it over an encrypted connection to our server and Gemini only to return your text — it isn't stored after the request. When you're offline or out of free tries, SmarType switches to Android's system voice input when available (handled by that voice provider under its own privacy terms without SmarType's Check step), or shows a notice in the keyboard."),
+        ("Does voice typing send my audio?", "SmarType sends audio only when you use SmarType AI voice typing and tap Check. While you speak, it keeps up to 60 seconds of audio in memory. Delete throws it away on your phone. Check sends it, encrypted, to our server and Gemini to turn it into text, and we don't keep it after that. If you're offline or out of free tries, the mic uses your phone's system voice input when available, which follows that provider's own privacy terms."),
     ]),
     ("Account and data", [
         ("How do I delete my account?", f"Write to {SUPPORT} from your Google sign-in email address. Within 30 days we delete your SmarType account profile, AI usage count and subscription status from our servers."),
@@ -461,38 +461,38 @@ def contact():
 
 def compare():
     rows = [
-        ("One-tap tone rewrite", "22 built-in styles (Polite, Professional, Casual, Simple, Empathetic, Firm and more) + custom styles; pin up to 4 chips on any Android 8.0+ phone.",
-         "Proofread and Writing Tools depend on supported Pixel or Gemini devices.", "Copilot tone rewrite inside the toolbar.", "English grammar and tone suggestions."),
-        ("Indian typing &amp; AI translation", "Globe-key typing in English, Hindi, Telugu, Tamil, Bengali and 50+ layouts; one-tap AI translation into 31 languages, including Hindi, Telugu, Tamil, Kannada, Malayalam, Marathi, Bengali, Gujarati, Punjabi, Odia and Urdu.",
-         "Broad Indic layouts and Google Translate bar.", "Indic layouts and Microsoft Translator bar.", "English writing assistant; uses layouts from your existing keyboard without built-in Indic AI translation."),
-        ("Voice typing cleanup", "Records up to 60 seconds in memory; adds punctuation and trims filler words on Check; instant delete on cancel; system voice fallback offline.",
-         "Fast speech-to-text; assistant punctuation varies by phone.", "Uses voice input without 60-second Check cleanup.", "No built-in AI voice cleanup recorder."),
-        ("Quick Notes scratchpad", "In-keyboard notes panel plus a movable floating note window over any app, with optional AI polish.",
-         "Clipboard history only; no scratchpad.", "Clipboard pins and to-do integration; no floating note window.", "No built-in scratchpad."),
-        ("Password-field privacy", "Turns off AI actions and AI voice dictation in password and incognito fields; password fields also turn off composing, autocorrect, glide typing and the microphone button; verified editor ranges only.",
-         "Suppresses predictions in password fields.", "Suppresses predictions in password fields.", "Pauses checks in sensitive fields."),
+        ("Rewriting a message", "Tap the spark and pick one of 22 styles, like Grammar fix, Polite, Professional or Casual. You can write your own and pin your four favourites above the keys.",
+         "Proofread and Writing Tools, but only on some Pixel and Gemini phones.", "Copilot can rewrite tone from the toolbar.", "Strong on English grammar and tone."),
+        ("Indian languages and translation", "Type in English, Hindi, Telugu, Tamil, Bengali or Urdu. Translate writes in 31 languages, 11 of them Indian.",
+         "The widest choice of Indian layouts, plus Google Translate.", "Indian layouts, plus Microsoft Translator.", "English only, and it uses the layouts from your existing keyboard."),
+        ("Voice typing", "Speak for up to 60 seconds, pauses included. Tap Check and you get punctuated text. Delete throws the recording away on the spot.",
+         "Fast dictation. Punctuation depends on the phone.", "Uses your phone's voice input.", "No voice typing of its own."),
+        ("Notes", "Quick Notes: a notes panel inside the keyboard, plus a small floating window you can keep over any app.",
+         "Clipboard history only.", "Clipboard pins and To Do.", "None."),
+        ("Password fields", "AI, voice, learning and autocorrect all switch off. In incognito fields, AI and voice switch off.",
+         "Turns off suggestions.", "Turns off suggestions.", "Pauses checking."),
     ]
     trs = "".join(f'<tr><th scope="row">{r[0]}</th><td class="st-col">{E(r[1])}</td><td>{E(r[2])}</td><td>{E(r[3])}</td><td>{E(r[4])}</td></tr>' for r in rows)
     pillars = [
-        ("spark", "Polite message rewrite in one tap", "Pick Grammar fix, Polite, Professional, Casual, Simple or any of 22 built-in styles — or write your own custom style and pin up to 4 chips on the top bar."),
-        ("translate", "Indian-language typing + 31-language AI translation", "Switch between English, Hindi, Telugu, Tamil, Bengali and 50+ keyboard layouts with the globe key. Tap Translate to send messages in 11 Indian languages, English and 19 more, inside WhatsApp or Gmail. Add the languages you use as one-tap chips."),
-        ("mic", "Voice typing punctuation and cleanup", "Speak for up to 60 seconds in memory and tap Check for punctuated text. Cancel deletes the audio immediately. Offline or out of tries, SmarType switches to Android system voice input."),
-        ("sticky_note_2", "Quick Notes in and over any app", "Keep a scratchpad inside the keyboard or float a movable Quick Notes window above chats, browsers and forms, with one-tap AI polish and undo."),
-        ("lock", "Strict password and everyday privacy", 'Everyday keystrokes stay on your phone without an account. Password and incognito fields shut off AI and voice dictation, and password fields also turn off autocorrect and the mic button. Read <a href="/privacy-architecture.html">what stays on your phone</a>.'),
+        ("spark", "Fixing a message takes one tap", "Most of us know what we want to say and just want it to sound right. Type it rough, tap the spark, pick Polite or Professional, and send. You stay in WhatsApp the whole time."),
+        ("translate", "It speaks your languages", "Gboard and SwiftKey are great at English. If you message in Hindi, Telugu or Tamil, or need to reply to someone in Spanish or Arabic, SmarType does it without leaving the chat."),
+        ("mic", "Voice that waits while you think", "Other voice typing stops when you pause. SmarType keeps listening for up to a minute and gives you back sentences, not a run-on line without full stops."),
+        ("sticky_note_2", "A notepad that floats", "Copy an address, jot a list, keep a draft. The note window sits over whatever app you're in, and AI can tidy it if you ask."),
+        ("lock", "It doesn't read over your shoulder", 'Your typing stays on your phone, and nothing is sent unless you tap an AI button. In password fields, all of it switches off. <a href="/privacy-architecture.html">Here is exactly what stays on your phone</a>.'),
     ]
     cards = "".join(f'<article class="arch-card"><div class="arch-ic">{icon(ic)}</div><h3>{E(t)}</h3><p>{d}</p></article>' for ic, t, d in pillars)
     body = (f'<div class="wrap page-wide"><p class="kicker">Android keyboard comparison</p>'
-            '<h1>SmarType vs Gboard vs SwiftKey vs Grammarly: the best AI keyboard for Android?</h1>'
-            '<p class="lede">Gboard and SwiftKey handle everyday typing; Grammarly adds an Android writing assistant alongside your keyboard. SmarType combines one-tap polite tone rewrite, AI translation into 11 Indian languages, 60-second voice cleanup, Quick Notes and on-device everyday typing in one keyboard.</p>'
-            f'<div class="cta">{play_button()}<a class="btn key alt" href="/privacy-architecture.html">Privacy architecture</a></div>'
-            '<div class="cmp-scroll" tabindex="0" role="region" aria-label="Android keyboard comparison"><table class="cmp-table"><thead><tr><th scope="col">Capability</th><th scope="col" class="st-col">SmarType</th>'
+            '<h1>SmarType vs Gboard vs SwiftKey vs Grammarly: which AI keyboard should you use?</h1>'
+            '<p class="lede">Honest answer: if you only type in English and never rewrite anything, Gboard is fine. We built SmarType for people who switch languages, want a message to sound right before they send it, and would rather their keyboard not read along.</p>'
+            f'<div class="cta">{play_button()}<a class="btn key alt" href="/privacy-architecture.html">How we handle privacy</a></div>'
+            '<div class="cmp-scroll" tabindex="0" role="region" aria-label="Android keyboard comparison"><table class="cmp-table"><thead><tr><th scope="col">What you need</th><th scope="col" class="st-col">SmarType</th>'
             f'<th scope="col">Gboard</th><th scope="col">SwiftKey</th><th scope="col">Grammarly Android assistant</th></tr></thead><tbody>{trs}</tbody></table></div>'
-            f'<h2>Five differences that matter every day</h2><div class="arch-grid">{cards}</div>'
-            '<div class="cta-strip"><div><h2>Try SmarType free on Android 8.0+</h2><p>Typing and suggestions need no account. Sign in with Google when you want free AI tries.</p></div>'
+            '<p class="doc-inline">We compared the free versions on Android in November 2026. Features change, so if something here is out of date, <a href="/contact.html">tell us</a> and we will fix it.</p>'
+            f'<h2>Where SmarType is different</h2><div class="arch-grid">{cards}</div>'
+            '<div class="cta-strip"><div><h2>Try it free on Android 8.0 and later</h2><p>You can type without an account. Sign in with Google when you want to try the AI.</p></div>'
             f'{play_button()}</div></div>')
     return page("compare.html", "Best AI Keyboard for Android: SmarType vs Gboard, SwiftKey, Grammarly",
-                "Compare SmarType, Gboard, SwiftKey and Grammarly on tone rewrite, AI translation into Hindi, Telugu, Tamil and more, voice punctuation, Quick Notes and privacy.", body)
-
+                "An honest comparison of SmarType, Gboard, SwiftKey and Grammarly: rewriting messages, Indian languages and translation, voice typing, notes and privacy.", body)
 
 TYPED = {"hi", "te", "ta", "bn", "ur"}  # languages with a typing layout in the app; the rest are Translate only
 TYPING_LANGS = [("हिन्दी", "Hindi", "hi"), ("తెలుగు", "Telugu", "te"), ("தமிழ்", "Tamil", "ta"), ("বাংলা", "Bengali", "bn"),
@@ -512,58 +512,58 @@ def languages_page():
     faq = {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in qa]}
     body = ('<div class="wrap page-wide"><p class="kicker">Indian language keyboard</p>'
             '<h1>Hindi, Telugu, Tamil and more: an AI keyboard for Indian languages</h1>'
-            '<p class="lede">Type in your language, switch to English with one key, and translate English to Hindi, Telugu, Tamil or 8 more Indian languages right inside WhatsApp, Instagram or Gmail.</p>'
+            '<p class="lede">Most of us switch between English and our own language all day. SmarType keeps both one key apart, and translates a message when the other person reads a different language.</p>'
             f'<div class="cta">{play_button()}{soon_badge()}</div>'
             f'<h2>11 Indian languages in Translate, 5 with a keyboard</h2><div class="arch-grid">{tiles}</div>'
             '<h2>Questions</h2><div class="doc-inline">' + "".join(f'<details><summary>{E(q)}</summary><p>{E(a)}</p></details>' for q, a in qa) + '</div>'
-            '<div class="cta-strip"><div><h2>Get the Indian language AI keyboard</h2><p>Free on Android 8.0+. No account needed to type.</p></div>'
+            '<div class="cta-strip"><div><h2>Type in your language</h2><p>Free on Android 8.0 and later. No account needed to type.</p></div>'
             f'{play_button()}</div></div>')
     return page("languages.html", "Hindi, Telugu & Tamil Keyboard with AI Translate · SmarType",
-                "AI keyboard for Indian languages: type in Hindi, Telugu, Tamil, Bengali, Marathi, Kannada and more, switch to English in one tap, and translate English to Hindi instantly.",
+                "Type in Hindi, Telugu, Tamil, Bengali or Urdu, switch to English with one key, and translate English to Hindi or 10 other Indian languages inside WhatsApp.",
                 body, schema=[faq, crumbs("languages.html", "Indian languages")])
 
 
 def privacy_architecture():
     zones = [
-        ("keyboard", "1 · Stays on your phone", "Local keyboard storage",
-         ["Everyday keystrokes, glide trails and in-memory learned word suggestions stay on your device; settings, custom styles, personal dictionary and custom themes (including any theme photo and installed keyboard extensions) also stay local unless Android backup or device transfer is enabled on your phone (never sent to SmarType's servers).",
-          "Clipboard history (masking items flagged sensitive by Android 13+ or copied/cut with SmarType in password or incognito fields, and periodically removing unpinned sensitive items older than 20 seconds by default) and Quick Notes text stay on your phone and are excluded from Android backup.",
-          "Everyday typing and suggestions work without an account."]),
-        ("lock", "2 · Password &amp; incognito shutoff", "Automatic hard lock",
-         ["Password and incognito fields turn off AI actions and AI voice dictation.",
-          "Password fields also turn off composing, autocorrect and glide typing, and disable the password-row microphone so speech capture cannot start.",
-          "Editor updates replace only verified text ranges — never blind select-all deletion."]),
-        ("spark", "3 · Explicit AI tap only", "Encrypted ephemeral request",
-         ["Text leaves the phone over HTTPS only when you tap Rewrite, Translate, Format or Notes AI.",
-          "Voice typing holds up to 60 seconds in memory; Cancel deletes it immediately, and Check sends it encrypted to Google Firebase and Gemini.",
-          "Firebase App Check with Google Play Integrity guards the service. We do not store prompts or audio after the request, and we do not use them to train models."]),
+        ("keyboard", "Stays on your phone", "What never leaves",
+         ["What you type, your swipe trails and the words SmarType learns for suggestions.",
+          "Your clipboard history and your notes. Neither is included in Android backups.",
+          "Your settings, custom styles, personal dictionary and custom themes. They are only copied if you turn on Android backup or move to a new phone yourself.",
+          "Clipboard items Android marks as sensitive are hidden, periodically removing unpinned sensitive items older than 20 seconds by default."]),
+        ("lock", "Password and incognito fields", "Everything switches off",
+         ["No AI, no voice, no learning.",
+          "In password fields autocorrect, swipe typing and the mic button are off too, so nothing can be recorded.",
+          "When SmarType changes text, it only touches the exact words it was asked to change. It never selects everything and deletes it."]),
+        ("spark", "When you tap an AI button", "What leaves, and only then",
+         ["The text you chose goes to our server over an encrypted connection when you tap Rewrite, Translate, Format or ask AI about one of your Quick Notes.",
+          "Voice is kept in memory, up to 60 seconds. Delete throws it away on the phone. Check sends it encrypted to our server and Google's Gemini.",
+          "Firebase App Check with Google Play Integrity checks that requests come from the real app. We do not store your text or audio after we send back the result, and we don't train models on it."]),
     ]
     zhtml = "".join(
         f'<article class="arch-card"><span class="arch-tag">{tag}</span><div class="arch-ic">{icon(ic)}</div><h3>{E(t)}</h3>'
         + "<ul>" + "".join(f"<li>{E(li)}</li>" for li in items) + "</ul></article>" for ic, tag, t, items in zones
     )
-    body = (f'<div class="wrap page-wide"><p class="kicker">Privacy architecture</p>'
-            '<h1>What stays on your phone — and what leaves when you tap AI</h1>'
-            '<p class="lede">SmarType separates local everyday typing from optional AI requests so your keystrokes, passwords and private notes stay under your control.</p>'
-            f'<div class="cta">{play_button()}<a class="btn key alt" href="/privacy.html#choices">Data &amp; deletion choices</a></div>'
-            f'<h2>Three privacy boundaries</h2><div class="arch-grid">{zhtml}</div>'
-            '<section class="doc-inline"><h2>Optional Google sign-in and system voice fallback</h2>'
-            '<p>You can type without signing in. If you sign in with Google for free AI tries or Premium (sold through Google Play), SmarType stores only your account ID, name, email, photo, sign-in dates, AI try count and subscription status. '
-            'When your phone is offline or out of AI tries, tapping the microphone switches to Android system voice input when available under that provider\'s privacy terms. '
-            'Read the full <a href="/privacy.html">Privacy policy</a> or manage account deletion at <a href="/privacy.html#choices">Your choices</a>.</p></section>'
-            '<div class="cta-strip"><div><h2>Private Android AI keyboard</h2><p>Install SmarType from Google Play and start typing without an account.</p></div>'
+    body = (f'<div class="wrap page-wide"><p class="kicker">Privacy</p>'
+            '<h1>What stays on your phone, and what leaves when you tap AI</h1>'
+            '<p class="lede">A keyboard sees every keystroke, so you should know exactly where they go. Everyday typing works without an account, and here is the rest in plain words.</p>'
+            f'<div class="cta">{play_button()}<a class="btn key alt" href="/privacy.html#choices">Delete your data</a></div>'
+            f'<h2>Three simple rules</h2><div class="arch-grid">{zhtml}</div>'
+            '<section class="doc-inline"><h2>Signing in, and when the mic uses Google</h2>'
+            '<p>You don\'t need an account to type. If you sign in with Google for free AI tries or Premium, we keep your account ID, name, email, photo, sign-in dates, how many AI tries you\'ve used and whether you have Premium. That\'s it. '
+            'If you are offline or out of AI tries, the mic hands over to your phone\'s own voice typing, which follows that provider\'s privacy terms. '
+            'The full details are in the <a href="/privacy.html">privacy policy</a>, and you can <a href="/privacy.html#choices">delete your account</a> at any time.</p></section>'
+            '<div class="cta-strip"><div><h2>A keyboard that minds its own business</h2><p>Install SmarType and start typing. No account needed.</p></div>'
             f'{play_button()}</div></div>')
-    return page("privacy-architecture.html", "Privacy architecture · What stays on your phone · SmarType",
-                "How SmarType keeps keystrokes, clipboard items and Quick Notes on your phone, locks down password fields, and sends text or voice only when you tap AI.", body)
-
+    return page("privacy-architecture.html", "Private Keyboard for Android: What Stays on Your Phone · SmarType",
+                "Where your typing goes with SmarType: keystrokes, clipboard and notes stay on your phone, password fields switch everything off, and text is sent only when you tap AI.", body)
 
 MICRO_TOOLS_META = (
     ("polite-whatsapp-rewriter.html", "spark", "Polite WhatsApp rewriter",
-     "Preview Polite, Professional, Empathetic and Firm replies for real chat situations."),
-    ("ai-tone-translator.html", "translate", "AI tone translator (21 languages)",
-     "Switch English to Hindi, English to Spanish, Arabic to English and French to English with register control."),
-    ("rough-notes-to-neat-list.html", "format_list_bulleted", "Rough-notes-to-neat-list",
-     "Turn comma-separated or line-separated jottings into bullets, numbered steps, checklists or tables in your browser."),
+     "Four everyday messages, rewritten four ways."),
+    ("ai-tone-translator.html", "translate", "AI tone translator",
+     "See the same message in Hindi, Spanish or English, polite or casual."),
+    ("rough-notes-to-neat-list.html", "format_list_bulleted", "Rough notes to neat list",
+     "Paste a messy list and get bullets, steps, a checklist or a table."),
 )
 
 
@@ -578,13 +578,13 @@ def micro_tool_page(fname, title, desc, kicker, h1, lede, card_inner, strip_h2, 
         for slug, ic, name, blurb in MICRO_TOOLS_META if slug != fname
     ]
     others.append(
-        f'<article class="arch-card"><div class="arch-ic">{icon("lock")}</div><h3><a href="/privacy-architecture.html">On-device privacy boundary</a></h3>'
-        '<p>See what stays on your phone and how SmarType shuts off AI in password and incognito fields.</p></article>'
+        f'<article class="arch-card"><div class="arch-ic">{icon("lock")}</div><h3><a href="/privacy-architecture.html">What stays on your phone</a></h3>'
+        '<p>Where your typing goes, in plain words.</p></article>'
     )
     payload_json = json.dumps(data_obj, ensure_ascii=False).replace("</", "<\\/")
     body = (
         f'<div class="wrap page-wide"><p class="kicker">{E(kicker)}</p><h1>{E(h1)}</h1><p class="lede">{E(lede)}</p>'
-        f'{card_inner}<h2>Explore more free SmarType web tools</h2><div class="arch-grid">{"".join(others)}</div>'
+        f'{card_inner}<h2>More free tools</h2><div class="arch-grid">{"".join(others)}</div>'
         f'<div class="cta-strip"><div><h2>{E(strip_h2)}</h2><p>{E(strip_p)}</p></div>{play_button()}</div></div>'
     )
     extra = f'<script id="tool-data" type="application/json">{payload_json}</script><script src="{ver("tools.js")}" defer></script>'
@@ -616,11 +616,11 @@ def polite_whatsapp_rewriter():
         {"label": "Ask Friday off", "raw": "can i take friday off? ill finish my work before", "tones": [
             {"name": "Polite", "out": "Hi! Would it be alright if I took Friday off? I will finish all of my pending tasks before Thursday evening."},
             {"name": "Professional", "out": "I would like to request leave this Friday. All current deliverables will be completed beforehand."},
-            {"name": "Empathetic", "out": "I know the team has a busy week — would Friday off still work if I wrap up everything on my plate by Thursday?"},
+            {"name": "Empathetic", "out": "I know it's a busy week. Would Friday off still work if I wrap up everything on my plate by Thursday?"},
             {"name": "Firm", "out": "I am taking Friday off and will hand over my completed tasks by Thursday afternoon."},
         ]},
         {"label": "Pending invoice", "raw": "you still havent paid last weeks invoice, send today", "tones": [
-            {"name": "Polite", "out": "Hi Priya, hope your week is going well! Just checking in on last week's invoice — could you let me know when the transfer is planned?"},
+            {"name": "Polite", "out": "Hi Priya, hope your week is going well! Just checking in on last week's invoice. Could you let me know when the transfer is planned?"},
             {"name": "Professional", "out": "Hello Priya, following up on last week's invoice. Please share an update on the payment schedule today."},
             {"name": "Empathetic", "out": "Hi Priya, I know schedules get busy! Whenever you have a moment today, could you check on last week's open invoice?"},
             {"name": "Firm", "out": "Hello Priya, last week's invoice remains unpaid. Please complete the transfer today and send confirmation."},
@@ -628,28 +628,28 @@ def polite_whatsapp_rewriter():
         {"label": "Decline weekend call", "raw": "cant do saturday call im with family, monday morning works", "tones": [
             {"name": "Polite", "out": "Thanks for reaching out! I am with family on Saturday, so could we speak on Monday morning instead?"},
             {"name": "Professional", "out": "I am unavailable for a call on Saturday. Let us schedule this for Monday morning."},
-            {"name": "Empathetic", "out": "I want to give our chat proper attention, and Saturday is family time on my side — does Monday morning work for you?"},
+            {"name": "Empathetic", "out": "I want to give our chat proper attention, and Saturday is family time for me. Does Monday morning work for you?"},
             {"name": "Firm", "out": "I do not take calls on Saturdays. Let us connect on Monday morning at 10 AM."},
         ]},
         {"label": "Late rent update", "raw": "hey priya rent will be 2 days late bank transfer stuck", "tones": [
             {"name": "Polite", "out": "Hi Priya, wanted to let you know early that my bank transfer is delayed, so rent will reach you in two days. Sorry for the wait!"},
             {"name": "Professional", "out": "Hello Priya, please note that this month's rent transfer is delayed at my bank and will clear within two days."},
-            {"name": "Empathetic", "out": "Hi Priya, I want to keep you updated right away — my bank transfer got held up, and the rent will arrive in two days. Thank you for your patience."},
+            {"name": "Empathetic", "out": "Hi Priya, I want to keep you posted: my bank transfer got held up, and the rent will arrive in two days. Thank you for your patience."},
             {"name": "Firm", "out": "Hello Priya, my bank transfer is processing and the full rent will land within two days. I will share the receipt once it clears."},
         ]},
     ]
     card = preset_tool_card(
         [{"presets": presets}], ("1. Pick a real WhatsApp draft", "2. Tap a SmarType tone chip"), "Rough draft",
-        "<strong>Stop copying between tabs.</strong> Rewrite any WhatsApp, Gmail or Slack draft in one tap with 22 built-in styles and 4 pinned Smartbar chips on Android.",
-        "Runs 100% in your browser tab. Zero text is sent to any server.",
+        "<strong>Want this for your own messages?</strong> On Android, SmarType does it inside WhatsApp, Gmail or Slack. Type, tap the spark, pick a tone.",
+        "These are fixed examples, so nothing you do here is sent anywhere.",
     )
     return micro_tool_page(
         "polite-whatsapp-rewriter.html", "Polite WhatsApp message rewriter · SmarType",
-        "Free browser preview of SmarType's polite WhatsApp message rewriter across Polite, Professional, Empathetic and Firm tones.",
-        "Free WhatsApp tone tool", "Polite WhatsApp message rewriter",
-        "See how SmarType turns blunt chat drafts into Polite, Professional, Empathetic or Firm replies — then rewrite your own messages directly inside WhatsApp on Android.",
-        card, "Use all 22 rewrite styles inside your Android keyboard",
-        "Pin your 4 go-to tone chips on the Smartbar and rewrite messages without leaving WhatsApp.", {"presets": presets},
+        "See how a blunt WhatsApp message reads when it's rewritten to sound polite, professional, kind or firm. Free examples for asking for leave, chasing payment and saying no.",
+        "Free WhatsApp tool", "Polite WhatsApp message rewriter: make any message sound kind",
+        "We've all sent a message that came out ruder than we meant. Pick one of these everyday drafts and see how it reads in four different tones.",
+        card, "Do this to any message, right in your keyboard",
+        "22 styles, your four favourites pinned above the keys, and you never leave the chat.", {"presets": presets},
     )
 
 
@@ -693,7 +693,7 @@ def ai_tone_translator():
         ]},
         {"label": "French → English (Français)", "dir": "ltr", "lang": "fr", "outLang": "en", "presets": [
             {"label": "Train held up", "raw": "Désolé pour le retard, le train est resté bloqué dix minutes.", "tones": [
-                {"name": "Polite", "out": "So sorry for the delay — my train was held up for ten minutes, and I am on my way now.", "sub": "Warm polite English."},
+                {"name": "Polite", "out": "So sorry for the delay, my train was held up for ten minutes, and I am on my way now.", "sub": "Warm polite English."},
                 {"name": "Professional", "out": "Apologies for the delay. My train was held for ten minutes, and I will join shortly.", "sub": "Work-ready update."},
                 {"name": "Casual", "out": "Sorry I am running late! The train got stuck for ten minutes.", "sub": "Quick chat message."},
             ]},
@@ -701,16 +701,16 @@ def ai_tone_translator():
     ]
     card = preset_tool_card(
         groups, ("1. Choose a language pair", "2. Pick a message", "3. Select tone & register"), "Source message",
-        "<strong>Translate while you type.</strong> SmarType auto-detects your draft and translates into Hindi, Spanish, English, Arabic, French and 16 more languages right inside any Android app.",
-        "Runs 100% in your browser tab. On Android, SmarType translates across 21 target languages and types natively in 50+ keyboard layouts (including English, Hindi, Telugu and Tamil).",
+        "<strong>Translate while you type.</strong> SmarType works out which language you wrote in and translates it into one of 31 languages, right inside the app you are using.",
+        "These are fixed examples, so nothing you do here is sent anywhere.",
     )
     return micro_tool_page(
-        "ai-tone-translator.html", "AI tone translator — English-to-Hindi, Spanish & Arabic to English · SmarType",
-        "Preview English-to-Hindi, English-to-Spanish, Arabic-to-English and French-to-English tone translations, powered on Android by SmarType's 21-language keyboard.",
-        "21-language AI keyboard preview", "AI tone translator for Hindi, Spanish, Arabic & 21 languages",
-        "Try our English-to-Hindi tone translator alongside English-to-Spanish, Arabic-to-English and French-to-English examples — then translate live inside any Android app.",
-        card, "Translate across 21 languages without leaving your chat",
-        "Auto-detect any source message and replace it in place from your Android keyboard.", {"groups": groups},
+        "ai-tone-translator.html", "AI Tone Translator: English to Hindi, Spanish & More · SmarType",
+        "Translation that gets the tone right: see English to Hindi with aap or tum, English to Spanish with usted or tú, and Arabic or French to English.",
+        "Free translation tool", "English-to-Hindi tone translator, and more",
+        "Word-for-word translation can sound rude. In Hindi, aap and tum say very different things, and Spanish has usted and tú. Pick a message and hear the difference.",
+        card, "Translate inside any app, in 31 languages",
+        "Type in your language, tap Translate, and the translation replaces your text.", {"groups": groups},
     )
 
 
@@ -724,22 +724,22 @@ def rough_notes_to_neat_list():
     default_out = "• Book flight tickets\n• 2 nights hotel near metro\n• Cab from airport\n• Dinner with priya sat"
     card = (
         f'<div class="tool-card" data-tool="notes"><span class="tool-label">Load a sample or type your own</span>{tool_btn_row(presets, "label", "tool-tab", "data-preset-row", "Load a sample or type your own")}'
-        '<label class="tool-label" for="notes-input">Your rough notes (stays in this browser tab)</label>'
+        '<label class="tool-label" for="notes-input">Your notes (they stay in this tab)</label>'
         f'<textarea id="notes-input" class="tool-input" data-notes-input maxlength="2000">{E(presets[0]["raw"])}</textarea>'
         f'<span class="tool-label">Output format</span>{tool_btn_row(modes, "name", "tool-chip", "data-mode-row", "Output format")}'
         f'<div class="tool-res" aria-live="polite"><div class="tool-res-head"><span class="tool-badge" data-badge>Bullet points result</span>'
         f'<button type="button" class="tool-copy" data-copy>{icon("content_copy")}<span data-copy-label>Copy</span></button></div>'
         f'<p class="tool-out" data-output data-empty="false">{E(default_out)}</p></div>'
-        '<div class="tool-dock"><p><strong>Format notes inside any Android app.</strong> SmarType\'s Format panel and floating Quick Notes turn rough jottings into bullet lists, summaries and tables right above your keys.</p>'
-        f'{play_button()}</div><p class="tool-note">{icon("lock")}<span>Formats 100% locally in your browser memory — zero network calls and zero saved text.</span></p></div>'
+        '<div class="tool-dock"><p><strong>Do this in any Android app.</strong> In SmarType, tap Format and your notes become a list or a table, right above your keys.</p>'
+        f'{play_button()}</div><p class="tool-note">{icon("lock")}<span>This runs in your browser. Nothing you paste is sent or saved.</span></p></div>'
     )
     return micro_tool_page(
-        "rough-notes-to-neat-list.html", "Rough-notes-to-neat-list formatter · SmarType",
-        "Paste comma-separated or line-separated rough notes to format clean bullet points, numbered steps, checklists or tables locally in your browser.",
-        "Instant browser formatter", "Rough-notes-to-neat-list formatter",
-        "Paste comma-separated, semicolon-separated or line-by-line jottings below to turn them into clean bullets, numbered steps, a checklist or a two-column table.",
-        card, "Keep Quick Notes and one-tap Format on your Android keyboard",
-        "Jot thoughts in a floating Quick Notes window over any app and format lists in a single tap.", {"presets": presets, "modes": modes},
+        "rough-notes-to-neat-list.html", "Turn Rough Notes into a Neat List: Free Formatter · SmarType",
+        "Paste messy notes and get clean bullet points, numbered steps, a checklist or a table. Free, and it runs in your browser.",
+        "Free notes tool", "Rough-notes-to-neat-list formatter",
+        "Paste what you jotted down, separated by commas, semicolons or new lines, and pick how you want it laid out.",
+        card, "Keep notes and tidy them from your keyboard",
+        "A small note window floats over any app. One tap turns it into a list.", {"presets": presets, "modes": modes},
     )
 
 
@@ -777,14 +777,14 @@ def llms_txt():
 - **Voice typing cleanup:** Records up to 60 seconds in memory and keeps listening through pauses; Check adds punctuation and cleans up filler words, Cancel deletes the audio immediately, and Android system voice input serves as the offline or out-of-tries fallback.
 - **Quick Notes:** In-keyboard scratchpad and movable floating note window over any app, with optional AI polish and undo.
 - **On-device and password privacy:** Everyday keystrokes, glide trails, in-memory learned word suggestions, clipboard items (masking items flagged sensitive by Android 13+ or copied/cut with SmarType in password or incognito fields, and periodically removing unpinned sensitive items older than 20 seconds by default), and Quick Notes text stay on the phone and are excluded from Android backup; settings, custom styles, personal dictionary, and custom themes (including any theme photo and installed keyboard extensions) stay local unless Android backup or device transfer is enabled on the phone (none are sent to SmarType's servers). Password and incognito fields turn off AI actions and AI voice dictation; password fields also turn off composing, autocorrect, and glide typing, and disable the password-row microphone. Text or voice is sent encrypted over HTTPS to Google Firebase and Gemini (guarded by Firebase App Check with Google Play Integrity) only when the user taps an AI action; prompts and audio are not stored after the request and are not used to train models.
-- **Plans:** Everyday typing is free without an account; Google sign-in unlocks free AI tries, and Premium is sold through Google Play.
+- **Plans:** Everyday typing is free without an account; signing in with Google gives free AI tries, and Premium is sold through Google Play.
 
 ## Pages
 
 - [SmarType Home](https://smartype.in/): Overview of Rewrite, Translate, Voice typing, Quick Notes, and privacy.
 - [Indian language keyboard](https://smartype.in/languages): Hindi, Telugu, Tamil and 8 more Indian languages, with English-to-Indian-language AI translation.
 - [SmarType vs Gboard vs SwiftKey vs Grammarly](https://smartype.in/compare): Side-by-side comparison across tone rewrite, Indian-language translation, voice cleanup, Quick Notes, and password privacy.
-- [Privacy Architecture](https://smartype.in/privacy-architecture): Technical breakdown of what stays on the phone, password-field shutoff, and explicit-tap ephemeral AI requests.
+- [Privacy Architecture](https://smartype.in/privacy-architecture): What stays on the phone, what switches off in password fields, and what is sent when you tap AI.
 - [Polite WhatsApp Message Rewriter](https://smartype.in/polite-whatsapp-rewriter): Interactive browser showcase of Polite, Professional, Empathetic, and Firm chat rewrites.
 - [AI Tone Translator](https://smartype.in/ai-tone-translator): Interactive English-to-Hindi, English-to-Spanish, Arabic-to-English, and French-to-English tone translator preview across SmarType's 21 translation targets.
 - [Rough-Notes-to-Neat-List Formatter](https://smartype.in/rough-notes-to-neat-list): Local in-browser list, checklist, and table formatter paired with SmarType Format and Quick Notes.

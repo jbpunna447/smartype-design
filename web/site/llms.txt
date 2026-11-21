@@ -12,14 +12,14 @@
 - **Voice typing cleanup:** Records up to 60 seconds in memory and keeps listening through pauses; Check adds punctuation and cleans up filler words, Cancel deletes the audio immediately, and Android system voice input serves as the offline or out-of-tries fallback.
 - **Quick Notes:** In-keyboard scratchpad and movable floating note window over any app, with optional AI polish and undo.
 - **On-device and password privacy:** Everyday keystrokes, glide trails, in-memory learned word suggestions, clipboard items (masking items flagged sensitive by Android 13+ or copied/cut with SmarType in password or incognito fields, and periodically removing unpinned sensitive items older than 20 seconds by default), and Quick Notes text stay on the phone and are excluded from Android backup; settings, custom styles, personal dictionary, and custom themes (including any theme photo and installed keyboard extensions) stay local unless Android backup or device transfer is enabled on the phone (none are sent to SmarType's servers). Password and incognito fields turn off AI actions and AI voice dictation; password fields also turn off composing, autocorrect, and glide typing, and disable the password-row microphone. Text or voice is sent encrypted over HTTPS to Google Firebase and Gemini (guarded by Firebase App Check with Google Play Integrity) only when the user taps an AI action; prompts and audio are not stored after the request and are not used to train models.
-- **Plans:** Everyday typing is free without an account; Google sign-in unlocks free AI tries, and Premium is sold through Google Play.
+- **Plans:** Everyday typing is free without an account; signing in with Google gives free AI tries, and Premium is sold through Google Play.
 
 ## Pages
 
 - [SmarType Home](https://smartype.in/): Overview of Rewrite, Translate, Voice typing, Quick Notes, and privacy.
 - [Indian language keyboard](https://smartype.in/languages): Hindi, Telugu, Tamil and 8 more Indian languages, with English-to-Indian-language AI translation.
 - [SmarType vs Gboard vs SwiftKey vs Grammarly](https://smartype.in/compare): Side-by-side comparison across tone rewrite, Indian-language translation, voice cleanup, Quick Notes, and password privacy.
-- [Privacy Architecture](https://smartype.in/privacy-architecture): Technical breakdown of what stays on the phone, password-field shutoff, and explicit-tap ephemeral AI requests.
+- [Privacy Architecture](https://smartype.in/privacy-architecture): What stays on the phone, what switches off in password fields, and what is sent when you tap AI.
 - [Polite WhatsApp Message Rewriter](https://smartype.in/polite-whatsapp-rewriter): Interactive browser showcase of Polite, Professional, Empathetic, and Firm chat rewrites.
 - [AI Tone Translator](https://smartype.in/ai-tone-translator): Interactive English-to-Hindi, English-to-Spanish, Arabic-to-English, and French-to-English tone translator preview across SmarType's 21 translation targets.
 - [Rough-Notes-to-Neat-List Formatter](https://smartype.in/rough-notes-to-neat-list): Local in-browser list, checklist, and table formatter paired with SmarType Format and Quick Notes.
