@@ -122,12 +122,12 @@ def keys(dim=False, space="", utility="mood", annotate=True, deva=False):
     rows = QWERTY if not deva else ["ौैाीूबहगदज", "ोेअिुपरकत", "ंमनवलसय"]
     r1 = "".join(f'<div class="s-k" style="grid-column:span 2">{c}</div>' for c in rows[0][:10])
     r2 = '<div style="grid-column:span 1"></div>' + "".join(f'<div class="s-k" style="grid-column:span 2">{c}</div>' for c in rows[1][:9])
-    r3 = ('<div class="s-k fn" style="grid-column:span 3">⇧</div>' + "".join(f'<div class="s-k" style="grid-column:span 2">{c}</div>' for c in rows[2][:7])
-          + '<div class="s-k fn" style="grid-column:span 3">⌫</div>')
+    r3 = ('<div class="s-k fn" style="grid-column:span 3">' + ic("shift", size=24) + '</div>' + "".join(f'<div class="s-k" style="grid-column:span 2">{c}</div>' for c in rows[2][:7])
+          + '<div class="s-k fn" style="grid-column:span 3">' + ic("backspace", size=24) + '</div>')
     util = ic("language", size=20) if utility == "language" else ic("mood", size=20)
     r4 = (f'<div class="s-k fn" style="grid-column:span 3">?123</div><div class="s-k fn" style="grid-column:span 2">{util}</div>'
           f'<div class="s-k space" style="grid-column:span 10">{esc(space)}</div><div class="s-k fn" style="grid-column:span 2">.</div>'
-          '<div class="s-k ent" style="grid-column:span 3">↵</div>')
+          '<div class="s-k ent" style="grid-column:span 3">' + ic("keyboard_return", size=24) + '</div>')
     a = ann("Keys", "Unchanged. 4 rows × ~55 dp on a 360 × 800 dp phone (keyboard row base height); key radius 8 dp",
             "keyboard theme: key surface, on-surface") if annotate else ""
     return (f'<div class="s-keys{" dim" if dim else ""}"{a}>' + "".join(f'<div class="s-krow">{r}</div>' for r in (r1, r2, r3, r4)) + "</div>")

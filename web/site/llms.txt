@@ -1,6 +1,6 @@
 # SmarType
 
-> SmarType is a private Android AI keyboard (Android 8.0+, package `bha.keys.smartype`) with one-tap polite tone rewrite, English-to-Hindi and 21-language AI translation, 60-second voice typing cleanup with punctuation, and Quick Notes.
+> SmarType is a private Android AI keyboard (Android 8.0+, package `bha.keys.smartype`) with one-tap polite tone rewrite, AI translation into 31 languages including 11 Indian languages, 60-second voice typing cleanup with punctuation, and Quick Notes.
 
 - Google Play listing: https://play.google.com/store/apps/details?id=bha.keys.smartype
 - Support: mailto:contact@smartype.in
@@ -8,8 +8,8 @@
 ## Key Facts
 
 - **One-tap tone rewrite:** 22 built-in styles (Grammar fix, Polite, Professional, Casual, Simple, Empathetic, Firm, and 15 more) plus custom styles, with up to 4 pinned chips on the top bar.
-- **Indian typing and 21-language AI translation:** Globe-key typing across English, Hindi, Telugu, Tamil, Bengali, Urdu, and 50+ layouts. In-keyboard AI Translate auto-detects source text and outputs 21 languages: Arabic, Chinese (Simplified), Dutch, English, French, German, Greek, Hebrew, Hindi, Indonesian, Italian, Japanese, Korean, Polish, Portuguese, Russian, Spanish, Swedish, Thai, Turkish, and Vietnamese.
-- **Voice typing cleanup:** Records up to 60 seconds in memory; Check adds punctuation and cleans up filler words, Cancel deletes the audio immediately, and Android system voice input serves as the offline or out-of-tries fallback.
+- **Indian typing and 31-language AI translation:** Globe-key typing across English, Hindi, Telugu, Tamil, Bengali, Urdu, and 50+ layouts. In-keyboard AI Translate auto-detects source text and outputs 31 languages: Hindi, Telugu, Tamil, Kannada, Malayalam, Marathi, Bengali, Gujarati, Punjabi, Odia, Urdu, English, Arabic, Chinese (Simplified), Dutch, French, German, Greek, Hebrew, Indonesian, Italian, Japanese, Korean, Polish, Portuguese, Russian, Spanish, Swedish, Thai, Turkish, Vietnamese. Users add the languages they use as one-tap chips; English is always offered.
+- **Voice typing cleanup:** Records up to 60 seconds in memory and keeps listening through pauses; Check adds punctuation and cleans up filler words, Cancel deletes the audio immediately, and Android system voice input serves as the offline or out-of-tries fallback.
 - **Quick Notes:** In-keyboard scratchpad and movable floating note window over any app, with optional AI polish and undo.
 - **On-device and password privacy:** Everyday keystrokes, glide trails, in-memory learned word suggestions, clipboard items (masking items flagged sensitive by Android 13+ or copied/cut with SmarType in password or incognito fields, and periodically removing unpinned sensitive items older than 20 seconds by default), and Quick Notes text stay on the phone and are excluded from Android backup; settings, custom styles, personal dictionary, and custom themes (including any theme photo and installed keyboard extensions) stay local unless Android backup or device transfer is enabled on the phone (none are sent to SmarType's servers). Password and incognito fields turn off AI actions and AI voice dictation; password fields also turn off composing, autocorrect, and glide typing, and disable the password-row microphone. Text or voice is sent encrypted over HTTPS to Google Firebase and Gemini (guarded by Firebase App Check with Google Play Integrity) only when the user taps an AI action; prompts and audio are not stored after the request and are not used to train models.
 - **Plans:** Everyday typing is free without an account; Google sign-in unlocks free AI tries, and Premium is sold through Google Play.
