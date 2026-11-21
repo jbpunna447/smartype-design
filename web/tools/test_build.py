@@ -1,7 +1,9 @@
 """Verification tests for web/tools/build.py and generated web/site/ output."""
 import html
+import json
 import os
 import re
+import subprocess
 import sys
 import unittest
 import xml.etree.ElementTree as ET
@@ -111,6 +113,9 @@ class WebBuildPrivacyTests(unittest.TestCase):
             "index.html": (build.home(), 4),
             "compare.html": (build.compare(), 4),
             "privacy-architecture.html": (build.privacy_architecture(), 4),
+            "polite-whatsapp-rewriter.html": (build.polite_whatsapp_rewriter(), 4),
+            "ai-tone-translator.html": (build.ai_tone_translator(), 4),
+            "rough-notes-to-neat-list.html": (build.rough_notes_to_neat_list(), 4),
             "privacy.html": (build.privacy(), 2),
             "terms.html": (build.terms(), 2),
             "help.html": (build.help_page(), 2),
@@ -145,6 +150,9 @@ class WebBuildPrivacyTests(unittest.TestCase):
             "index.html": build.home(),
             "compare.html": build.compare(),
             "privacy-architecture.html": build.privacy_architecture(),
+            "polite-whatsapp-rewriter.html": build.polite_whatsapp_rewriter(),
+            "ai-tone-translator.html": build.ai_tone_translator(),
+            "rough-notes-to-neat-list.html": build.rough_notes_to_neat_list(),
             "privacy.html": build.privacy(),
             "terms.html": build.terms(),
             "help.html": build.help_page(),
@@ -165,7 +173,7 @@ class WebBuildPrivacyTests(unittest.TestCase):
             src_css_text = src_css_fh.read()
         self.assertEqual(css_text, src_css_text)
         self.assertIn("scroll-margin-top:", css_text)
-        for js_name in ("site.js", "home.js"):
+        for js_name in ("site.js", "home.js", "tools.js"):
             with open(os.path.join(SITE_DIR, "assets", "js", js_name), encoding="utf-8") as dst_fh, open(
                 os.path.join(TOOLS_DIR, js_name), encoding="utf-8"
             ) as src_fh:
@@ -317,6 +325,9 @@ class WebBuildPrivacyTests(unittest.TestCase):
             "https://smartype.in/",
             "https://smartype.in/compare",
             "https://smartype.in/privacy-architecture",
+            "https://smartype.in/polite-whatsapp-rewriter",
+            "https://smartype.in/ai-tone-translator",
+            "https://smartype.in/rough-notes-to-neat-list",
             "https://smartype.in/privacy",
             "https://smartype.in/terms",
             "https://smartype.in/help",
@@ -343,6 +354,9 @@ class WebBuildPrivacyTests(unittest.TestCase):
             "https://play.google.com/store/apps/details?id=bha.keys.smartype",
             "https://smartype.in/compare",
             "https://smartype.in/privacy-architecture",
+            "https://smartype.in/polite-whatsapp-rewriter",
+            "https://smartype.in/ai-tone-translator",
+            "https://smartype.in/rough-notes-to-neat-list",
             "https://smartype.in/privacy",
             "22 built-in",
             "21",
@@ -446,6 +460,310 @@ class FastlaneMetadataTests(unittest.TestCase):
             dst = os.path.join(screenshots_dir, fname)
             with open(dst, "rb") as dst_fh, open(src, "rb") as src_fh:
                 self.assertEqual(dst_fh.read(), src_fh.read(), f"Mismatch in {fname}")
+
+
+class MicroToolRuntimeTests(unittest.TestCase):
+    def test_format_rough_notes_modes_and_edge_cases(self):
+        tools_js = os.path.join(TOOLS_DIR, "tools.js")
+        self.assertTrue(os.path.isfile(tools_js), "Missing web/tools/tools.js")
+        probe = r"""
+const { formatRoughNotes } = require(process.argv[1]);
+const out = {
+  bullets: formatRoughNotes("book flight, 2 nights hotel, 5kg basmati rice", "bullets"),
+  numbered: formatRoughNotes("1. tickets\n- passport\n[x] charger", "numbered"),
+  commaMarkers: formatRoughNotes("1. tickets, 2. passport; [ ] visa", "bullets"),
+  indented: formatRoughNotes("  - apples\n  - bananas,", "bullets"),
+  thousands: formatRoughNotes("budget 1,000 INR, taxi 250 INR", "bullets"),
+  checklist: formatRoughNotes("milk; eggs; bread", "checklist"),
+  inlineDash: formatRoughNotes("basmati rice 5kg - paneer 200g - ginger & coriander", "bullets"),
+  table: formatRoughNotes("Flight: AI-102 9am\nHotel - 2 nights near metro\nMeet Priya at 7:30 PM\nhttps://smartype.in", "table"),
+  empty: formatRoughNotes("   \n , ;  ", "bullets"),
+  bareMarkers: formatRoughNotes(" - \n 1. \n [ ] , ", "bullets"),
+  xss: formatRoughNotes("<script>alert(1)</script>, a & b", "bullets"),
+};
+process.stdout.write(JSON.stringify(out));
+"""
+        proc = subprocess.run(
+            ["node", "-e", probe, tools_js],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        res = json.loads(proc.stdout)
+        self.assertEqual(
+            res["bullets"],
+            {"text": "• Book flight\n• 2 nights hotel\n• 5kg basmati rice", "empty": False},
+        )
+        self.assertEqual(
+            res["numbered"],
+            {"text": "1. Tickets\n2. Passport\n3. Charger", "empty": False},
+        )
+        self.assertEqual(
+            res["commaMarkers"],
+            {"text": "• Tickets\n• Passport\n• Visa", "empty": False},
+        )
+        self.assertEqual(
+            res["indented"],
+            {"text": "• Apples\n• Bananas", "empty": False},
+        )
+        self.assertEqual(
+            res["thousands"],
+            {"text": "• Budget 1,000 INR\n• Taxi 250 INR", "empty": False},
+        )
+        self.assertEqual(
+            res["checklist"],
+            {"text": "☐ Milk\n☐ Eggs\n☐ Bread", "empty": False},
+        )
+        self.assertEqual(
+            res["inlineDash"],
+            {"text": "• Basmati rice 5kg\n• Paneer 200g\n• Ginger & coriander", "empty": False},
+        )
+        self.assertEqual(
+            res["table"],
+            {
+                "text": "Item | Details\n--- | ---\nFlight | AI-102 9am\nHotel | 2 nights near metro\nMeet Priya at 7:30 PM | —\nhttps://smartype.in | —",
+                "empty": False,
+            },
+        )
+        self.assertEqual(
+            res["empty"],
+            {"text": "Paste or type comma-separated or line-separated notes above.", "empty": True},
+        )
+        self.assertEqual(
+            res["bareMarkers"],
+            {"text": "Paste or type comma-separated or line-separated notes above.", "empty": True},
+        )
+        self.assertEqual(
+            res["xss"],
+            {"text": "• <script>alert(1)</script>\n• A & b", "empty": False},
+        )
+
+    def test_dom_runtime_rtl_lang_focus_and_copy_cleanup(self):
+        tools_js = os.path.join(TOOLS_DIR, "tools.js")
+        probe = r"""
+const path = process.argv[1];
+function makeEl(tag, attrs = {}) {
+  const listeners = {};
+  const el = {
+    tagName: tag.toUpperCase(),
+    dataset: Object.assign({}, attrs.dataset || {}),
+    attributes: {},
+    children: [],
+    style: {},
+    className: "",
+    textContent: attrs.textContent || "",
+    value: attrs.value || "",
+    disabled: false,
+    hidden: false,
+    dir: "ltr",
+    lang: "en",
+    onclick: null,
+    parentNode: null,
+    classList: {
+      toggle(c, on) {
+        const parts = new Set(el.className.split(/\s+/).filter(Boolean));
+        if (on) parts.add(c); else parts.delete(c);
+        el.className = [...parts].join(" ");
+      }
+    },
+    setAttribute(k, v) { el.attributes[k] = String(v); },
+    getAttribute(k) { return el.attributes[k]; },
+    addEventListener(ev, fn) { (listeners[ev] = listeners[ev] || []).push(fn); },
+    trigger(ev) {
+      if (ev === "click" && typeof el.onclick === "function") el.onclick();
+      (listeners[ev] || []).forEach((fn) => fn());
+    },
+    appendChild(ch) { ch.parentNode = el; el.children.push(ch); return ch; },
+    removeChild(ch) { el.children = el.children.filter((x) => x !== ch); ch.parentNode = null; },
+    remove() { if (el.parentNode) el.parentNode.removeChild(el); },
+    replaceChildren(...kids) {
+      el.children.forEach((c) => { if (global.document.activeElement === c) global.document.activeElement = global.document.body; c.parentNode = null; });
+      el.children = [];
+      kids.forEach((k) => el.appendChild(k));
+    },
+    contains(target) { return target === el || el.children.includes(target); },
+    focus() { global.document.activeElement = el; },
+    select() { global.document.activeElement = el; },
+  };
+  return el;
+}
+
+function ssrRow(items) {
+  const row = makeEl("div");
+  items.forEach((lbl) => row.appendChild(makeEl("button", { textContent: lbl })));
+  return row;
+}
+
+function runScenario(mode, cfg, initialValue = "") {
+  const body = makeEl("body");
+  const root = makeEl("div", { dataset: { tool: mode } });
+  const g0 = (cfg.groups || [{ presets: cfg.presets || [] }])[0];
+  const p0 = (g0.presets || [{ tones: [] }])[0];
+  const map = {
+    "[data-group-row]": ssrRow((cfg.groups || []).map((g) => g.label)),
+    "[data-preset-row]": ssrRow((g0.presets || []).map((p) => p.label)),
+    "[data-tone-row]": ssrRow((p0.tones || []).map((t) => t.name)),
+    "[data-mode-row]": ssrRow((cfg.modes || []).map((m) => m.name)),
+    "[data-source]": makeEl("div"),
+    "[data-badge]": makeEl("span"),
+    "[data-output]": makeEl("p"),
+    "[data-sub]": makeEl("p"),
+    "[data-copy]": makeEl("button"),
+    "[data-copy-label]": makeEl("span", { textContent: "Copy" }),
+    "[data-notes-input]": makeEl("textarea", { value: initialValue }),
+  };
+  root.querySelector = (sel) => map[sel] || null;
+  const dataEl = makeEl("script", { textContent: JSON.stringify(cfg) });
+  global.document = {
+    readyState: "complete",
+    body,
+    activeElement: body,
+    createElement: (t) => makeEl(t),
+    querySelector: (sel) => (sel === "[data-tool]" ? root : null),
+    getElementById: (id) => (id === "tool-data" ? dataEl : null),
+    execCommand: () => { throw new Error("CopyBlocked"); },
+  };
+  global.navigator = {};
+  delete require.cache[require.resolve(path)];
+  require(path);
+  return { body, map };
+}
+
+const pScene = runScenario("presets", {
+  groups: [
+    { label: "EN-HI", dir: "ltr", lang: "en", outLang: "hi", presets: [
+      { label: "P1", raw: "Hello", tones: [{ name: "Respectful", out: "नमस्ते", sub: "Namaste" }, { name: "Warm", out: "हाय", sub: "Hi" }] },
+      { label: "P1b", raw: "Thanks", tones: [{ name: "Respectful", out: "धन्यवाद", sub: "Dhanyavaad" }] },
+    ] },
+    { label: "AR-EN", dir: "rtl", lang: "ar", outLang: "en", presets: [{ label: "P2", raw: "مرحبا", tones: [{ name: "Polite", out: "Hello", sub: "" }] }] },
+  ],
+});
+pScene.map["[data-tone-row]"].children[1].trigger("click");
+const afterTone = pScene.map["[data-output]"].textContent;
+pScene.map["[data-preset-row]"].children[1].focus();
+pScene.map["[data-preset-row]"].children[1].trigger("click");
+const afterPreset = pScene.map["[data-output]"].textContent;
+const gBtns = pScene.map["[data-group-row]"].children;
+gBtns[1].focus();
+gBtns[1].trigger("click");
+const afterAr = {
+  srcDir: pScene.map["[data-source]"].dir,
+  srcLang: pScene.map["[data-source]"].lang,
+  outLang: pScene.map["[data-output]"].lang,
+  focusKept: global.document.activeElement === pScene.map["[data-group-row]"].children[1],
+};
+pScene.map["[data-group-row]"].children[0].trigger("click");
+const afterHi = {
+  srcDir: pScene.map["[data-source]"].dir,
+  outLang: pScene.map["[data-output]"].lang,
+};
+
+const nScene = runScenario("notes", {
+  presets: [{ label: "Trip", raw: "tickets, hotel" }],
+  modes: [{ id: "bullets", name: "Bullets" }, { id: "table", name: "Table" }],
+}, "custom note");
+const initialPresetPressed = nScene.map["[data-preset-row]"].children[0].getAttribute("aria-pressed");
+const copyBtn = nScene.map["[data-copy]"];
+copyBtn.focus();
+copyBtn.trigger("click");
+const leakedChildren = nScene.body.children.length;
+const copyFocusRestored = global.document.activeElement === copyBtn;
+global.document.execCommand = () => true;
+copyBtn.trigger("click");
+const copiedShown = nScene.map["[data-copy-label]"].textContent === "Copied";
+nScene.map["[data-notes-input]"].value = "   ";
+nScene.map["[data-notes-input]"].trigger("input");
+const copiedReset = nScene.map["[data-copy-label]"].textContent === "Copy";
+const emptyDisabled = copyBtn.disabled && nScene.map["[data-output]"].dataset.empty === "true";
+nScene.map["[data-preset-row]"].children[0].trigger("click");
+nScene.map["[data-mode-row]"].children[1].trigger("click");
+const presetRestored = nScene.map["[data-notes-input]"].value === "tickets, hotel" && !copyBtn.disabled && nScene.map["[data-output]"].textContent.includes("Item | Details");
+
+process.stdout.write(JSON.stringify({ afterTone, afterPreset, afterAr, afterHi, initialPresetPressed, leakedChildren, copyFocusRestored, copiedShown, copiedReset, emptyDisabled, presetRestored }));
+"""
+        proc = subprocess.run(["node", "-e", probe, tools_js], check=True, capture_output=True, text=True)
+        res = json.loads(proc.stdout)
+        self.assertEqual(res["afterTone"], "हाय")
+        self.assertEqual(res["afterPreset"], "धन्यवाद")
+        self.assertEqual(res["afterAr"], {"srcDir": "rtl", "srcLang": "ar", "outLang": "en", "focusKept": True})
+        self.assertEqual(res["afterHi"], {"srcDir": "ltr", "outLang": "hi"})
+        self.assertEqual(res["initialPresetPressed"], "false")
+        self.assertEqual(res["leakedChildren"], 0)
+        self.assertTrue(res["copyFocusRestored"])
+        self.assertTrue(res["copiedShown"])
+        self.assertTrue(res["copiedReset"])
+        self.assertTrue(res["emptyDisabled"])
+        self.assertTrue(res["presetRestored"])
+
+    def test_tools_js_and_css_are_purely_local_and_safe(self):
+        tools_js = os.path.join(TOOLS_DIR, "tools.js")
+        self.assertTrue(os.path.isfile(tools_js), "Missing web/tools/tools.js")
+        with open(tools_js, encoding="utf-8") as fh:
+            js_text = fh.read()
+        for forbidden in ("innerHTML", "outerHTML", "insertAdjacentHTML", "fetch(", "XMLHttpRequest", "sendBeacon", "localStorage", "sessionStorage"):
+            self.assertNotIn(forbidden, js_text)
+        with open(os.path.join(TOOLS_DIR, "site.css"), encoding="utf-8") as css_fh:
+            css_text = css_fh.read()
+        for selector in (".tool-card", ".tool-dock", ".tool-chip", ".tool-res"):
+            self.assertIn(selector, css_text)
+        self.assertIn("overflow-wrap: anywhere", css_text)
+
+
+class WebMicroToolsTests(unittest.TestCase):
+    def _assert_common_tool_contract(self, slug, html_text):
+        self.assertIn(f'<link rel="canonical" href="https://smartype.in/{slug}">', html_text)
+        self.assertIn(f'<meta property="og:url" content="https://smartype.in/{slug}">', html_text)
+        self.assertIn("tools.js", html_text)
+        self.assertRegex(
+            html_text,
+            re.compile(r'<div class="tool-res"[^>]*>.*?</div>\s*<div class="tool-dock">.*?play-chip.*?Get it on Google Play', re.DOTALL),
+        )
+        m = re.search(r'<script id="tool-data" type="application/json">(.*?)</script>', html_text, flags=re.DOTALL)
+        self.assertIsNotNone(m, f"Missing #tool-data JSON on {slug}")
+        payload = json.loads(m.group(1))
+        for unshipped in ("friendly", "concise", "emoji search", "smartype pro"):
+            self.assertNotIn(unshipped, html_text.lower())
+        return payload
+
+    def test_polite_whatsapp_rewriter_page(self):
+        html_text = build.polite_whatsapp_rewriter()
+        payload = self._assert_common_tool_contract("polite-whatsapp-rewriter", html_text)
+        self.assertIn("Polite WhatsApp message rewriter", html_text)
+        self.assertGreaterEqual(len(payload["presets"]), 4)
+        for style_name in ("Polite", "Professional", "Empathetic", "Firm"):
+            self.assertIn(style_name, html_text)
+
+    def test_ai_tone_translator_multilanguage_page(self):
+        html_text = build.ai_tone_translator()
+        payload = self._assert_common_tool_contract("ai-tone-translator", html_text)
+        self.assertIn("English-to-Hindi", html_text)
+        group_labels = [g["label"] for g in payload["groups"]]
+        for expected_pair in ("English → Hindi", "English → Spanish", "Arabic → English", "French → English"):
+            self.assertTrue(
+                any(expected_pair in label for label in group_labels),
+                f"Missing {expected_pair} in {group_labels}",
+            )
+        arabic_group = next(g for g in payload["groups"] if "Arabic → English" in g["label"])
+        self.assertEqual(arabic_group.get("dir"), "rtl")
+        self.assertEqual(arabic_group.get("lang"), "ar")
+        self.assertEqual(arabic_group.get("outLang"), "en")
+        hindi_group = next(g for g in payload["groups"] if "English → Hindi" in g["label"])
+        self.assertEqual(hindi_group.get("outLang"), "hi")
+        self.assertIn('data-output lang="hi"', html_text)
+        self.assertIn('role="group" aria-label="1. Choose a language pair"', html_text)
+        self.assertIn("21", html_text)
+
+    def test_rough_notes_to_neat_list_page(self):
+        html_text = build.rough_notes_to_neat_list()
+        payload = self._assert_common_tool_contract("rough-notes-to-neat-list", html_text)
+        self.assertIn("Rough-notes-to-neat-list formatter", html_text)
+        self.assertIn("<textarea", html_text)
+        self.assertIn('maxlength="2000"', html_text)
+        self.assertIn('role="group" aria-label="Output format"', html_text)
+        mode_ids = [m["id"] for m in payload["modes"]]
+        self.assertEqual(mode_ids, ["bullets", "numbered", "checklist", "table"])
+        escaped = build.micro_tool_page("t.html", "T", "D", "K", "H", "L", "<div></div>", "S", "P", {"x": "</script>"})
+        self.assertIn(r"<\/script>", escaped)
 
 
 if __name__ == "__main__":
