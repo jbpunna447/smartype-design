@@ -175,7 +175,7 @@ def page(name, title, description, body, extra="", schema=None):
 <main id="main">{body}</main>
 <footer class="foot"><div class="wrap foot-in">
 <div>{lockup(26)}<p>The Android keyboard that helps you type, speak and get it right.</p></div>
-<nav aria-label="Footer"><a href="/languages.html">Indian languages</a><a href="/compare.html">Compare</a><a href="/privacy-architecture.html">Privacy architecture</a><a href="/help.html">Help</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy policy</a><a href="/terms.html">Terms</a></nav>
+<nav class="foot-links" aria-label="Footer"><div><h2>Product</h2><a href="/languages.html">Indian languages</a><a href="/compare.html">Compare</a><a href="/help.html">Help</a><a href="/contact.html">Contact</a></div><div><h2>Privacy &amp; legal</h2><a href="/privacy-architecture.html">Privacy architecture</a><a href="/privacy.html">Privacy policy</a><a href="/terms.html">Terms</a></div></nav>
 <p class="copy">© {YEAR} SmarType</p></div></footer><script src="{ver("site.js")}" defer></script>{extra}</body></html>
 """
 

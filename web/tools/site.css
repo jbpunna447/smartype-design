@@ -77,7 +77,8 @@ html.scrolled .top-pill { background: color-mix(in srgb, var(--surface) 90%, tra
 .foot { border-top: 1px solid var(--line); margin-top: 40px; padding: 40px 0 48px; color: var(--on-2); font-size: 15px; }
 .foot-in { display: grid; grid-template-columns: 1fr auto; gap: 18px 40px; align-items: start; }
 .foot img { display: block; height: 26px; width: auto; } .foot p { margin: 10px 0 0; white-space: nowrap; }
-.foot nav { display: flex; flex-wrap: wrap; gap: 10px 22px; } .foot nav a { color: var(--on-2); text-decoration: none; } .foot nav a:hover { color: var(--on); }
+.foot nav { display: grid; grid-template-columns: repeat(2, auto); gap: 0 56px; } .foot nav div { display: flex; flex-direction: column; gap: 10px; }
+.foot nav h2 { margin: 0 0 4px; font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--on); } .foot nav a { color: var(--on-2); text-decoration: none; } .foot nav a:hover { color: var(--on); }
 .copy { grid-column: 1 / -1; font-size: 13px; }
 
 /* buttons: one style everywhere, flat. Primary: the AI gradient, left to right. Alt: an outline on the page. */
