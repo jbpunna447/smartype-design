@@ -519,6 +519,7 @@ def downloads_page():
     shutil.copy(os.path.join(ASSETS, "brand/png/logo-480.png"), os.path.join(OUT, "assets/art/logo.png"))
     shutil.copy(os.path.join(ASSETS, "retired/keycap-3d.png"), os.path.join(OUT, "assets/art/keycap-3d.png"))
     shutil.copytree(os.path.join(ASSETS, "brand/svg"), os.path.join(OUT, "assets/brand"), dirs_exist_ok=True)
+    shutil.copytree(os.path.join(ASSETS, "store/themes"), os.path.join(OUT, "assets/store/themes"), dirs_exist_ok=True)
     for f in ("favicon.svg", "favicon-32.png", "apple-touch-icon.png"):
         shutil.copy(os.path.join(ASSETS, "brand/web", f), os.path.join(OUT, "assets", f))
     art = "".join(f'<figure><img src="assets/illustrations/still/{n}.svg" alt="" width="160" height="160"><figcaption><code>{n}</code></figcaption></figure>'

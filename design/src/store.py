@@ -38,6 +38,38 @@ def _bubble(text, cls="", style=""):
 SQUIGGLE = ('<svg class="sq" viewBox="0 0 120 8" preserveAspectRatio="none" aria-hidden="true"><path d="M0 4 q5 -5 10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0" '
             'fill="none" stroke="#E5395B" stroke-width="2.5"/></svg>')
 
+# Real SmarType themes (colours and background art from the app's theme stylesheets), each with a different script.
+_THEMES = [
+    # label, background, key, key text, accent, rows
+    ("Aurora", "url({root}assets/store/themes/gradient_aurora.webp) center/cover", "rgba(21,50,55,.8)", "#DEE4E5", "#7EF0C8",
+     ["qwertyuiop", "asdfghjkl", "zxcvbnm"]),
+    ("Coral", "#FDE0DB", "#FFF7F5", "#3A1510", "#B23C29", ["йцукенгшщз", "фывапролд", "ячсмить"]),
+    ("Night stars", "url({root}assets/store/themes/scene_night_stars.webp) center/cover", "rgba(22,29,56,.8)", "#DEDFE6", "#FFD98A",
+     ["ςερτυθιοπ", "ασδφγηξκλ", "ζχψωβνμ"]),
+    ("Sunset", "url({root}assets/store/themes/gradient_sunset.webp) center/cover", "rgba(255,239,236,.8)", "#261A18", "#902734",
+     ["ضصثقفغعهخ", "شسيبلاتنم", "ئءؤرىةوز"]),
+]
+
+
+def _mini_kb(bg, key, fg, accent, rows):
+    keys = "".join('<div class="tk-row">' + "".join(f'<i style="background:{key};color:{fg}">{c}</i>' for c in r) + "</div>" for r in rows)
+    return (f'<div class="tk" style="background:{bg}">{keys}<div class="tk-row"><i class="sp" style="background:{key}"></i>'
+            f'<i class="en" style="background:{accent}"></i></div></div>')
+
+
+def _themes_extras():
+    fan = [(70, 440, -7), (440, 520, 6), (60, 830, 5), (430, 910, -5)]
+    out = ""
+    for (lb, bg, key, fg, ac, rows), (x, y, r) in zip(_THEMES, fan):
+        out += (f'<div class="tk-card" style="left:{x}px;top:{y}px;transform:rotate({r}deg)">{_mini_kb(bg, key, fg, ac, rows)}'
+                '</div>')
+    sw = "".join(f'<b style="background:{c}"></b>' for c in ["#0B1430", "#B23C29", "#7EF0C8", "#FFD98A", "#8FB4FF", "#F5FAFB"])
+    out += ('<div class="tk-custom"><div class="hd"><svg aria-hidden="true"><use href="#ms-palette"/></svg>Your own theme</div>'
+            f'<div class="sw">{sw}</div><div class="ch"><span><svg aria-hidden="true"><use href="#ms-add_photo_alternate"/></svg>Your photo</span>'
+            '<span>Colours</span><span>Rounded keys</span></div></div>')
+    return out
+
+
 # Each frame: screen id, theme, headline (with one <em> accent), crop (y0, y1 in dp: the content plus 24 dp of air on top,
 # down to the keyboard's bottom edge, never the nav bar; the slab sits flush with the frame's bottom edge),
 # extras (HTML placed absolutely), alt text (<= 140 characters).
@@ -79,6 +111,9 @@ FRAMES = [
                  _bubble('<span dir="rtl">أراك غدًا</span>', "ai", "left:70px;top:640px") + _bubble("また明日", "ai", "right:70px;top:640px") +
                  '<div class="pl-globe" style="left:475px;top:620px"><svg aria-hidden="true"><use href="#ms-language"/></svg></div>'),
          alt="The SmarType globe key switching between English, Spanish, Hindi, Russian, Arabic and Japanese keyboards"),
+    dict(sid="themes", theme="light", head="38 themes. <em>Or make your own.</em>", graphic=True,
+         extras=_themes_extras(),
+         alt="Four SmarType keyboard themes, Aurora, Coral, Night stars and Sunset, and a custom theme with your photo and key colours"),
     dict(sid="privacy", theme="dark", head="Your typing <em>stays on your phone</em>", graphic=True,
          extras=(f'<div style="position:absolute;left:250px;top:470px">{_key("happy", 250)}</div>'
                  '<div class="pl-lock" style="left:560px;top:490px"><svg aria-hidden="true"><use href="#ms-lock"/></svg></div>'
@@ -125,7 +160,7 @@ def frame_html(i, root=""):
     tone = "ink" if f["theme"] == "light" else "porcelain"
     brand = f'<img class="pl-brand" src="{root}assets/brand/lockup-{tone}.svg" alt="SmarType">'
     return (f'<div class="pl {f["theme"]}" role="img" aria-label="{f["alt"]}">{_backdrop(i, f["theme"])}{brand}'
-            f'<h1 class="pl-head">{f["head"]}</h1>{slab}{f["extras"]}</div>')
+            f'<h1 class="pl-head">{f["head"]}</h1>{slab}{f["extras"].replace("{root}", root)}</div>')
 
 
 STYLE = f"""
@@ -167,6 +202,22 @@ STYLE = f"""
 .pl-promise b {{ display: block; font-size: 52px; line-height: 1.1; font-weight: 700; letter-spacing: -.01em; }}
 .pl-promise span {{ display: block; margin-top: 12px; font-size: 36px; line-height: 1.25; color: #B5CACF; }}
 .pl > div[style*="position:absolute"] svg {{ display: block; filter: drop-shadow(0 16px 30px rgba(8,50,59,.22)); }}
+.tk-card {{ position: absolute; z-index: 2; width: 580px; }}
+.tk-card span {{ display: inline-block; margin: 18px 0 0 12px; padding: 10px 26px; border-radius: 30px; background: #FFFFFF; color: {INK}; font-size: 34px; font-weight: 600;
+  box-shadow: 0 10px 24px rgba(8,50,59,.14); }}
+.tk {{ padding: 22px 14px 18px; border-radius: 36px; box-shadow: 0 30px 70px rgba(8,50,59,.28); }}
+.tk-row {{ display: flex; justify-content: center; gap: 8px; margin-bottom: 10px; }}
+.tk i {{ flex: 0 0 46px; height: 62px; border-radius: 10px; display: grid; place-items: center; font-style: normal; font-size: 30px; font-weight: 500; }}
+.tk i.sp {{ flex: 0 0 330px; }} .tk i.en {{ flex: 0 0 90px; }}
+.tk-custom {{ position: absolute; z-index: 3; left: 72px; right: 72px; top: 1340px; padding: 44px 48px; border-radius: 48px; background: #FFFFFF;
+  box-shadow: 0 30px 80px rgba(8,50,59,.22); color: {INK}; }}
+.tk-custom .hd {{ display: flex; align-items: center; gap: 22px; font-size: 50px; font-weight: 700; }}
+.tk-custom svg {{ width: 64px; height: 64px; fill: #1E9BD7; }}
+.tk-custom .sw {{ display: flex; gap: 22px; margin: 34px 0; }}
+.tk-custom .sw b {{ width: 92px; height: 92px; border-radius: 46px; box-shadow: inset 0 0 0 3px rgba(8,50,59,.12); }}
+.tk-custom .ch {{ display: flex; gap: 16px; flex-wrap: wrap; }}
+.tk-custom .ch span {{ display: inline-flex; align-items: center; gap: 12px; padding: 16px 28px; border-radius: 40px; border: 3px solid #C3D5DA; font-size: 34px; font-weight: 600; }}
+.tk-custom .ch svg {{ width: 44px; height: 44px; fill: {INK}; }}
 """
 
 

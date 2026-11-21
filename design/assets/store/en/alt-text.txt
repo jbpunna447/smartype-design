@@ -5,7 +5,8 @@
 05-nt-changed.png	A SmarType note changed by AI after asking, add that I'll pay the rent on Friday, with Undo and Insert
 06-cb-open.png	The SmarType clipboard in the keyboard with pinned and recent clips, ready to paste
 07-lg-globe.png	The SmarType globe key switching between English, Spanish, Hindi, Russian, Arabic and Japanese keyboards
-08-privacy.png	SmarType privacy: typing stays on the phone, AI sees only what you send, password fields stay private
+08-themes.png	Four SmarType keyboard themes, Aurora, Coral, Night stars and Sunset, and a custom theme with your photo and key colours
+09-privacy.png	SmarType privacy: typing stays on the phone, AI sees only what you send, password fields stay private
 feature-a.png	The SmarType key fixing a typo, translating into Japanese and turning speech into text, on the brand gradient
 feature-b.png	The SmarType key in a spotlight of the brand gradient, with a fixed typo, Arabic and voice floating around it
 feature-c.png	The SmarType key standing on a keyboard as messages in English, Spanish and Japanese rise off the keys
