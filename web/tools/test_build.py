@@ -366,7 +366,7 @@ class WebBuildPrivacyTests(unittest.TestCase):
 
 
 class FastlaneMetadataTests(unittest.TestCase):
-    EXPECTED_LOCALES = ("en-US", "hi-IN", "te-IN", "ta-IN")
+    EXPECTED_LOCALES = ("en-GB", "en-US", "hi-IN", "te-IN", "ta-IN")
     ASO_PHRASES = (
         "english to hindi ai keyboard",
         "polite message rewrite keyboard",
@@ -380,10 +380,10 @@ class FastlaneMetadataTests(unittest.TestCase):
         for locale in self.EXPECTED_LOCALES:
             with self.subTest(locale=locale):
                 locale_dir = os.path.join(FASTLANE_ANDROID_DIR, locale)
-                self.assertEqual(
-                    set(os.listdir(locale_dir)),
-                    {"title.txt", "short_description.txt", "full_description.txt"},
-                )
+                expected_entries = {"title.txt", "short_description.txt", "full_description.txt"}
+                if locale == "en-GB":
+                    expected_entries.add("images")
+                self.assertEqual(set(os.listdir(locale_dir)), expected_entries)
                 with open(os.path.join(locale_dir, "title.txt"), encoding="utf-8") as fh:
                     title = fh.read().rstrip("\r\n")
                 with open(os.path.join(locale_dir, "short_description.txt"), encoding="utf-8") as fh:
@@ -426,6 +426,26 @@ class FastlaneMetadataTests(unittest.TestCase):
                         combined += "\n" + fh.read().lower()
                 for phrase in self.ASO_PHRASES:
                     self.assertIn(phrase, combined, f"{locale} missing ASO phrase {phrase!r}")
+
+    def test_en_gb_default_store_graphics_match_design_assets(self):
+        en_images = os.path.join(FASTLANE_ANDROID_DIR, "en-GB", "images")
+        design_brand = os.path.join(REPO_DIR, "design", "assets", "brand", "png", "play-store-icon-512.png")
+        design_feature = os.path.join(REPO_DIR, "design", "assets", "store", "en", "feature-a.png")
+        with open(os.path.join(en_images, "icon.png"), "rb") as actual_fh, open(design_brand, "rb") as expected_fh:
+            self.assertEqual(actual_fh.read(), expected_fh.read())
+        with open(os.path.join(en_images, "featureGraphic.png"), "rb") as actual_fh, open(design_feature, "rb") as expected_fh:
+            self.assertEqual(actual_fh.read(), expected_fh.read())
+        screenshots_dir = os.path.join(en_images, "phoneScreenshots")
+        expected_shots = sorted(
+            fname for fname in os.listdir(os.path.join(REPO_DIR, "design", "assets", "store", "en"))
+            if re.match(r"^0[1-8]-.*\.png$", fname)
+        )
+        self.assertEqual(sorted(os.listdir(screenshots_dir)), expected_shots)
+        for fname in expected_shots:
+            src = os.path.join(REPO_DIR, "design", "assets", "store", "en", fname)
+            dst = os.path.join(screenshots_dir, fname)
+            with open(dst, "rb") as dst_fh, open(src, "rb") as src_fh:
+                self.assertEqual(dst_fh.read(), src_fh.read(), f"Mismatch in {fname}")
 
 
 if __name__ == "__main__":
