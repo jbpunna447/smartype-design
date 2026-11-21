@@ -105,6 +105,27 @@ details { border-bottom: 1px solid var(--line); padding: 14px 0; }
 summary { cursor: pointer; font-weight: 600; font-size: 18px; color: var(--on); }
 details p { margin: 10px 0 2px; }
 .contact { text-align: center; } .contact .art img { width: 200px; margin: 0 auto 8px; display: block; } .contact .lede { margin-left: auto; margin-right: auto; }
+.page-wide { padding-top: 48px; padding-bottom: 32px; }
+.page-wide h1 { font-size: clamp(34px, 5vw, 54px); max-width: 24ch; }
+.page-wide h2 { font-size: clamp(24px, 3.4vw, 34px); margin: 44px 0 16px; }
+.cmp-scroll { overflow-x: auto; margin: 32px 0; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--elev-1); }
+.cmp-table { width: 100%; min-width: 640px; border-collapse: collapse; font-size: 15px; line-height: 1.5; }
+.cmp-table th, .cmp-table td { padding: 14px 16px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); color: var(--on-2); }
+.cmp-table thead th, .cmp-table tbody th { color: var(--on); font-weight: 600; }
+.cmp-table thead th { background: var(--surface-2); font-size: 14px; }
+.cmp-table .st-col { background: color-mix(in srgb, var(--accent) 10%, var(--surface)); color: var(--on); }
+.cmp-table tr:last-child th, .cmp-table tr:last-child td { border-bottom: 0; }
+.arch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin: 28px 0; }
+.arch-card { padding: 22px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--elev-1); }
+.arch-ic { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--surface-2); color: var(--accent); margin-bottom: 12px; }
+.arch-tag { display: block; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+.arch-card h3 { margin-bottom: 8px; }
+.arch-card p, .arch-card li { color: var(--on-2); font-size: 15.5px; margin: 6px 0 0; }
+.arch-card ul { margin: 8px 0 0; padding-left: 18px; }
+.doc-inline { max-width: 78ch; margin: 32px 0; } .doc-inline p { color: var(--on-2); }
+.cta-strip { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; margin-top: 36px; padding: 24px 26px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); }
+.page-wide .cta-strip h2 { font-size: 20px; font-weight: 600; letter-spacing: -.01em; margin: 0; }
+.cta-strip p { margin: 6px 0 0; color: var(--on-2); font-size: 15.5px; }
 @media (max-width: 560px) { .foot-in { grid-template-columns: 1fr; } .toc ol { columns: 1; } }
 
 /* ---------- home (motion in home.js) ---------- */

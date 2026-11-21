@@ -96,7 +96,7 @@ def not_looking():
 # ---------- layout ----------
 
 # The header links: sections of the home page, then pages. On the home page a section link only scrolls.
-NAV = [("how", "How it works"), ("features", "Features"), ("privacy", "Privacy"), ("/help.html", "Help")]
+NAV = [("how", "How it works"), ("features", "Features"), ("/compare.html", "Compare"), ("privacy", "Privacy"), ("/help.html", "Help")]
 
 
 def nav_links(name):
@@ -140,7 +140,7 @@ def page(name, title, description, body, extra=""):
 <main id="main">{body}</main>
 <footer class="foot"><div class="wrap foot-in">
 <div>{lockup(26)}<p>The Android keyboard that helps you type, speak and get it right.</p></div>
-<nav aria-label="Footer"><a href="/help.html">Help</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy policy</a><a href="/terms.html">Terms</a></nav>
+<nav aria-label="Footer"><a href="/compare.html">Compare</a><a href="/privacy-architecture.html">Privacy architecture</a><a href="/help.html">Help</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy policy</a><a href="/terms.html">Terms</a></nav>
 <p class="copy">© {YEAR} SmarType</p></div></footer><script src="{ver("site.js")}" defer></script>{extra}</body></html>
 """
 
@@ -291,7 +291,7 @@ def home():
 {seal}</div>
 <div class="wrap"><div class="peek-note" data-reveal>{not_looking()}<div><h3>We don't know what you type. Honestly.</h3>
 <p>Nothing in SmarType tracks your words. If you sign in, we keep your name, email and Google photo, so your free AI tries and Premium can follow you to a new phone. What you write, rewrite and almost send is your business, not ours. We never sell your data or use what you type for ads.</p>
-<a class="link" href="/privacy.html">Read the privacy policy {icon("chevron_right", "ic sm")}</a></div></div></div></section>
+<a class="link" href="/privacy.html">Read the privacy policy {icon("chevron_right", "ic sm")}</a> · <a class="link" href="/privacy-architecture.html">See the privacy architecture {icon("chevron_right", "ic sm")}</a></div></div></div></section>
 
 <section class="closing2"><div class="glow g-close" data-depth=".2"></div>
 <div class="wrap split"><div class="close-art" data-reveal>{art("art_signin", 320)}</div><div>
@@ -320,8 +320,9 @@ def privacy():
          "<li>Nothing is learned or sent from password fields.</li>"
          "<li>If you sign in, we keep your Google account's ID, name, email, photo and sign-in dates, and how many AI tries you've used.</li>"
          "<li>We don't sell your data and we don't use what you type or say for advertising.</li></ul>"),
-        ("typing", "What stays on your phone", "<p>Your keystrokes, the words SmarType learns for suggestions, your clipboard history, your notes and your settings are stored only on your phone. "
-         "They are not sent to us. Clipboard history skips content Android marks as sensitive. Uninstalling the app or clearing its data removes them.</p>"),
+        ("typing", "What stays on your phone", "<p>Your keystrokes, glide trails, the words SmarType learns in memory for suggestions, your clipboard history and your Quick Notes text stay on your phone and are excluded from Android backup; your settings, custom styles, personal dictionary and custom themes (including any theme photo and installed keyboard extensions) also stay on your phone unless Android backup or device transfer is enabled on your phone (none are sent to SmarType's servers). "
+         "Clipboard history masks items flagged sensitive by Android 13+ or copied/cut with SmarType in password or incognito fields, and periodically removes unpinned sensitive items older than 20 seconds by default. Uninstalling the app or clearing its data removes on-device data. "
+         "See <a href=\"/privacy-architecture.html\">Privacy architecture</a> for a full diagram of these boundaries.</p>"),
         ("ai", "When you use AI", "<p>When you tap Rewrite, Translate or Format, or ask AI to change a note, the text you chose is sent over an encrypted connection to SmarType's server (Google Firebase), "
          "which sends it to an AI model provider (currently Google's Gemini) to produce the result and returns it to you.</p>"
          "<p>Voice typing: after you accept the voice notice and microphone permission, SmarType records up to 60 seconds of speech in memory while you dictate. "
@@ -335,7 +336,7 @@ def privacy():
         ("device", "Keeping the service safe", "<p>To stop abuse of the AI service, the app uses Firebase App Check with Google Play Integrity, which confirms requests come from a real copy of the app on a real device.</p>"),
         ("analytics", "Usage analytics", "<p>The app includes Google Analytics for Firebase, which collects basic, non-content information such as app opens, device model, Android version and approximate country. "
          "It never receives what you type or dictate.</p>"),
-        ("sharing", "Who we share data with", "<p>Only the service providers that run SmarType: Google (Firebase, Gemini, Google Play) and, if you set one up yourself, the AI provider of your own key. "
+        ("sharing", "Who we share data with", "<p>Only the service providers that run SmarType: Google (Firebase, Gemini, Google Play). "
          "We don't sell personal data. We may disclose data if the law requires it.</p>"),
         ("choices", "Your choices", "<ul><li>Use SmarType without signing in: typing and on-device suggestions work without an account.</li>"
          "<li>Turn off clipboard history in Settings, or reset the voice typing notice in SmarType AI settings.</li>"
@@ -400,9 +401,121 @@ def contact():
                 '<p>To delete your account, write from the email address you sign in with. For billing, Google Play handles payments and refunds.</p></div>')
 
 
+def compare():
+    rows = [
+        ("One-tap tone rewrite", "22 built-in styles (Polite, Professional, Casual, Simple, Empathetic, Firm and more) + custom styles; pin up to 4 chips on any Android 8.0+ phone.",
+         "Proofread and Writing Tools depend on supported Pixel or Gemini devices.", "Copilot tone rewrite inside the toolbar.", "English grammar and tone suggestions."),
+        ("Indian typing &amp; AI translation", "Globe-key typing in English, Hindi, Telugu, Tamil, Bengali and 50+ layouts; one-tap AI translation to Hindi, English and 19 more languages (21 total).",
+         "Broad Indic layouts and Google Translate bar.", "Indic layouts and Microsoft Translator bar.", "English writing assistant; uses layouts from your existing keyboard without built-in Indic AI translation."),
+        ("Voice typing cleanup", "Records up to 60 seconds in memory; adds punctuation and trims filler words on Check; instant delete on cancel; system voice fallback offline.",
+         "Fast speech-to-text; assistant punctuation varies by phone.", "Uses voice input without 60-second Check cleanup.", "No built-in AI voice cleanup recorder."),
+        ("Quick Notes scratchpad", "In-keyboard notes panel plus a movable floating note window over any app, with optional AI polish.",
+         "Clipboard history only; no scratchpad.", "Clipboard pins and to-do integration; no floating note window.", "No built-in scratchpad."),
+        ("Password-field privacy", "Turns off AI actions and AI voice dictation in password and incognito fields; password fields also turn off composing, autocorrect, glide typing and the microphone button; verified editor ranges only.",
+         "Suppresses predictions in password fields.", "Suppresses predictions in password fields.", "Pauses checks in sensitive fields."),
+    ]
+    trs = "".join(f'<tr><th scope="row">{r[0]}</th><td class="st-col">{E(r[1])}</td><td>{E(r[2])}</td><td>{E(r[3])}</td><td>{E(r[4])}</td></tr>' for r in rows)
+    pillars = [
+        ("spark", "Polite message rewrite in one tap", "Pick Grammar fix, Polite, Professional, Casual, Simple or any of 22 built-in styles — or write your own custom style and pin up to 4 chips on the top bar."),
+        ("translate", "Indian-language typing + 21-language AI translation", "Switch between English, Hindi, Telugu, Tamil, Bengali and 50+ keyboard layouts with the globe key. Tap Translate to convert messages to Hindi, English and 19 more languages inside WhatsApp or Gmail."),
+        ("mic", "Voice typing punctuation and cleanup", "Speak for up to 60 seconds in memory and tap Check for punctuated text. Cancel deletes the audio immediately. Offline or out of tries, SmarType switches to Android system voice input."),
+        ("sticky_note_2", "Quick Notes in and over any app", "Keep a scratchpad inside the keyboard or float a movable Quick Notes window above chats, browsers and forms, with one-tap AI polish and undo."),
+        ("lock", "Strict password and everyday privacy", 'Everyday keystrokes stay on your phone without an account. Password and incognito fields shut off AI and voice dictation, and password fields also turn off autocorrect and the mic button. Read <a href="/privacy-architecture.html">what stays on your phone</a>.'),
+    ]
+    cards = "".join(f'<article class="arch-card"><div class="arch-ic">{icon(ic)}</div><h3>{E(t)}</h3><p>{d}</p></article>' for ic, t, d in pillars)
+    body = (f'<div class="wrap page-wide"><p class="kicker">Android keyboard comparison</p>'
+            '<h1>SmarType vs Gboard vs SwiftKey vs Grammarly</h1>'
+            '<p class="lede">Gboard and SwiftKey handle everyday typing; Grammarly adds an Android writing assistant alongside your keyboard. SmarType combines one-tap polite tone rewrite, English-to-Hindi AI translation, 60-second voice cleanup, Quick Notes and on-device everyday typing in one keyboard.</p>'
+            f'<div class="cta">{play_button()}<a class="btn key alt" href="/privacy-architecture.html">Privacy architecture</a></div>'
+            '<div class="cmp-scroll" tabindex="0" role="region" aria-label="Android keyboard comparison"><table class="cmp-table"><thead><tr><th scope="col">Capability</th><th scope="col" class="st-col">SmarType</th>'
+            f'<th scope="col">Gboard</th><th scope="col">SwiftKey</th><th scope="col">Grammarly Android assistant</th></tr></thead><tbody>{trs}</tbody></table></div>'
+            f'<h2>Five differences that matter every day</h2><div class="arch-grid">{cards}</div>'
+            '<div class="cta-strip"><div><h2>Try SmarType free on Android 8.0+</h2><p>Typing and suggestions need no account. Sign in with Google when you want free AI tries.</p></div>'
+            f'{play_button()}</div></div>')
+    return page("compare.html", "SmarType vs Gboard vs SwiftKey vs Grammarly · Android AI Keyboard",
+                "Compare SmarType, Gboard, SwiftKey and Grammarly on one-tap tone rewrite, English-to-Hindi AI translation, voice punctuation, Quick Notes and password privacy.", body)
+
+
+def privacy_architecture():
+    zones = [
+        ("keyboard", "1 · Stays on your phone", "Local keyboard storage",
+         ["Everyday keystrokes, glide trails and in-memory learned word suggestions stay on your device; settings, custom styles, personal dictionary and custom themes (including any theme photo and installed keyboard extensions) also stay local unless Android backup or device transfer is enabled on your phone (never sent to SmarType's servers).",
+          "Clipboard history (masking items flagged sensitive by Android 13+ or copied/cut with SmarType in password or incognito fields, and periodically removing unpinned sensitive items older than 20 seconds by default) and Quick Notes text stay on your phone and are excluded from Android backup.",
+          "Everyday typing and suggestions work without an account."]),
+        ("lock", "2 · Password &amp; incognito shutoff", "Automatic hard lock",
+         ["Password and incognito fields turn off AI actions and AI voice dictation.",
+          "Password fields also turn off composing, autocorrect and glide typing, and disable the password-row microphone so speech capture cannot start.",
+          "Editor updates replace only verified text ranges — never blind select-all deletion."]),
+        ("spark", "3 · Explicit AI tap only", "Encrypted ephemeral request",
+         ["Text leaves the phone over HTTPS only when you tap Rewrite, Translate, Format or Notes AI.",
+          "Voice typing holds up to 60 seconds in memory; Cancel deletes it immediately, and Check sends it encrypted to Google Firebase and Gemini.",
+          "Firebase App Check with Google Play Integrity guards the service. We do not store prompts or audio after the request, and we do not use them to train models."]),
+    ]
+    zhtml = "".join(
+        f'<article class="arch-card"><span class="arch-tag">{tag}</span><div class="arch-ic">{icon(ic)}</div><h3>{E(t)}</h3>'
+        + "<ul>" + "".join(f"<li>{E(li)}</li>" for li in items) + "</ul></article>" for ic, tag, t, items in zones
+    )
+    body = (f'<div class="wrap page-wide"><p class="kicker">Privacy architecture</p>'
+            '<h1>What stays on your phone — and what leaves when you tap AI</h1>'
+            '<p class="lede">SmarType separates local everyday typing from optional AI requests so your keystrokes, passwords and private notes stay under your control.</p>'
+            f'<div class="cta">{play_button()}<a class="btn key alt" href="/privacy.html#choices">Data &amp; deletion choices</a></div>'
+            f'<h2>Three privacy boundaries</h2><div class="arch-grid">{zhtml}</div>'
+            '<section class="doc-inline"><h2>Optional Google sign-in and system voice fallback</h2>'
+            '<p>You can type without signing in. If you sign in with Google for free AI tries or Premium (sold through Google Play), SmarType stores only your account ID, name, email, photo, sign-in dates, AI try count and subscription status. '
+            'When your phone is offline or out of AI tries, tapping the microphone switches to Android system voice input when available under that provider\'s privacy terms. '
+            'Read the full <a href="/privacy.html">Privacy policy</a> or manage account deletion at <a href="/privacy.html#choices">Your choices</a>.</p></section>'
+            '<div class="cta-strip"><div><h2>Private Android AI keyboard</h2><p>Install SmarType from Google Play and start typing without an account.</p></div>'
+            f'{play_button()}</div></div>')
+    return page("privacy-architecture.html", "Privacy architecture · What stays on your phone · SmarType",
+                "How SmarType keeps keystrokes, clipboard items and Quick Notes on your phone, locks down password fields, and sends text or voice only when you tap AI.", body)
+
+
 def notfound():
     return page("404.html", "Page not found · SmarType", "This page doesn't exist.",
                 f'<div class="wrap doc contact">{art("art_empty_notes", 200)}<h1>Page not found</h1><p class="lede"><a href="/">Go to the home page</a>.</p></div>')
+
+
+def robots_txt():
+    bots = ("*", "Googlebot", "Bingbot", "OAI-SearchBot", "GPTBot", "ClaudeBot", "PerplexityBot", "Applebot-Extended")
+    rules = "\n\n".join(f"User-agent: {b}\nAllow: /" for b in bots)
+    return f"{rules}\n\nSitemap: https://smartype.in/sitemap.xml\n"
+
+
+def sitemap_xml(pages):
+    urls = "".join(
+        f"<url><loc>https://smartype.in/{p.replace('.html', '') if p != 'index.html' else ''}</loc></url>"
+        for p in pages if p != "404.html"
+    )
+    return f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n'
+
+
+def llms_txt():
+    return f"""# SmarType
+
+> SmarType is a private Android AI keyboard (Android 8.0+, package `bha.keys.smartype`) with one-tap polite tone rewrite, English-to-Hindi and 21-language AI translation, 60-second voice typing cleanup with punctuation, and Quick Notes.
+
+- Google Play listing: {PLAY_STORE_URL}
+- Support: mailto:{SUPPORT}
+
+## Key Facts
+
+- **One-tap tone rewrite:** 22 built-in styles (Grammar fix, Polite, Professional, Casual, Simple, Empathetic, Firm, and 15 more) plus custom styles, with up to 4 pinned chips on the top bar.
+- **Indian typing and 21-language AI translation:** Globe-key typing across English, Hindi, Telugu, Tamil, Bengali, Urdu, and 50+ layouts. In-keyboard AI Translate auto-detects source text and outputs 21 languages: Arabic, Chinese (Simplified), Dutch, English, French, German, Greek, Hebrew, Hindi, Indonesian, Italian, Japanese, Korean, Polish, Portuguese, Russian, Spanish, Swedish, Thai, Turkish, and Vietnamese.
+- **Voice typing cleanup:** Records up to 60 seconds in memory; Check adds punctuation and cleans up filler words, Cancel deletes the audio immediately, and Android system voice input serves as the offline or out-of-tries fallback.
+- **Quick Notes:** In-keyboard scratchpad and movable floating note window over any app, with optional AI polish and undo.
+- **On-device and password privacy:** Everyday keystrokes, glide trails, in-memory learned word suggestions, clipboard items (masking items flagged sensitive by Android 13+ or copied/cut with SmarType in password or incognito fields, and periodically removing unpinned sensitive items older than 20 seconds by default), and Quick Notes text stay on the phone and are excluded from Android backup; settings, custom styles, personal dictionary, and custom themes (including any theme photo and installed keyboard extensions) stay local unless Android backup or device transfer is enabled on the phone (none are sent to SmarType's servers). Password and incognito fields turn off AI actions and AI voice dictation; password fields also turn off composing, autocorrect, and glide typing, and disable the password-row microphone. Text or voice is sent encrypted over HTTPS to Google Firebase and Gemini (guarded by Firebase App Check with Google Play Integrity) only when the user taps an AI action; prompts and audio are not stored after the request and are not used to train models.
+- **Plans:** Everyday typing is free without an account; Google sign-in unlocks free AI tries, and Premium is sold through Google Play.
+
+## Pages
+
+- [SmarType Home](https://smartype.in/): Overview of Rewrite, Translate, Voice typing, Quick Notes, and privacy.
+- [SmarType vs Gboard vs SwiftKey vs Grammarly](https://smartype.in/compare): Side-by-side comparison across tone rewrite, Indian-language translation, voice cleanup, Quick Notes, and password privacy.
+- [Privacy Architecture](https://smartype.in/privacy-architecture): Technical breakdown of what stays on the phone, password-field shutoff, and explicit-tap ephemeral AI requests.
+- [Privacy Policy](https://smartype.in/privacy): Full data handling and account deletion instructions (`https://smartype.in/privacy#choices`).
+- [Help & FAQ](https://smartype.in/help): Setup, AI features, languages, voice typing, and billing answers.
+- [Terms of Service](https://smartype.in/terms): Service and Google Play subscription terms.
+- [Contact](https://smartype.in/contact): Support and account deletion contact (`{SUPPORT}`).
+"""
 
 
 # ---------- build ----------
@@ -427,18 +540,20 @@ def main():
         shutil.copy(os.path.join(WEB, "tools/vendor", f), os.path.join(OUT, "assets/js", f))
     for f in ("site.js", "home.js"):
         shutil.copy(os.path.join(WEB, "tools", f), os.path.join(OUT, "assets/js", f))
-    pages = {"index.html": home(), "privacy.html": privacy(), "terms.html": terms(), "help.html": help_page(),
+    pages = {"index.html": home(), "compare.html": compare(), "privacy-architecture.html": privacy_architecture(),
+             "privacy.html": privacy(), "terms.html": terms(), "help.html": help_page(),
              "contact.html": contact(), "404.html": notfound()}
     for name, text in pages.items():
-        with open(os.path.join(OUT, name), "w") as fh:
+        with open(os.path.join(OUT, name), "w", encoding="utf-8") as fh:
             fh.write(text)
-    with open(os.path.join(OUT, "vercel.json"), "w") as fh:
+    with open(os.path.join(OUT, "vercel.json"), "w", encoding="utf-8") as fh:
         fh.write('{\n  "cleanUrls": true,\n  "trailingSlash": false\n}\n')
-    with open(os.path.join(OUT, "robots.txt"), "w") as fh:
-        fh.write("User-agent: *\nAllow: /\nSitemap: https://smartype.in/sitemap.xml\n")
-    with open(os.path.join(OUT, "sitemap.xml"), "w") as fh:
-        urls = "".join(f"<url><loc>https://smartype.in/{p.replace('.html', '') if p != 'index.html' else ''}</loc></url>" for p in pages if p != "404.html")
-        fh.write(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n')
+    with open(os.path.join(OUT, "robots.txt"), "w", encoding="utf-8") as fh:
+        fh.write(robots_txt())
+    with open(os.path.join(OUT, "sitemap.xml"), "w", encoding="utf-8") as fh:
+        fh.write(sitemap_xml(pages))
+    with open(os.path.join(OUT, "llms.txt"), "w", encoding="utf-8") as fh:
+        fh.write(llms_txt())
     print("website written to", OUT)
 
 
