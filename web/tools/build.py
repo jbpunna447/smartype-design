@@ -808,7 +808,7 @@ def main():
     for n in ILLUSTRATIONS:
         for suf in ("", "-dark"):
             shutil.copy(os.path.join(DESIGN, f"illustrations/svg/{n}{suf}.svg"), os.path.join(OUT, f"assets/art/{n}{suf}.svg"))
-    for f in ("01-ai-open.png", "02-tr-open.png", "03-vo-listen.png", "08-privacy.png"):
+    for f in ("01-ai-open.png", "02-tr-open.png", "03-vo-listen.png", "09-privacy.png"):
         shutil.copy(os.path.join(DESIGN, "store/en", f), os.path.join(OUT, "assets/shots", f))
     shutil.copy(os.path.join(DESIGN, "store/en/feature-a.png"), os.path.join(OUT, "assets/og.png"))
     shutil.copy(os.path.join(WEB, "tools/site.css"), os.path.join(OUT, "assets/site.css"))

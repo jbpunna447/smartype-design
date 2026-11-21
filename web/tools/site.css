@@ -468,7 +468,9 @@ html:not(.js) .packet, .seal.p1 .packet.go { opacity: 1; }
 @media (max-width: 560px) {
   .acc-head { padding: 16px 18px; } .acc-pad { padding: 0 18px 18px; min-height: 0; }
   .phone { width: 312px; border-radius: 44px; } .ph-chat { min-height: 172px; padding-top: 22px; }
-  .tone-chips { width: 100%; } .chip { padding: 8px 11px; font-size: 13px; }
+  .tone-chips { display: flex; flex-wrap: nowrap; width: 100%; } .chip { padding: 8px 11px; font-size: 13px; }
+  /* The styles fill the bar, so both ends keep the same 5 px inset at any phone width. */
+  .tone-chips .chip { flex: 1 1 auto; min-width: 0; padding: 8px 6px; }
   .tone-screen { min-height: 140px; margin-top: 18px; padding: 20px 14px; } .tone-text { font-size: 19px; }
   .vow button { padding: 12px 8px; }
 }
