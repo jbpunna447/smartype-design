@@ -23,6 +23,7 @@
 - [Polite WhatsApp Message Rewriter](https://smartype.in/polite-whatsapp-rewriter): Interactive browser showcase of Polite, Professional, Empathetic, and Firm chat rewrites.
 - [AI Tone Translator](https://smartype.in/ai-tone-translator): Interactive English-to-Hindi, English-to-Spanish, Arabic-to-English, and French-to-English tone translator preview across SmarType's 21 translation targets.
 - [Rough-Notes-to-Neat-List Formatter](https://smartype.in/rough-notes-to-neat-list): Local in-browser list, checklist, and table formatter paired with SmarType Format and Quick Notes.
+- [Shared Custom Style Preview](https://smartype.in/custom-style): Stateless URL-fragment preview page for shared custom AI writing styles (`name` up to 50 chars, `prompt` up to 150 chars) with one-tap Android sheet pre-fill.
 - [Privacy Policy](https://smartype.in/privacy): Full data handling and account deletion instructions (`https://smartype.in/privacy#choices`).
 - [Help & FAQ](https://smartype.in/help): Setup, AI features, languages, voice typing, and billing answers.
 - [Terms of Service](https://smartype.in/terms): Service and Google Play subscription terms.

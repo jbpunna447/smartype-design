@@ -32,6 +32,43 @@
     return { text: lines.join("\n"), empty: false };
   };
 
+  const UNSAFE_CTRL_RE = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F\u061C\u200E\u200F\u202A-\u202E\u2066-\u2069]/g;
+  const LONE_SURROGATE_RE = /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g;
+  const cleanText = (raw) => String(raw || "").replace(LONE_SURROGATE_RE, "");
+  const truncateUtf16Safe = (raw, maxLen) => {
+    const s = cleanText(raw);
+    if (s.length <= maxLen) return s;
+    const cut = s.slice(0, maxLen);
+    const last = cut.charCodeAt(cut.length - 1);
+    return last >= 0xd800 && last <= 0xdbff ? cut.slice(0, -1) : cut;
+  };
+  const encodeShareComponent = (value) =>
+    encodeURIComponent(truncateUtf16Safe(value, 1000)).replace(/[.!*'()~]/g, (c) => "%" + c.charCodeAt(0).toString(16).toUpperCase().padStart(2, "0"));
+  const sanitizeStyleName = (raw) =>
+    truncateUtf16Safe(cleanText(raw).replace(/[\r\n\t]+/g, " ").replace(UNSAFE_CTRL_RE, "").trim(), 50).trim();
+  const sanitizeStylePrompt = (raw) =>
+    truncateUtf16Safe(cleanText(raw).replace(/\r\n?/g, "\n").replace(/\t/g, " ").replace(UNSAFE_CTRL_RE, "").trim(), 150).trim();
+
+  const parseStyleParams = (raw) => {
+    const clean = String(raw || "").replace(/^[#?]/, "");
+    if (!clean) return null;
+    const sp = new URLSearchParams(clean);
+    if (!sp.has("n") && !sp.has("p")) return null;
+    return { name: sanitizeStyleName(sp.get("n")), prompt: sanitizeStylePrompt(sp.get("p")) };
+  };
+
+  const parseSharedStyleLocation = (hash, search) => {
+    const src = parseStyleParams(hash) || parseStyleParams(search);
+    if (!src || !src.name || !src.prompt) return { valid: false, name: "", prompt: "" };
+    return { valid: true, name: src.name, prompt: src.prompt };
+  };
+
+  const buildAddStyleDeepLink = (name, prompt) => {
+    const n = sanitizeStyleName(name), p = sanitizeStylePrompt(prompt);
+    if (!n || !p) return "ui://smartype/custom-style";
+    return `ui://smartype/custom-style?name=${encodeShareComponent(n)}&prompt=${encodeShareComponent(p)}`;
+  };
+
   const fallbackCopy = (text, done) => {
     const prev = document.activeElement, ta = Object.assign(document.createElement("textarea"), { value: text, readOnly: true });
     ta.style.cssText = "position:fixed;opacity:0;pointer-events:none";
@@ -77,8 +114,8 @@
 
   const init = () => {
     const root = document.querySelector("[data-tool]"), dataEl = document.getElementById("tool-data");
-    if (!root || !dataEl) return;
-    const cfg = JSON.parse(dataEl.textContent || "{}");
+    if (!root || (root.dataset.tool !== "custom-style" && !dataEl)) return;
+    const cfg = dataEl ? JSON.parse(dataEl.textContent || "{}") : {};
     const copyBtn = root.querySelector("[data-copy]"), copyLabel = root.querySelector("[data-copy-label]");
     const outEl = root.querySelector("[data-output]"), subEl = root.querySelector("[data-sub]"), badgeEl = root.querySelector("[data-badge]");
     let currentCopy = outEl ? outEl.textContent : "", copyTimer = null;
@@ -137,10 +174,54 @@
       };
       inputEl?.addEventListener("input", () => { activePreset = -1; render(); });
       render();
+    } else if (root.dataset.tool === "custom-style") {
+      const validBox = root.querySelector("[data-style-valid]"), emptyBox = root.querySelector("[data-style-empty]");
+      const nameEl = root.querySelector("[data-style-name]"), nameCountEl = root.querySelector("[data-style-name-count]");
+      const promptCountEl = root.querySelector("[data-style-prompt-count]"), addBtn = root.querySelector("[data-add-style]");
+      const renderStyle = () => {
+        const loc = typeof window !== "undefined" && window.location ? window.location : { hash: "", search: "" };
+        const parsed = parseSharedStyleLocation(loc.hash, loc.search);
+        if (validBox) validBox.hidden = !parsed.valid;
+        if (emptyBox) emptyBox.hidden = parsed.valid;
+        if (!parsed.valid) {
+          if (copyBtn) copyBtn.disabled = true;
+          setCopy("");
+          return;
+        }
+        if (nameEl) nameEl.textContent = parsed.name;
+        if (nameCountEl) nameCountEl.textContent = `${parsed.name.length} / 50`;
+        if (outEl) outEl.textContent = parsed.prompt;
+        if (promptCountEl) promptCountEl.textContent = `${parsed.prompt.length} / 150`;
+        if (addBtn) addBtn.setAttribute("href", buildAddStyleDeepLink(parsed.name, parsed.prompt));
+        if (copyBtn) copyBtn.disabled = false;
+        setCopy(parsed.prompt);
+      };
+      const skipEl = typeof document !== "undefined" ? document.querySelector('a.skip[href="#main"]') : null;
+      const mainEl = typeof document !== "undefined" ? document.getElementById("main") : null;
+      skipEl?.addEventListener("click", (e) => {
+        if (!mainEl) return;
+        e.preventDefault();
+        if (!mainEl.hasAttribute("tabindex")) mainEl.setAttribute("tabindex", "-1");
+        mainEl.focus();
+        if (typeof mainEl.scrollIntoView === "function") mainEl.scrollIntoView();
+      });
+      if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+        window.addEventListener("hashchange", renderStyle);
+      }
+      renderStyle();
     }
   };
 
-  if (typeof module !== "undefined" && module.exports) module.exports = { stripListMarker, formatRoughNotes };
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+      stripListMarker,
+      formatRoughNotes,
+      encodeShareComponent,
+      truncateUtf16Safe,
+      parseSharedStyleLocation,
+      buildAddStyleDeepLink,
+    };
+  }
   if (typeof document !== "undefined") {
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
     else init();

@@ -117,6 +117,7 @@ class WebBuildPrivacyTests(unittest.TestCase):
             "polite-whatsapp-rewriter.html": (build.polite_whatsapp_rewriter(), 4),
             "ai-tone-translator.html": (build.ai_tone_translator(), 4),
             "rough-notes-to-neat-list.html": (build.rough_notes_to_neat_list(), 4),
+            "custom-style.html": (build.custom_style_preview(), 4),
             "privacy.html": (build.privacy(), 2),
             "terms.html": (build.terms(), 2),
             "help.html": (build.help_page(), 2),
@@ -160,6 +161,7 @@ class WebBuildPrivacyTests(unittest.TestCase):
             "polite-whatsapp-rewriter.html": build.polite_whatsapp_rewriter(),
             "ai-tone-translator.html": build.ai_tone_translator(),
             "rough-notes-to-neat-list.html": build.rough_notes_to_neat_list(),
+            "custom-style.html": build.custom_style_preview(),
             "privacy.html": build.privacy(),
             "terms.html": build.terms(),
             "help.html": build.help_page(),
@@ -343,6 +345,7 @@ class WebBuildPrivacyTests(unittest.TestCase):
         ):
             self.assertIn(f"<loc>{loc}</loc>", sitemap_disk)
         self.assertNotIn("404", sitemap_disk)
+        self.assertNotIn("custom-style", sitemap_disk)
 
         robots_expected = build.robots_txt()
         with open(os.path.join(SITE_DIR, "robots.txt"), encoding="utf-8") as fh:
@@ -365,6 +368,7 @@ class WebBuildPrivacyTests(unittest.TestCase):
             "https://smartype.in/polite-whatsapp-rewriter",
             "https://smartype.in/ai-tone-translator",
             "https://smartype.in/rough-notes-to-neat-list",
+            "https://smartype.in/custom-style",
             "https://smartype.in/privacy",
             "22 built-in",
             "31",
@@ -720,9 +724,190 @@ process.stdout.write(JSON.stringify({ afterTone, afterPreset, afterAr, afterHi, 
             self.assertNotIn(forbidden, js_text)
         with open(os.path.join(TOOLS_DIR, "site.css"), encoding="utf-8") as css_fh:
             css_text = css_fh.read()
-        for selector in (".tool-card", ".tool-dock", ".tool-chip", ".tool-res"):
+        for selector in (".tool-card", ".tool-dock", ".tool-chip", ".tool-res", ".style-actions"):
             self.assertIn(selector, css_text)
         self.assertIn("overflow-wrap: anywhere", css_text)
+
+    def test_custom_style_hash_query_xss_and_dom_preview(self):
+        tools_js = os.path.join(TOOLS_DIR, "tools.js")
+        probe = r"""
+const path = process.argv[1];
+const {
+  encodeShareComponent,
+  truncateUtf16Safe,
+  parseSharedStyleLocation,
+  buildAddStyleDeepLink,
+} = require(path);
+
+const emoji51 = "A".repeat(49) + "🔥";
+const emoji151 = "B".repeat(149) + "🙏";
+const encodedDot = encodeShareComponent("Keep dates exact.");
+const hashWins = parseSharedStyleLocation("#n=Polite%20Hinglish&p=Keep%20dates%20exact%2E", "?n=Ignored&p=Ignored");
+const queryFallback = parseSharedStyleLocation("", "?n=" + encodeURIComponent(emoji51) + "&p=" + encodeURIComponent(emoji151));
+const malformed = parseSharedStyleLocation("#n=%E0%A4%A&p=Clean%20output", "");
+const blankRejected = parseSharedStyleLocation("#n=%20%0A%09&p=Prompt", "");
+const bidiStripped = parseSharedStyleLocation("#n=" + encodeURIComponent("Polite\u202E\u0085\u2066") + "&p=" + encodeURIComponent("Clean\u202D prompt\u200F"), "");
+const xssLink = buildAddStyleDeepLink("javascript:alert(1)", "<img src=x onerror=alert(1)>");
+
+function makeNode(tag, attrs = {}) {
+  const listeners = {};
+  const el = {
+    tagName: tag.toUpperCase(),
+    dataset: Object.assign({}, attrs.dataset || {}),
+    attributes: {},
+    children: [],
+    style: {},
+    textContent: attrs.textContent || "",
+    href: attrs.href || "",
+    hidden: Boolean(attrs.hidden),
+    disabled: false,
+    scrolled: false,
+    hasAttribute(k) { return Object.prototype.hasOwnProperty.call(el.attributes, k); },
+    addEventListener(ev, fn) { (listeners[ev] = listeners[ev] || []).push(fn); },
+    trigger(ev, eventObj = {}) { (listeners[ev] || []).forEach((fn) => fn(eventObj)); },
+    setAttribute(k, v) { el.attributes[k] = String(v); if (k === "href") el.href = String(v); },
+    getAttribute(k) { return el.attributes[k]; },
+    appendChild(ch) { ch.children = ch.children || []; el.children.push(ch); return ch; },
+    remove() {},
+    focus() { if (global.document) global.document.activeElement = el; },
+    scrollIntoView() { el.scrolled = true; },
+    select() {},
+  };
+  return el;
+}
+
+function runPreview(hash, search) {
+  const root = makeNode("div", { dataset: { tool: "custom-style" } });
+  const skipEl = makeNode("a", { href: "#main" });
+  const mainEl = makeNode("main");
+  const map = {
+    "[data-style-valid]": makeNode("div", { hidden: true }),
+    "[data-style-empty]": makeNode("div", { hidden: false }),
+    "[data-style-name]": makeNode("h2"),
+    "[data-style-name-count]": makeNode("span"),
+    "[data-output]": makeNode("p"),
+    "[data-style-prompt-count]": makeNode("span"),
+    "[data-add-style]": makeNode("a", { href: "ui://smartype/custom-style" }),
+    "[data-copy]": makeNode("button"),
+    "[data-copy-label]": makeNode("span", { textContent: "Copy" }),
+  };
+  root.querySelector = (sel) => map[sel] || null;
+  const winListeners = {};
+  global.window = {
+    location: { hash, search },
+    addEventListener: (ev, fn) => { winListeners[ev] = fn; },
+  };
+  global.document = {
+    readyState: "complete",
+    body: makeNode("body"),
+    activeElement: null,
+    createElement: (t) => makeNode(t),
+    querySelector: (sel) => {
+      if (sel === "[data-tool]") return root;
+      if (sel === 'a.skip[href="#main"]') return skipEl;
+      return null;
+    },
+    getElementById: (id) => (id === "main" ? mainEl : null),
+    execCommand: () => true,
+  };
+  global.navigator = {};
+  delete require.cache[require.resolve(path)];
+  require(path);
+  return { map, winListeners, win: global.window, skipEl, mainEl, doc: global.document };
+}
+
+const validScene = runPreview("#n=%3Cimg%20src%3Dx%20onerror%3Dalert(1)%3E&p=Line%201%0D%0ALine%202.", "");
+const validDom = validScene.map;
+const emptyDom = runPreview("", "").map;
+
+const skipScene = runPreview("#n=First&p=One", "");
+const skipEv = { defaultPrevented: false, preventDefault() { this.defaultPrevented = true; } };
+skipScene.skipEl.trigger("click", skipEv);
+if (!skipEv.defaultPrevented) {
+  skipScene.win.location.hash = "#main";
+  if (skipScene.winListeners.hashchange) skipScene.winListeners.hashchange();
+}
+const afterSkip = {
+  defaultPrevented: skipEv.defaultPrevented,
+  hash: skipScene.win.location.hash,
+  focusedMain: skipScene.doc.activeElement === skipScene.mainEl,
+  tabIndex: skipScene.mainEl.getAttribute("tabindex"),
+  scrolled: skipScene.mainEl.scrolled,
+  validShown: !skipScene.map["[data-style-valid]"].hidden && skipScene.map["[data-style-empty]"].hidden,
+  copyEnabled: !skipScene.map["[data-copy]"].disabled,
+};
+
+const hashScene = runPreview("#n=First&p=One", "");
+hashScene.win.location.hash = "#n=Second&p=Two";
+hashScene.winListeners.hashchange();
+const afterSecond = {
+  validShown: !hashScene.map["[data-style-valid]"].hidden && hashScene.map["[data-style-empty]"].hidden,
+  name: hashScene.map["[data-style-name]"].textContent,
+  prompt: hashScene.map["[data-output]"].textContent,
+  copyEnabled: !hashScene.map["[data-copy]"].disabled,
+};
+hashScene.win.location.hash = "#n=OnlyName";
+hashScene.winListeners.hashchange();
+const afterInvalid = {
+  emptyShown: hashScene.map["[data-style-valid]"].hidden && !hashScene.map["[data-style-empty]"].hidden,
+  copyDisabled: Boolean(hashScene.map["[data-copy]"].disabled),
+};
+
+process.stdout.write(JSON.stringify({
+  trunc49: truncateUtf16Safe(emoji51, 50),
+  trunc149: truncateUtf16Safe(emoji151, 150),
+  encodedDotEndsWith2E: encodedDot.endsWith("%2E"),
+  hashWins,
+  queryNameLen: queryFallback.name.length,
+  queryPromptLen: queryFallback.prompt.length,
+  malformedValid: malformed.valid,
+  blankValid: blankRejected.valid,
+  bidiStripped,
+  xssLink,
+  validShown: !validDom["[data-style-valid]"].hidden && validDom["[data-style-empty]"].hidden,
+  validName: validDom["[data-style-name]"].textContent,
+  validNameCount: validDom["[data-style-name-count]"].textContent,
+  validPrompt: validDom["[data-output]"].textContent,
+  validHref: validDom["[data-add-style]"].href,
+  emptyShown: validDom !== emptyDom && emptyDom["[data-style-valid]"].hidden && !emptyDom["[data-style-empty]"].hidden,
+  afterSecond,
+  afterInvalid,
+  afterSkip,
+}));
+"""
+        proc = subprocess.run(["node", "-e", probe, tools_js], check=True, capture_output=True, text=True)
+        res = json.loads(proc.stdout)
+        self.assertEqual(res["trunc49"], "A" * 49)
+        self.assertEqual(res["trunc149"], "B" * 149)
+        self.assertTrue(res["encodedDotEndsWith2E"])
+        self.assertEqual(res["hashWins"], {"valid": True, "name": "Polite Hinglish", "prompt": "Keep dates exact."})
+        self.assertEqual(res["queryNameLen"], 49)
+        self.assertEqual(res["queryPromptLen"], 149)
+        self.assertTrue(res["malformedValid"])
+        self.assertFalse(res["blankValid"])
+        self.assertEqual(res["bidiStripped"], {"valid": True, "name": "Polite", "prompt": "Clean prompt"})
+        self.assertTrue(res["xssLink"].startswith("ui://smartype/custom-style?name="))
+        self.assertNotIn("javascript:alert", res["xssLink"])
+        self.assertTrue(res["validShown"])
+        self.assertEqual(res["validName"], "<img src=x onerror=alert(1)>")
+        self.assertEqual(res["validNameCount"], "28 / 50")
+        self.assertEqual(res["validPrompt"], "Line 1\nLine 2.")
+        self.assertTrue(res["validHref"].startswith("ui://smartype/custom-style?name="))
+        self.assertTrue(res["emptyShown"])
+        self.assertEqual(res["afterSecond"], {"validShown": True, "name": "Second", "prompt": "Two", "copyEnabled": True})
+        self.assertEqual(res["afterInvalid"], {"emptyShown": True, "copyDisabled": True})
+        self.assertEqual(
+            res["afterSkip"],
+            {
+                "defaultPrevented": True,
+                "hash": "#n=First&p=One",
+                "focusedMain": True,
+                "tabIndex": "-1",
+                "scrolled": True,
+                "validShown": True,
+                "copyEnabled": True,
+            },
+        )
 
 
 class WebMicroToolsTests(unittest.TestCase):
@@ -780,6 +965,25 @@ class WebMicroToolsTests(unittest.TestCase):
         self.assertEqual(mode_ids, ["bullets", "numbered", "checklist", "table"])
         escaped = build.micro_tool_page("t.html", "T", "D", "K", "H", "L", "<div></div>", "S", "P", {"x": "</script>"})
         self.assertIn(r"<\/script>", escaped)
+
+    def test_custom_style_preview_page_and_play_fallback(self):
+        html_text = build.custom_style_preview()
+        self.assertIn('<meta name="robots" content="noindex">', html_text)
+        self.assertIn('<meta name="referrer" content="no-referrer">', html_text)
+        self.assertNotIn('<link rel="canonical"', html_text)
+        self.assertIn('data-tool="custom-style"', html_text)
+        self.assertIn("data-add-style", html_text)
+        self.assertIn("Add to SmarType", html_text)
+        self.assertIn("ui://smartype/custom-style", html_text)
+        self.assertIn("New style", html_text)
+        self.assertIn("tools.js", html_text)
+        self.assertRegex(
+            html_text,
+            re.compile(r'<div aria-live="polite">\s*<div data-style-valid hidden>.*<div class="style-empty" data-style-empty>', re.DOTALL),
+        )
+        self.assertNotIn("up to 20 custom styles", html_text.lower())
+        for unshipped in ("friendly", "concise", "emoji search", "smartype pro"):
+            self.assertNotIn(unshipped, html_text.lower())
 
 
 if __name__ == "__main__":

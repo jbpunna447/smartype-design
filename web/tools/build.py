@@ -148,10 +148,14 @@ def page(name, title, description, body, extra="", schema=None):
     start at the site root, so the 404 page also works at any depth."""
     links = nav_links(name)
     url = "https://smartype.in/" + ("" if name == "index.html" else name.replace(".html", ""))
-    where = ('<meta name="robots" content="noindex">' if name == "404.html"
-             else f'<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1"><link rel="canonical" href="{url}">'
-                  f'<link rel="alternate" hreflang="en" href="{url}"><link rel="alternate" hreflang="x-default" href="{url}"><meta property="og:url" content="{url}">')
-    if schema is None and name not in ("index.html", "404.html"):
+    if name == "404.html":
+        where = '<meta name="robots" content="noindex">'
+    elif name == "custom-style.html":
+        where = '<meta name="robots" content="noindex"><meta name="referrer" content="no-referrer">'
+    else:
+        where = (f'<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1"><link rel="canonical" href="{url}">'
+                 f'<link rel="alternate" hreflang="en" href="{url}"><link rel="alternate" hreflang="x-default" href="{url}"><meta property="og:url" content="{url}">')
+    if schema is None and name not in ("index.html", "404.html", "custom-style.html"):
         schema = [crumbs(name, title.split(" · ")[0])]
     jsonld = ld(*schema) if schema else ""
     return f"""<!doctype html>
@@ -743,6 +747,45 @@ def rough_notes_to_neat_list():
     )
 
 
+def custom_style_preview():
+    card = (
+        '<div class="tool-card" data-tool="custom-style">'
+        '<div aria-live="polite">'
+        '<div data-style-valid hidden>'
+        '<div class="tool-res-head"><span class="tool-badge">Style name</span><span class="style-count" data-style-name-count>0 / 50</span></div>'
+        '<h2 class="style-name" data-style-name>Custom style</h2>'
+        '<div class="tool-res"><div class="tool-res-head"><span class="tool-badge">Style instructions</span>'
+        '<div class="style-meta"><span class="style-count" data-style-prompt-count>0 / 150</span>'
+        f'<button type="button" class="tool-copy" data-copy>{icon("content_copy")}<span data-copy-label>Copy</span></button></div></div>'
+        '<p class="tool-out" data-output></p></div>'
+        '<div class="style-actions">'
+        f'<a class="btn key" data-add-style href="ui://smartype/custom-style" rel="noopener">{icon("spark")}Add to SmarType</a>'
+        '<p class="style-hint">Opens SmarType\'s <strong>New style</strong> sheet on Android so you can review or edit before saving.</p>'
+        '</div></div>'
+        '<div class="style-empty" data-style-empty>'
+        '<h2 class="style-name">Open a shared custom style link</h2>'
+        '<p>This page previews stateless custom style links shared from <strong>SmarType → AI → Writing styles</strong> on Android. If a link looks incomplete, ask the sender to tap Share on the style again, or install SmarType below to create your own.</p>'
+        '</div></div>'
+        '<div class="tool-dock"><p><strong>Do not have SmarType yet?</strong> Install SmarType on Android from Google Play, then tap <strong>Add to SmarType</strong> on the shared link.</p>'
+        f'{play_button()}</div>'
+        f'<p class="tool-note">{icon("lock")}<span>Stateless link preview: links shared from SmarType keep the style name (up to 50 characters) and prompt (up to 150 characters) in the # URL fragment, and SmarType never stores shared styles in a database.</span></p></div>'
+    )
+    body = (
+        '<div class="wrap page-wide"><p class="kicker">Shareable AI writing style</p>'
+        '<h1>Shared AI writing style</h1>'
+        '<p class="lede">Preview a custom rewrite style shared from SmarType and add it to your Android keyboard after reviewing the instructions.</p>'
+        f'{card}'
+        '<div class="cta-strip"><div><h2>Create and pin your own rewrite styles on Android</h2>'
+        '<p>Combine 22 built-in rewrite styles with your own custom styles and pin up to 4 on the top bar.</p></div>'
+        f'{play_button()}</div></div>'
+    )
+    return page(
+        "custom-style.html", "Shared AI writing style · SmarType",
+        "Preview a shared custom AI writing style and add it to SmarType on Android, or install SmarType from Google Play.",
+        body, f'<script src="{ver("tools.js")}" defer></script>',
+    )
+
+
 def notfound():
     return page("404.html", "Page not found · SmarType", "This page doesn't exist.",
                 f'<div class="wrap doc contact">{art("art_empty_notes", 200)}<h1>Page not found</h1><p class="lede"><a href="/">Go to the home page</a>.</p></div>')
@@ -757,7 +800,7 @@ def robots_txt():
 def sitemap_xml(pages):
     urls = "".join(
         f"<url><loc>https://smartype.in/{p.replace('.html', '') if p != 'index.html' else ''}</loc><lastmod>{UPDATED}</lastmod></url>"
-        for p in pages if p != "404.html"
+        for p in pages if p not in ("404.html", "custom-style.html")
     )
     return f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n'
 
@@ -788,6 +831,7 @@ def llms_txt():
 - [Polite WhatsApp Message Rewriter](https://smartype.in/polite-whatsapp-rewriter): Interactive browser showcase of Polite, Professional, Empathetic, and Firm chat rewrites.
 - [AI Tone Translator](https://smartype.in/ai-tone-translator): Interactive English-to-Hindi, English-to-Spanish, Arabic-to-English, and French-to-English tone translator preview across SmarType's 21 translation targets.
 - [Rough-Notes-to-Neat-List Formatter](https://smartype.in/rough-notes-to-neat-list): Local in-browser list, checklist, and table formatter paired with SmarType Format and Quick Notes.
+- [Shared Custom Style Preview](https://smartype.in/custom-style): Stateless URL-fragment preview page for shared custom AI writing styles (`name` up to 50 chars, `prompt` up to 150 chars) with one-tap Android sheet pre-fill.
 - [Privacy Policy](https://smartype.in/privacy): Full data handling and account deletion instructions (`https://smartype.in/privacy#choices`).
 - [Help & FAQ](https://smartype.in/help): Setup, AI features, languages, voice typing, and billing answers.
 - [Terms of Service](https://smartype.in/terms): Service and Google Play subscription terms.
@@ -821,6 +865,7 @@ def main():
              "polite-whatsapp-rewriter.html": polite_whatsapp_rewriter(),
              "ai-tone-translator.html": ai_tone_translator(),
              "rough-notes-to-neat-list.html": rough_notes_to_neat_list(),
+             "custom-style.html": custom_style_preview(),
              "privacy.html": privacy(), "terms.html": terms(), "help.html": help_page(),
              "contact.html": contact(), "404.html": notfound()}
     for name, text in pages.items():
