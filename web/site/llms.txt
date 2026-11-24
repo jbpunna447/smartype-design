@@ -20,8 +20,9 @@
 - [Indian language keyboard](https://smartype.in/languages): Hindi, Telugu, Tamil and 8 more Indian languages, with English-to-Indian-language AI translation.
 - [SmarType vs Gboard vs SwiftKey vs Grammarly](https://smartype.in/compare): Side-by-side comparison across tone rewrite, Indian-language translation, voice cleanup, Quick Notes, and password privacy.
 - [Privacy Architecture](https://smartype.in/privacy-architecture): What stays on the phone, what switches off in password fields, and what is sent when you tap AI.
+- [Voice Typing Keyboard](https://smartype.in/voice-typing-keyboard): 60-second punctuated speech-to-text keyboard preview across 31 languages including 11 Indian languages, with immediate Delete discard, password and incognito block, and zero transcript retention.
 - [Polite WhatsApp Message Rewriter](https://smartype.in/polite-whatsapp-rewriter): Interactive browser showcase of Polite, Professional, Empathetic, and Firm chat rewrites.
-- [AI Tone Translator](https://smartype.in/ai-tone-translator): Interactive English-to-Hindi, English-to-Spanish, Arabic-to-English, and French-to-English tone translator preview across SmarType's 21 translation targets.
+- [AI Tone Translator](https://smartype.in/ai-tone-translator): Interactive English-to-Hindi, English-to-Telugu, English-to-Tamil, English-to-Spanish, Arabic-to-English, and French-to-English tone translator preview across SmarType's 31 translation targets.
 - [Rough-Notes-to-Neat-List Formatter](https://smartype.in/rough-notes-to-neat-list): Local in-browser list, checklist, and table formatter paired with SmarType Format and Quick Notes.
 - [Shared Custom Style Preview](https://smartype.in/custom-style): Stateless URL-fragment preview page for shared custom AI writing styles (`name` up to 50 chars, `prompt` up to 150 chars) with one-tap Android sheet pre-fill.
 - [Privacy Policy](https://smartype.in/privacy): Full data handling and account deletion instructions (`https://smartype.in/privacy#choices`).

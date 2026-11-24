@@ -9,6 +9,7 @@ import json
 import os
 import re
 import shutil
+import urllib.parse
 
 WEB = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT = os.path.dirname(WEB)
@@ -52,10 +53,36 @@ PLAY = ('<svg class="play" viewBox="0 0 24 24" aria-hidden="true">'
         '<path fill="#F7304B" d="M16.6 15.4 4.8 22.2c-.4.2-.9.2-1.2 0l9.7-10.2z"/></svg>')
 
 
-def play_button(label="Get it on Google Play", cls=""):
+def href_path(slug: str) -> str:
+    """Clean canonical path matching vercel.json cleanUrls: '/' for index.html, '/foo' for 'foo.html'."""
+    if slug in ("/", "index.html"):
+        return "/"
+    clean = slug[:-5] if slug.endswith(".html") else slug
+    return "/" + clean.lstrip("/")
+
+
+def page_campaign(slug: str) -> str:
+    """UTM campaign identifier for a page slug: 'home' for index.html, else extensionless slug."""
+    if slug in ("/", "index.html", "home"):
+        return "home"
+    clean = slug[:-5] if slug.endswith(".html") else slug
+    return clean.strip("/")
+
+
+def play_store_cta_url(campaign: str) -> str:
+    """Google Play Store listing URL with URL-encoded install-referrer UTM parameters."""
+    referrer = urllib.parse.quote(
+        f"utm_source=smartype_web&utm_medium=cta&utm_campaign={campaign}",
+        safe="",
+    )
+    return f"{PLAY_STORE_URL}&referrer={referrer}"
+
+
+def play_button(campaign: str = "home", small: bool = False) -> str:
     """The one call to action: a flat button with the Play logo linking to the Google Play listing."""
-    cls_attr = f"btn key {cls}".strip()
-    return f'<a class="{cls_attr}" href="{E(PLAY_STORE_URL)}"><span class="play-chip">{PLAY}</span>{E(label)}</a>'
+    label = "Google Play" if small else "Get it on Google Play"
+    cls_attr = "btn key sm" if small else "btn key"
+    return f'<a class="{cls_attr}" href="{E(play_store_cta_url(campaign))}"><span class="play-chip">{PLAY}</span>{E(label)}</a>'
 
 
 # The Apple logo, so the badge reads as the App Store at a glance (path from Simple Icons, CC0).
@@ -114,14 +141,26 @@ def not_looking():
 # ---------- layout ----------
 
 # The header links: sections of the home page, then pages. On the home page a section link only scrolls.
-NAV = [("how", "How it works"), ("features", "Features"), ("/languages.html", "Languages"), ("/compare.html", "Compare"), ("privacy", "Privacy"), ("/help.html", "Help")]
+NAV = [("how", "How it works"), ("features", "Features"), ("/languages", "Languages"), ("/compare", "Compare"), ("privacy", "Privacy"), ("/help", "Help")]
+
+VERCEL_ANALYTICS = (
+    '<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};'
+    'window.va("beforeSend",function(e){try{if(!e||typeof e.url!=="string")return null;'
+    'var u=new URL(e.url,location.origin);u.hash="";var p=u.pathname.replace(/\\/+$/,"");'
+    'if(p==="/custom-style"||p==="/custom-style.html"){u.search=""}'
+    'else{Array.from(u.searchParams.keys()).forEach(function(k){if(k.indexOf("utm_")!==0)u.searchParams.delete(k)})}'
+    'return Object.assign({},e,{url:u.toString()})}catch(_){return null}});</script>'
+    '<script defer src="/_vercel/insights/script.js"></script>'
+)
 
 
 def nav_links(name):
+    current = href_path(name)
     out = []
     for h, label in NAV:
         if h.startswith("/"):
-            out.append(f'<a href="{h}"{" aria-current=page" if h == "/" + name else ""}>{E(label)}</a>')
+            attrs = ' class="on" aria-current="page"' if h == current else ""
+            out.append(f'<a href="{h}"{attrs}>{E(label)}</a>')
         else:
             out.append(f'<a href="{"" if name == "index.html" else "/"}#{h}" data-sec="{h}">{E(label)}</a>')
     return "".join(out)
@@ -140,14 +179,15 @@ def ld(*objs):
 def crumbs(name, label):
     return {"@type": "BreadcrumbList", "itemListElement": [
         {"@type": "ListItem", "position": 1, "name": "Home", "item": SITE + "/"},
-        {"@type": "ListItem", "position": 2, "name": label, "item": SITE + "/" + name.replace(".html", "")}]}
+        {"@type": "ListItem", "position": 2, "name": label, "item": SITE + href_path(name)}]}
 
 
 def page(name, title, description, body, extra="", schema=None):
     """A page: the floating header (a pill; on phones a Menu sheet), the content and the footer. Links and assets
     start at the site root, so the 404 page also works at any depth."""
     links = nav_links(name)
-    url = "https://smartype.in/" + ("" if name == "index.html" else name.replace(".html", ""))
+    campaign = page_campaign(name)
+    url = SITE + href_path(name)
     if name == "404.html":
         where = '<meta name="robots" content="noindex">'
     elif name == "custom-style.html":
@@ -170,16 +210,16 @@ def page(name, title, description, body, extra="", schema=None):
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png"><link rel="manifest" href="/assets/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="{ver("site.css")}">{jsonld}</head>
+<link rel="stylesheet" href="{ver("site.css")}">{jsonld}{VERCEL_ANALYTICS}</head>
 <body><a class="skip" href="#main">Skip to content</a>
 <header class="top"><div class="top-pill"><a class="brand" href="/" aria-label="SmarType home">{lockup(28)}</a>
-<nav class="top-nav" aria-label="Main"><span class="nav-hl" aria-hidden="true"></span>{links}</nav>{play_button("Google Play", "sm")}
+<nav class="top-nav" aria-label="Main"><span class="nav-hl" aria-hidden="true"></span>{links}</nav>{play_button(campaign, small=True)}
 <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu">Menu</button></div>
-<nav class="menu" id="menu" aria-label="Menu" hidden>{links}{play_button()}</nav></header>
+<nav class="menu" id="menu" aria-label="Menu" hidden>{links}{play_button(campaign)}</nav></header>
 <main id="main">{body}</main>
 <footer class="foot"><div class="wrap foot-in">
 <div>{lockup(26)}<p>The Android keyboard that helps you type, speak and get it right.</p></div>
-<nav class="foot-links" aria-label="Footer"><div><h2>Product</h2><a href="/languages.html">Indian languages</a><a href="/compare.html">Compare</a><a href="/help.html">Help</a><a href="/contact.html">Contact</a></div><div><h2>Free tools</h2><a href="/polite-whatsapp-rewriter.html">Polite WhatsApp rewriter</a><a href="/ai-tone-translator.html">AI tone translator</a><a href="/rough-notes-to-neat-list.html">Rough notes to neat list</a></div><div><h2>Privacy &amp; legal</h2><a href="/privacy-architecture.html">Privacy architecture</a><a href="/privacy.html">Privacy policy</a><a href="/terms.html">Terms</a></div></nav>
+<nav class="foot-links" aria-label="Footer"><div><h2>Product</h2><a href="/languages">Indian languages</a><a href="/compare">Compare</a><a href="/help">Help</a><a href="/contact">Contact</a></div><div><h2>Free tools</h2><a href="/voice-typing-keyboard">Voice typing keyboard</a><a href="/polite-whatsapp-rewriter">Polite WhatsApp rewriter</a><a href="/ai-tone-translator">AI tone translator</a><a href="/rough-notes-to-neat-list">Rough notes to neat list</a></div><div><h2>Privacy &amp; legal</h2><a href="/privacy-architecture">Privacy architecture</a><a href="/privacy">Privacy policy</a><a href="/terms">Terms</a></div></nav>
 <p class="copy">© {YEAR} SmarType</p></div></footer><script src="{ver("site.js")}" defer></script>{extra}</body></html>
 """
 
@@ -307,7 +347,7 @@ def home():
 <p class="kicker" data-reveal>The AI keyboard for Android</p>
 <h1 data-type="hero">Type it.<br>Say it.<br><em>Get it right.</em></h1>
 <p class="lede" data-reveal>SmarType fixes, translates and tidies your words, right where you type, in every app.</p>
-<div class="cta" data-reveal>{play_button()}{soon_badge()}</div>
+<div class="cta" data-reveal>{play_button("home")}{soon_badge()}</div>
 <p class="assure-link" data-reveal><a class="link" href="#how">See how it works</a></p>
 <p class="assure" data-reveal>{icon("lock", "ic sm")}Typing stays on your phone. No account needed to type.</p></div>
 <div class="hero2-art">{art("art_welcome", 480, eager=True)}</div></div></section>
@@ -335,13 +375,13 @@ def home():
 {seal}</div>
 <div class="wrap"><div class="peek-note" data-reveal>{not_looking()}<div><h3>We don't know what you type. Honestly.</h3>
 <p>Nothing in SmarType tracks your words. If you sign in, we keep your name, email and Google photo, so your free AI tries and Premium can follow you to a new phone. What you write, rewrite and almost send is your business, not ours. We never sell your data or use what you type for ads.</p>
-<a class="link" href="/privacy.html">Read the privacy policy {icon("chevron_right", "ic sm")}</a> · <a class="link" href="/privacy-architecture.html">See the privacy architecture {icon("chevron_right", "ic sm")}</a></div></div></div></section>
+<a class="link" href="/privacy">Read the privacy policy {icon("chevron_right", "ic sm")}</a> · <a class="link" href="/privacy-architecture">See the privacy architecture {icon("chevron_right", "ic sm")}</a></div></div></div></section>
 
 <section class="closing2"><div class="glow g-close" data-depth=".2"></div>
 <div class="wrap split"><div class="close-art" data-reveal>{art("art_signin", 320)}</div><div>
 <h2 data-type>Try the AI <em>for free.</em></h2>
 <p class="lede" data-reveal>Sign in with Google to get free AI tries for rewrite, translate, format and AI voice typing. Typing and suggestions work without an account.</p>
-<div class="cta" data-reveal>{play_button()}{soon_badge()}</div></div></div>
+<div class="cta" data-reveal>{play_button("home")}{soon_badge()}</div></div></div>
 </section>
 """
     scripts = "".join(f'<script src="{ver(f)}" defer></script>' for f in ("gsap.min.js", "ScrollTrigger.min.js", "home.js"))
@@ -377,7 +417,7 @@ def privacy():
          "<li>We don't sell your data and we don't use what you type or say for advertising.</li></ul>"),
         ("typing", "What stays on your phone", "<p>Your keystrokes, glide trails, the words SmarType learns in memory for suggestions, your clipboard history and your Quick Notes text stay on your phone and are excluded from Android backup; your settings, custom styles, personal dictionary and custom themes (including any theme photo and installed keyboard extensions) also stay on your phone unless Android backup or device transfer is enabled on your phone (none are sent to SmarType's servers). "
          "Clipboard history masks items flagged sensitive by Android 13+ or copied/cut with SmarType in password or incognito fields, and periodically removes unpinned sensitive items older than 20 seconds by default. Uninstalling the app or clearing its data removes on-device data. "
-         "See <a href=\"/privacy-architecture.html\">Privacy architecture</a> for a simple picture of where everything goes.</p>"),
+         "See <a href=\"/privacy-architecture\">Privacy architecture</a> for a simple picture of where everything goes.</p>"),
         ("ai", "When you use AI", "<p>When you tap Rewrite, Translate or Format, or ask AI to change a note, the text you chose is sent over an encrypted connection to SmarType's server (Google Firebase), "
          "which sends it to an AI model provider (currently Google's Gemini) to produce the result and returns it to you.</p>"
          "<p>Voice typing: after you accept the voice notice and microphone permission, SmarType records up to 60 seconds of speech in memory while you dictate. "
@@ -453,7 +493,7 @@ def help_page():
                                               for _, items in FAQ for q, a in items]}
     return page("help.html", "Help · SmarType", "Answers about setting up SmarType, AI rewrite and translate, Indian languages, voice typing and your account.",
                 schema=[faq, crumbs("help.html", "Help")], body=
-                f'<div class="wrap doc"><h1>Help</h1><p class="lede">Quick answers. Still stuck? <a href="/contact.html">Contact us</a>.</p>{groups}</div>')
+                f'<div class="wrap doc"><h1>Help</h1><p class="lede">Quick answers. Still stuck? <a href="/contact">Contact us</a>.</p>{groups}</div>')
 
 
 def contact():
@@ -480,21 +520,21 @@ def compare():
     pillars = [
         ("spark", "Fixing a message takes one tap", "Most of us know what we want to say and just want it to sound right. Type it rough, tap the spark, pick Polite or Professional, and send. You stay in WhatsApp the whole time."),
         ("translate", "It speaks your languages", "Gboard and SwiftKey are great at English. If you message in Hindi, Telugu or Tamil, or need to reply to someone in Spanish or Arabic, SmarType does it without leaving the chat."),
-        ("mic", "Voice that waits while you think", "Other voice typing stops when you pause. SmarType keeps listening for up to a minute and gives you back sentences, not a run-on line without full stops."),
+        ("mic", "Voice that waits while you think", 'Other voice typing stops when you pause. SmarType keeps listening for up to a minute and gives you back sentences, not a run-on line without full stops. <a href="/voice-typing-keyboard">See how 60-second voice typing works</a>.'),
         ("sticky_note_2", "A notepad that floats", "Copy an address, jot a list, keep a draft. The note window sits over whatever app you're in, and AI can tidy it if you ask."),
-        ("lock", "It doesn't read over your shoulder", 'Your typing stays on your phone, and nothing is sent unless you tap an AI button. In password fields, all of it switches off. <a href="/privacy-architecture.html">Here is exactly what stays on your phone</a>.'),
+        ("lock", "It doesn't read over your shoulder", 'Your typing stays on your phone, and nothing is sent unless you tap an AI button. In password fields, all of it switches off. <a href="/privacy-architecture">Here is exactly what stays on your phone</a>.'),
     ]
     cards = "".join(f'<article class="arch-card"><div class="arch-ic">{icon(ic)}</div><h3>{E(t)}</h3><p>{d}</p></article>' for ic, t, d in pillars)
     body = (f'<div class="wrap page-wide"><p class="kicker">Android keyboard comparison</p>'
             '<h1>SmarType vs Gboard vs SwiftKey vs Grammarly: which AI keyboard should you use?</h1>'
             '<p class="lede">Honest answer: if you only type in English and never rewrite anything, Gboard is fine. We built SmarType for people who switch languages, want a message to sound right before they send it, and would rather their keyboard not read along.</p>'
-            f'<div class="cta">{play_button()}<a class="btn key alt" href="/privacy-architecture.html">How we handle privacy</a></div>'
+            f'<div class="cta">{play_button("compare")}<a class="btn key alt" href="/privacy-architecture">How we handle privacy</a></div>'
             '<div class="cmp-scroll" tabindex="0" role="region" aria-label="Android keyboard comparison"><table class="cmp-table"><thead><tr><th scope="col">What you need</th><th scope="col" class="st-col">SmarType</th>'
             f'<th scope="col">Gboard</th><th scope="col">SwiftKey</th><th scope="col">Grammarly Android assistant</th></tr></thead><tbody>{trs}</tbody></table></div>'
-            '<p class="doc-inline">We compared the free versions on Android in November 2026. Features change, so if something here is out of date, <a href="/contact.html">tell us</a> and we will fix it.</p>'
+            '<p class="doc-inline">We compared the free versions on Android in November 2026. Features change, so if something here is out of date, <a href="/contact">tell us</a> and we will fix it.</p>'
             f'<h2>Where SmarType is different</h2><div class="arch-grid">{cards}</div>'
             '<div class="cta-strip"><div><h2>Try it free on Android 8.0 and later</h2><p>You can type without an account. Sign in with Google when you want to try the AI.</p></div>'
-            f'{play_button()}</div></div>')
+            f'{play_button("compare")}</div></div>')
     return page("compare.html", "Best AI Keyboard for Android: SmarType vs Gboard, SwiftKey, Grammarly",
                 "An honest comparison of SmarType, Gboard, SwiftKey and Grammarly: rewriting messages, Indian languages and translation, voice typing, notes and privacy.", body)
 
@@ -517,11 +557,12 @@ def languages_page():
     body = ('<div class="wrap page-wide"><p class="kicker">Indian language keyboard</p>'
             '<h1>Hindi, Telugu, Tamil and more: an AI keyboard for Indian languages</h1>'
             '<p class="lede">Most of us switch between English and our own language all day. SmarType keeps both one key apart, and translates a message when the other person reads a different language.</p>'
-            f'<div class="cta">{play_button()}{soon_badge()}</div>'
+            f'<div class="cta">{play_button("languages")}{soon_badge()}</div>'
             f'<h2>11 Indian languages in Translate, 5 with a keyboard</h2><div class="arch-grid">{tiles}</div>'
             '<h2>Questions</h2><div class="doc-inline">' + "".join(f'<details><summary>{E(q)}</summary><p>{E(a)}</p></details>' for q, a in qa) + '</div>'
+            '<p class="doc-inline">Preview polite and casual registers in the <a href="/ai-tone-translator">AI tone translator</a>, or try 60-second speech cleanup on the <a href="/voice-typing-keyboard">voice typing keyboard</a> page.</p>'
             '<div class="cta-strip"><div><h2>Type in your language</h2><p>Free on Android 8.0 and later. No account needed to type.</p></div>'
-            f'{play_button()}</div></div>')
+            f'{play_button("languages")}</div></div>')
     return page("languages.html", "Hindi, Telugu & Tamil Keyboard with AI Translate · SmarType",
                 "Type in Hindi, Telugu, Tamil, Bengali or Urdu, switch to English with one key, and translate English to Hindi or 10 other Indian languages inside WhatsApp.",
                 body, schema=[faq, crumbs("languages.html", "Indian languages")])
@@ -550,22 +591,24 @@ def privacy_architecture():
     body = (f'<div class="wrap page-wide"><p class="kicker">Privacy</p>'
             '<h1>What stays on your phone, and what leaves when you tap AI</h1>'
             '<p class="lede">A keyboard sees every keystroke, so you should know exactly where they go. Everyday typing works without an account, and here is the rest in plain words.</p>'
-            f'<div class="cta">{play_button()}<a class="btn key alt" href="/privacy.html#choices">Delete your data</a></div>'
+            f'<div class="cta">{play_button("privacy-architecture")}<a class="btn key alt" href="/privacy#choices">Delete your data</a></div>'
             f'<h2>Three simple rules</h2><div class="arch-grid">{zhtml}</div>'
             '<section class="doc-inline"><h2>Signing in, and when the mic uses Google</h2>'
             '<p>You don\'t need an account to type. If you sign in with Google for free AI tries or Premium, we keep your account ID, name, email, photo, sign-in dates, how many AI tries you\'ve used and whether you have Premium. That\'s it. '
             'If you are offline or out of AI tries, the mic hands over to your phone\'s own voice typing, which follows that provider\'s privacy terms. '
-            'The full details are in the <a href="/privacy.html">privacy policy</a>, and you can <a href="/privacy.html#choices">delete your account</a> at any time.</p></section>'
+            'The full details are in the <a href="/privacy">privacy policy</a>, and you can <a href="/privacy#choices">delete your account</a> at any time.</p></section>'
             '<div class="cta-strip"><div><h2>A keyboard that minds its own business</h2><p>Install SmarType and start typing. No account needed.</p></div>'
-            f'{play_button()}</div></div>')
+            f'{play_button("privacy-architecture")}</div></div>')
     return page("privacy-architecture.html", "Private Keyboard for Android: What Stays on Your Phone · SmarType",
                 "Where your typing goes with SmarType: keystrokes, clipboard and notes stay on your phone, password fields switch everything off, and text is sent only when you tap AI.", body)
 
 MICRO_TOOLS_META = (
+    ("voice-typing-keyboard.html", "mic", "Voice typing keyboard",
+     "Speak for up to 60 seconds with pauses, and get clean, punctuated text."),
     ("polite-whatsapp-rewriter.html", "spark", "Polite WhatsApp rewriter",
      "Four everyday messages, rewritten four ways."),
     ("ai-tone-translator.html", "translate", "AI tone translator",
-     "See the same message in Hindi, Spanish or English, polite or casual."),
+     "See the same message in Hindi, Telugu, Tamil, Spanish or English, polite or casual."),
     ("rough-notes-to-neat-list.html", "format_list_bulleted", "Rough notes to neat list",
      "Paste a messy list and get bullets, steps, a checklist or a table."),
 )
@@ -577,25 +620,26 @@ def tool_btn_row(items, key, cls, attr, label):
 
 
 def micro_tool_page(fname, title, desc, kicker, h1, lede, card_inner, strip_h2, strip_p, data_obj):
+    campaign = page_campaign(fname)
     others = [
-        f'<article class="arch-card"><div class="arch-ic">{icon(ic)}</div><h3><a href="/{slug}">{E(name)}</a></h3><p>{E(blurb)}</p></article>'
+        f'<article class="arch-card"><div class="arch-ic">{icon(ic)}</div><h3><a href="{href_path(slug)}">{E(name)}</a></h3><p>{E(blurb)}</p></article>'
         for slug, ic, name, blurb in MICRO_TOOLS_META if slug != fname
     ]
     others.append(
-        f'<article class="arch-card"><div class="arch-ic">{icon("lock")}</div><h3><a href="/privacy-architecture.html">What stays on your phone</a></h3>'
+        f'<article class="arch-card"><div class="arch-ic">{icon("lock")}</div><h3><a href="/privacy-architecture">What stays on your phone</a></h3>'
         '<p>Where your typing goes, in plain words.</p></article>'
     )
     payload_json = json.dumps(data_obj, ensure_ascii=False).replace("</", "<\\/")
     body = (
         f'<div class="wrap page-wide"><p class="kicker">{E(kicker)}</p><h1>{E(h1)}</h1><p class="lede">{E(lede)}</p>'
         f'{card_inner}<h2>More free tools</h2><div class="arch-grid">{"".join(others)}</div>'
-        f'<div class="cta-strip"><div><h2>{E(strip_h2)}</h2><p>{E(strip_p)}</p></div>{play_button()}</div></div>'
+        f'<div class="cta-strip"><div><h2>{E(strip_h2)}</h2><p>{E(strip_p)}</p></div>{play_button(campaign)}</div></div>'
     )
     extra = f'<script id="tool-data" type="application/json">{payload_json}</script><script src="{ver("tools.js")}" defer></script>'
     return page(fname, title, desc, body, extra)
 
 
-def preset_tool_card(groups, step_labels, src_label, dock_html, note_text):
+def preset_tool_card(groups, step_labels, src_label, dock_html, note_text, campaign):
     g0 = groups[0]
     p0 = g0["presets"][0]
     t0 = p0["tones"][0]
@@ -610,7 +654,7 @@ def preset_tool_card(groups, step_labels, src_label, dock_html, note_text):
         f'<div class="tool-res" aria-live="polite"><div class="tool-res-head"><span class="tool-badge" data-badge>{E(t0["name"])} result</span>'
         f'<button type="button" class="tool-copy" data-copy>{icon("content_copy")}<span data-copy-label>Copy</span></button></div>'
         f'<p class="tool-out" data-output lang="{g0.get("outLang", "en")}">{E(t0["out"])}</p><p class="tool-sub" data-sub{" hidden" if not sub else ""}>{E(sub)}</p></div>'
-        f'<div class="tool-dock"><p>{dock_html}</p>{play_button()}</div>'
+        f'<div class="tool-dock"><p>{dock_html}</p>{play_button(campaign)}</div>'
         f'<p class="tool-note">{icon("lock")}<span>{E(note_text)}</span></p></div>'
     )
 
@@ -646,6 +690,7 @@ def polite_whatsapp_rewriter():
         [{"presets": presets}], ("1. Pick a real WhatsApp draft", "2. Tap a SmarType tone chip"), "Rough draft",
         "<strong>Want this for your own messages?</strong> On Android, SmarType does it inside WhatsApp, Gmail or Slack. Type, tap the spark, pick a tone.",
         "These are fixed examples, so nothing you do here is sent anywhere.",
+        "polite-whatsapp-rewriter",
     )
     return micro_tool_page(
         "polite-whatsapp-rewriter.html", "Polite WhatsApp message rewriter · SmarType",
@@ -669,6 +714,34 @@ def ai_tone_translator():
                 {"name": "Respectful (आप)", "out": "बहुत बढ़िया! क्या आप शाम 5 बजे से पहले मुझे पता भेज सकते हैं?", "sub": "Bahut badhiya! Kya aap shaam 5 baje se pehle mujhe pata bhej sakte hain?"},
                 {"name": "Warm (तुम)", "out": "बढ़िया! क्या तुम शाम 5 बजे से पहले पता भेज सकते हो?", "sub": "Badhiya! Kya tum shaam 5 baje se pehle pata bhej sakte ho?"},
                 {"name": "Formal Hindi", "out": "धन्यवाद। कृपया शाम 5 बजे से पूर्व पूरा पता साझा करें।", "sub": "Dhanyavaad. Kripya shaam 5 baje se poorv poora pata saajha karein."},
+            ]},
+        ]},
+        {"label": "English → Telugu (తెలుగు)", "dir": "ltr", "lang": "en", "outLang": "te", "presets": [
+            {"label": "Running 10 mins late", "raw": "I am stuck in traffic, I will reach in 10 minutes.", "tones": [
+                {"name": "Polite (మీరు)", "out": "నేను ట్రాఫిక్‌లో చిక్కుకున్నాను, మరో 10 నిమిషాల్లో చేరుకుంటాను. దయచేసి ఏమీ అనుకోకండి.", "sub": "Nenu traffic-lo chikkukunnanu, maro 10 nimishallo cherukuntanu. Respectful meeru phrasing."},
+                {"name": "Casual (నువ్వు)", "out": "కొంచెం ట్రాఫిక్ ఉంది, 10 నిమిషాల్లో వచ్చేస్తాను.", "sub": "Konchem traffic undi, 10 nimishallo vacchestanu. Everyday nuvvu chat."},
+                {"name": "Direct", "out": "ట్రాఫిక్ వల్ల 10 నిమిషాలు ఆలస్యం అవుతుంది, త్వరలోనే చేరుకుంటాను.", "sub": "Traffic valla 10 nimishalu aalasyam avutundi, tvaralone cherukuntanu."},
+                {"name": "Warm", "out": "దారిలో కొద్దిగా ట్రాఫిక్ ఉంది, పది నిమిషాల్లో అక్కడ ఉంటాను!", "sub": "Daarilo koddiga traffic undi, padi nimishallo akkada untanu!"},
+            ]},
+            {"label": "Send address before 5 PM", "raw": "Great! Can you send me the address before 5 PM?", "tones": [
+                {"name": "Polite (మీరు)", "out": "చాలా బాగుంది! దయచేసి సాయంత్రం 5 గంటల లోపు నాకు చిరునామా పంపగలరా?", "sub": "Chaala baagundi! Dayachesi saayantram 5 gantala lopu naaku chirunaama pampagalara?"},
+                {"name": "Casual (నువ్వు)", "out": "సూపర్! సాయంత్రం 5 లోపు అడ్రస్ పంపిస్తావా?", "sub": "Super! Saayantram 5 lopu address pampistava?"},
+                {"name": "Direct", "out": "ధన్యవాదాలు. సాయంత్రం 5 గంటల ముందు పూర్తి చిరునామా పంపండి.", "sub": "Dhanyavaadaalu. Saayantram 5 gantala mundu poorti chirunaama pampandi."},
+                {"name": "Warm", "out": "చాలా సంతోషం! సాయంత్రం 5 లోపు లొకేషన్ పంపితే బయలుదేరుతాను.", "sub": "Chaala santosham! Saayantram 5 lopu location pampite bayaluderutanu."},
+            ]},
+        ]},
+        {"label": "English → Tamil (தமிழ்)", "dir": "ltr", "lang": "en", "outLang": "ta", "presets": [
+            {"label": "Running 10 mins late", "raw": "I am stuck in traffic, I will reach in 10 minutes.", "tones": [
+                {"name": "Polite (நீங்கள்)", "out": "நான் போக்குவரத்து நெரிசலில் சிக்கியுள்ளேன், இன்னும் 10 நிமிடங்களில் வந்துவிடுவேன். தயவுசெய்து பொறுத்துக்கொள்ளுங்கள்.", "sub": "Naan pokkuvarathu nerisalil sikkiyullen, innum 10 nimidangalil vandhuviduven. Respectful neengal register."},
+                {"name": "Casual (நீ)", "out": "கொஞ்சம் டிராஃபிக் இருக்கு, இன்னும் 10 நிமிஷத்துல வந்துடுவேன்.", "sub": "Konjam traffic irukku, innum 10 nimishathula vandhuduven. Spoken nee chat."},
+                {"name": "Direct", "out": "போக்குவரத்து நெரிசல் காரணமாக 10 நிமிடங்கள் தாமதமாகும், விரைவில் வருகிறேன்.", "sub": "Pokkuvarathu nerisal kaaranamaaga 10 nimidangal thaamadhamaagum, viraivil varugiren."},
+                {"name": "Warm", "out": "வழியில் கொஞ்சம் டிராஃபிக், பத்து நிமிடத்தில் அங்கே வந்துவிடுவேன்!", "sub": "Vazhiyil konjam traffic, patthu nimidathil ange vandhuviduven!"},
+            ]},
+            {"label": "Send address before 5 PM", "raw": "Great! Can you send me the address before 5 PM?", "tones": [
+                {"name": "Polite (நீங்கள்)", "out": "மிகவும் நன்று! மாலை 5 மணிக்குள் முகவரியை அனுப்ப முடியுமா?", "sub": "Migavum nandru! Maalai 5 manikkul mugavariyai anuppa mudiyuma?"},
+                {"name": "Casual (நீ)", "out": "சூப்பர்! சாயங்காலம் 5 மணிக்குள்ள அட்ரஸ் அனுப்புறியா?", "sub": "Super! Saayangaalam 5 manikkulla address anuppuriya?"},
+                {"name": "Direct", "out": "நன்றி. மாலை 5 மணிக்கு முன் முழு முகவரியை பகிரவும்.", "sub": "Nandri. Maalai 5 manikku mun muzhu mugavariyai pagiravum."},
+                {"name": "Warm", "out": "ரொம்ப சந்தோஷம்! மாலை 5 மணிக்குள் முகவரி அனுப்பினால் உடனே கிளம்பிவிடுவேன்.", "sub": "Romba sandhosham! Maalai 5 manikkul mugavari anuppinaal udane kilambividuven."},
             ]},
         ]},
         {"label": "English → Spanish (Español)", "dir": "ltr", "lang": "en", "outLang": "es", "presets": [
@@ -707,14 +780,114 @@ def ai_tone_translator():
         groups, ("1. Choose a language pair", "2. Pick a message", "3. Select tone & register"), "Source message",
         "<strong>Translate while you type.</strong> SmarType works out which language you wrote in and translates it into one of 31 languages, right inside the app you are using.",
         "These are fixed examples, so nothing you do here is sent anywhere.",
+        "ai-tone-translator",
     )
     return micro_tool_page(
-        "ai-tone-translator.html", "AI Tone Translator: English to Hindi, Spanish & More · SmarType",
-        "Translation that gets the tone right: see English to Hindi with aap or tum, English to Spanish with usted or tú, and Arabic or French to English.",
-        "Free translation tool", "English-to-Hindi tone translator, and more",
-        "Word-for-word translation can sound rude. In Hindi, aap and tum say very different things, and Spanish has usted and tú. Pick a message and hear the difference.",
+        "ai-tone-translator.html", "AI Tone Translator: English to Hindi, Telugu, Tamil & Spanish · SmarType",
+        "English to Hindi, English to Telugu typing and English to Tamil typing with the right tone: compare polite aap, meeru and neengal against casual chat across 31 languages.",
+        "Free translation tool", "English-to-Hindi, Telugu and Tamil tone translator",
+        "Word-for-word translation can sound rude. Hindi has aap and tum, Telugu has meeru and nuvvu, Tamil has neengal and nee, and Spanish has usted and tú. Pick a message and hear the difference.",
         card, "Translate inside any app, in 31 languages",
         "Type in your language, tap Translate, and the translation replaces your text.", {"groups": groups},
+    )
+
+
+def voice_typing_keyboard():
+    presets = [
+        {"label": "English meeting update", "lang": "en", "outLang": "en",
+         "raw": "um hey team quick update the design review moved to thursday at 3 pm and uh please add your comments before lunch",
+         "tones": [
+             {"name": "Clean dictation", "lang": "en", "out": "Hey team, quick update: the design review moved to Thursday at 3 PM. Please add your comments before lunch.",
+              "sub": "Tap Check to clear filler words and add full stops, colons and capitals."},
+             {"name": "Polite rewrite", "lang": "en", "out": "Hi team! Quick update: our design review has moved to Thursday at 3 PM. Could everyone please add comments before lunch?",
+              "sub": "Tap the spark right after Check when a chat needs a softer tone."},
+             {"name": "Professional", "lang": "en", "out": "Hello team, the design review is rescheduled to Thursday at 3:00 PM. Please share your feedback before noon.",
+              "sub": "Work-ready text inside Slack, Gmail or Teams."},
+         ]},
+        {"label": "Hinglish → Hindi", "lang": "en", "outLang": "hi",
+         "raw": "arre mummy main abhi metro mein hoon barish bahut tez hai toh ghar pahunchne mein bees minute lagenge",
+         "tones": [
+             {"name": "Clean Hindi (हिन्दी)", "lang": "hi", "out": "मम्मी, मैं अभी मेट्रो में हूँ। बारिश बहुत तेज़ है, तो घर पहुँचने में बीस मिनट लगेंगे।",
+              "sub": "Speak naturally in Hindi and get punctuated Devanagari text on Check."},
+             {"name": "Hinglish chat", "lang": "en", "out": "Mummy, main abhi metro mein hoon. Baarish bahut tez hai, toh ghar pahunchne mein 20 minute lagenge.",
+              "sub": "Keep clean Latin Hinglish when your family group prefers it."},
+         ]},
+        {"label": "Spoken English → Polite Telugu", "lang": "en", "outLang": "te",
+         "raw": "hi uncle we reached hyderabad station safely cab is here and we will be home in twenty five minutes",
+         "tones": [
+             {"name": "Polite Telugu (తెలుగు)", "lang": "te", "out": "నమస్తే అంకుల్, మేము హైదరాబాద్ స్టేషన్‌కు క్షేమంగా చేరుకున్నాము. క్యాబ్ వచ్చింది, ఇరవై ఐదు నిమిషాల్లో ఇంటికి చేరుకుంటాము.",
+              "sub": "Speak in English, tap Check, then tap Translate for respectful meeru Telugu."},
+             {"name": "Clean English", "lang": "en", "out": "Hi Uncle, we reached Hyderabad station safely. The cab is here, and we will be home in 25 minutes.",
+              "sub": "Punctuated transcript returned on Check before one-tap translation."},
+         ]},
+        {"label": "Spoken English → Polite Tamil", "lang": "en", "outLang": "ta",
+         "raw": "hello sir i am sharing the signed invoice on whatsapp now please let me know once your accounts team receives it",
+         "tones": [
+             {"name": "Polite Tamil (தமிழ்)", "lang": "ta", "out": "வணக்கம் சார், கையொப்பமிட்ட விலைப்பட்டியலை இப்போது வாட்ஸ்அப்பில் அனுப்புகிறேன். உங்கள் கணக்குத் துறை பெற்றதும் தயவுசெய்து தெரியப்படுத்துங்கள்.",
+              "sub": "Speak in English, tap Check, then tap Translate for respectful neengal Tamil."},
+             {"name": "Clean English", "lang": "en", "out": "Hello sir, I am sharing the signed invoice on WhatsApp now. Please let me know once your accounts team receives it.",
+              "sub": "Punctuated transcript returned on Check before one-tap translation."},
+         ]},
+    ]
+    card = preset_tool_card(
+        [{"presets": presets}], ("1. Pick a spoken note", "2. Choose dictation cleanup or translation"), "What you spoke (raw speech)",
+        "<strong>Speak inside any Android app.</strong> Tap the mic on SmarType, pause whenever you need to think, and tap Check for punctuated speech to text.",
+        "These browser presets run locally in this tab; nothing you click here is recorded or sent anywhere.",
+        "voice-typing-keyboard",
+    )
+    arch = [
+        ("mic", "60-second in-memory buffer",
+         "Pause to think without getting cut off. SmarType holds up to 60 seconds of speech in memory and shows Still listening until you tap Check, or tap Cancel / Delete to discard the audio immediately on your phone."),
+        ("translate", "31 languages, including 11 Indian languages",
+         "Dictate in English, Hindi, Telugu, Tamil, Bengali or Urdu, or pair voice typing with one-tap AI Translate across 31 languages including Hindi, Telugu, Tamil, Kannada, Malayalam, Marathi, Bengali, Gujarati, Punjabi, Odia and Urdu."),
+        ("lock", "Zero transcript retention and password block",
+         "Audio is sent encrypted over HTTPS to Google Firebase and Gemini (guarded by Firebase App Check) only when you tap Check. We do not store your audio or transcript after the request and never use them to train models. Password and incognito fields switch off AI voice dictation, and Android system voice input serves as the fallback when you are offline or out of free AI tries (processed under that provider's own privacy terms)."),
+    ]
+    arch_html = "".join(
+        f'<article class="arch-card"><div class="arch-ic">{icon(ic)}</div><h3>{E(t)}</h3><p>{E(d)}</p></article>'
+        for ic, t, d in arch
+    )
+    qa = [
+        ("Does SmarType stop listening when I pause?",
+         "No. SmarType keeps listening for up to 60 seconds and shows Still listening while you gather your thoughts. Recording stops only when you tap Check, tap Delete to cancel, or reach 60 seconds."),
+        ("How is my voice audio handled?",
+         "After you accept the voice notice and microphone permission, speech stays in memory while you talk. Tapping Delete throws it away on your phone immediately. Tapping Check sends the audio over an encrypted connection to SmarType's Firebase server and Gemini only to return your text; we do not store it after the request or use it to train models."),
+        ("What happens when I am offline or in a password field?",
+         "In password and incognito fields, SmarType switches off AI voice dictation completely, and password fields also disable the password-row microphone. When you are offline or out of free AI tries in a normal text field, the mic hands over to Android system voice input when available, under that provider's own privacy terms."),
+    ]
+    faq_html = "".join(f'<details><summary>{E(q)}</summary><p>{E(a)}</p></details>' for q, a in qa)
+    faq_ld = {"@type": "FAQPage", "mainEntity": [
+        {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in qa
+    ]}
+    others = [
+        f'<article class="arch-card"><div class="arch-ic">{icon(ic)}</div><h3><a href="{href_path(slug)}">{E(name)}</a></h3><p>{E(blurb)}</p></article>'
+        for slug, ic, name, blurb in MICRO_TOOLS_META if slug != "voice-typing-keyboard.html"
+    ]
+    others.append(
+        f'<article class="arch-card"><div class="arch-ic">{icon("lock")}</div><h3><a href="/privacy-architecture">What stays on your phone</a></h3>'
+        '<p>Where your typing and voice audio go, in plain words.</p></article>'
+    )
+    payload_json = json.dumps({"presets": presets}, ensure_ascii=False).replace("</", "<\\/")
+    body = (
+        '<div class="wrap page-wide"><p class="kicker">Android speech to text</p>'
+        '<h1>Voice typing keyboard for Android: speech to text that waits while you think</h1>'
+        '<p class="lede">Most speech to text keyboards cut you off mid-thought and dump a wall of lowercase words. SmarType listens for up to 60 seconds through pauses, adds punctuation when you tap Check, and pairs with 31-language translation.</p>'
+        f'{card}'
+        f'<h2>Built for real speech and real privacy</h2><div class="arch-grid">{arch_html}</div>'
+        f'<h2>Voice typing questions</h2><div class="doc-inline">{faq_html}</div>'
+        f'<h2>More free tools</h2><div class="arch-grid">{"".join(others)}</div>'
+        '<div class="cta-strip"><div><h2>Dictate with punctuation in WhatsApp, Gmail and Notes</h2>'
+        '<p>Everyday typing is free without an account. Sign in with Google for free AI tries on Android 8.0 and later.</p></div>'
+        f'{play_button("voice-typing-keyboard")}</div></div>'
+    )
+    extra = f'<script id="tool-data" type="application/json">{payload_json}</script><script src="{ver("tools.js")}" defer></script>'
+    return page(
+        "voice-typing-keyboard.html",
+        "Voice Typing Keyboard for Android: 60s Speech to Text · SmarType",
+        "Android voice typing keyboard with 60-second speech to text, automatic punctuation on Check, 31 translation languages including Hindi, Telugu and Tamil, and zero transcript retention.",
+        body,
+        extra=extra,
+        schema=[faq_ld, crumbs("voice-typing-keyboard.html", "Voice typing keyboard")],
     )
 
 
@@ -735,7 +908,7 @@ def rough_notes_to_neat_list():
         f'<button type="button" class="tool-copy" data-copy>{icon("content_copy")}<span data-copy-label>Copy</span></button></div>'
         f'<p class="tool-out" data-output data-empty="false">{E(default_out)}</p></div>'
         '<div class="tool-dock"><p><strong>Do this in any Android app.</strong> In SmarType, tap Format and your notes become a list or a table, right above your keys.</p>'
-        f'{play_button()}</div><p class="tool-note">{icon("lock")}<span>This runs in your browser. Nothing you paste is sent or saved.</span></p></div>'
+        f'{play_button("rough-notes-to-neat-list")}</div><p class="tool-note">{icon("lock")}<span>This runs in your browser. Nothing you paste is sent or saved.</span></p></div>'
     )
     return micro_tool_page(
         "rough-notes-to-neat-list.html", "Turn Rough Notes into a Neat List: Free Formatter · SmarType",
@@ -767,7 +940,7 @@ def custom_style_preview():
         '<p>This page previews stateless custom style links shared from <strong>SmarType → AI → Writing styles</strong> on Android. If a link looks incomplete, ask the sender to tap Share on the style again, or install SmarType below to create your own.</p>'
         '</div></div>'
         '<div class="tool-dock"><p><strong>Do not have SmarType yet?</strong> Install SmarType on Android from Google Play, then tap <strong>Add to SmarType</strong> on the shared link.</p>'
-        f'{play_button()}</div>'
+        f'{play_button("custom-style")}</div>'
         f'<p class="tool-note">{icon("lock")}<span>Stateless link preview: links shared from SmarType keep the style name (up to 50 characters) and prompt (up to 150 characters) in the # URL fragment, and SmarType never stores shared styles in a database.</span></p></div>'
     )
     body = (
@@ -777,7 +950,7 @@ def custom_style_preview():
         f'{card}'
         '<div class="cta-strip"><div><h2>Create and pin your own rewrite styles on Android</h2>'
         '<p>Combine 22 built-in rewrite styles with your own custom styles and pin up to 4 on the top bar.</p></div>'
-        f'{play_button()}</div></div>'
+        f'{play_button("custom-style")}</div></div>'
     )
     return page(
         "custom-style.html", "Shared AI writing style · SmarType",
@@ -828,8 +1001,9 @@ def llms_txt():
 - [Indian language keyboard](https://smartype.in/languages): Hindi, Telugu, Tamil and 8 more Indian languages, with English-to-Indian-language AI translation.
 - [SmarType vs Gboard vs SwiftKey vs Grammarly](https://smartype.in/compare): Side-by-side comparison across tone rewrite, Indian-language translation, voice cleanup, Quick Notes, and password privacy.
 - [Privacy Architecture](https://smartype.in/privacy-architecture): What stays on the phone, what switches off in password fields, and what is sent when you tap AI.
+- [Voice Typing Keyboard](https://smartype.in/voice-typing-keyboard): 60-second punctuated speech-to-text keyboard preview across 31 languages including 11 Indian languages, with immediate Delete discard, password and incognito block, and zero transcript retention.
 - [Polite WhatsApp Message Rewriter](https://smartype.in/polite-whatsapp-rewriter): Interactive browser showcase of Polite, Professional, Empathetic, and Firm chat rewrites.
-- [AI Tone Translator](https://smartype.in/ai-tone-translator): Interactive English-to-Hindi, English-to-Spanish, Arabic-to-English, and French-to-English tone translator preview across SmarType's 21 translation targets.
+- [AI Tone Translator](https://smartype.in/ai-tone-translator): Interactive English-to-Hindi, English-to-Telugu, English-to-Tamil, English-to-Spanish, Arabic-to-English, and French-to-English tone translator preview across SmarType's 31 translation targets.
 - [Rough-Notes-to-Neat-List Formatter](https://smartype.in/rough-notes-to-neat-list): Local in-browser list, checklist, and table formatter paired with SmarType Format and Quick Notes.
 - [Shared Custom Style Preview](https://smartype.in/custom-style): Stateless URL-fragment preview page for shared custom AI writing styles (`name` up to 50 chars, `prompt` up to 150 chars) with one-tap Android sheet pre-fill.
 - [Privacy Policy](https://smartype.in/privacy): Full data handling and account deletion instructions (`https://smartype.in/privacy#choices`).
@@ -862,6 +1036,7 @@ def main():
     for f in ("site.js", "home.js", "tools.js"):
         shutil.copy(os.path.join(WEB, "tools", f), os.path.join(OUT, "assets/js", f))
     pages = {"index.html": home(), "languages.html": languages_page(), "compare.html": compare(), "privacy-architecture.html": privacy_architecture(),
+             "voice-typing-keyboard.html": voice_typing_keyboard(),
              "polite-whatsapp-rewriter.html": polite_whatsapp_rewriter(),
              "ai-tone-translator.html": ai_tone_translator(),
              "rough-notes-to-neat-list.html": rough_notes_to_neat_list(),

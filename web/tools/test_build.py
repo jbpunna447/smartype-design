@@ -6,6 +6,7 @@ import re
 import subprocess
 import sys
 import unittest
+import urllib.parse
 import xml.etree.ElementTree as ET
 
 TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -108,7 +109,8 @@ class WebBuildPrivacyTests(unittest.TestCase):
         self.assertIn("text or voice audio", terms_html.lower())
 
     def test_play_buttons_link_to_play_store_without_coming_soon(self):
-        expected_url = "https://play.google.com/store/apps/details?id=bha.keys.smartype"
+        self.assertTrue(hasattr(build, "voice_typing_keyboard"), "Missing voice_typing_keyboard() in build.py")
+        canonical_play_url = "https://play.google.com/store/apps/details?id=bha.keys.smartype"
         pages = {
             "index.html": (build.home(), 4),
             "compare.html": (build.compare(), 4),
@@ -117,6 +119,7 @@ class WebBuildPrivacyTests(unittest.TestCase):
             "polite-whatsapp-rewriter.html": (build.polite_whatsapp_rewriter(), 4),
             "ai-tone-translator.html": (build.ai_tone_translator(), 4),
             "rough-notes-to-neat-list.html": (build.rough_notes_to_neat_list(), 4),
+            "voice-typing-keyboard.html": (build.voice_typing_keyboard(), 4),
             "custom-style.html": (build.custom_style_preview(), 4),
             "privacy.html": (build.privacy(), 2),
             "terms.html": (build.terms(), 2),
@@ -130,6 +133,12 @@ class WebBuildPrivacyTests(unittest.TestCase):
         )
         for name, (html_text, expected_count) in pages.items():
             with self.subTest(page=name):
+                campaign = "home" if name == "index.html" else name[:-5]
+                expected_ref = urllib.parse.quote(
+                    f"utm_source=smartype_web&utm_medium=cta&utm_campaign={campaign}",
+                    safe="",
+                )
+                expected_url = f"{canonical_play_url}&referrer={expected_ref}"
                 # Google Play is live: no Play button may say "coming soon". Only the iPhone badge (not a link) may.
                 without_iphone_badge = re.sub(r'<span class="btn soon".*?</span></span>', "", html_text, flags=re.DOTALL)
                 self.assertNotIn("coming soon", without_iphone_badge.lower(), f"Unexpected 'coming soon' in {name}")
@@ -140,11 +149,102 @@ class WebBuildPrivacyTests(unittest.TestCase):
                 matches = [m for m in anchor_re.finditer(html_text) if "play-chip" in m.group("body")]
                 self.assertEqual(len(matches), expected_count)
                 for m in matches:
-                    self.assertEqual(m.group("href"), expected_url)
+                    self.assertEqual(html.unescape(m.group("href")), expected_url)
+                self.assertEqual(build.page_campaign(name), campaign)
+                self.assertEqual(build.play_store_cta_url(campaign), expected_url)
                 labels = [re.sub(r"<[^>]+>", "", m.group("body")).strip() for m in matches]
                 self.assertEqual(labels[0], "Google Play")
                 for full_label in labels[1:]:
                     self.assertEqual(full_label, "Get it on Google Play")
+
+        ld_blocks = [
+            json.loads(raw)
+            for raw in re.findall(r'<script type="application/ld\+json">(.*?)</script>', pages["index.html"][0])
+        ]
+        app_ld = next(obj for obj in ld_blocks if obj.get("@type") == "MobileApplication")
+        org_ld = next(obj for obj in ld_blocks if obj.get("@type") == "Organization")
+        self.assertEqual(app_ld["downloadUrl"], canonical_play_url)
+        self.assertEqual(app_ld["installUrl"], canonical_play_url)
+        self.assertEqual(org_ld["sameAs"], [canonical_play_url])
+        self.assertIn(f"- Google Play listing: {canonical_play_url}\n", build.llms_txt())
+
+    def test_no_internal_html_hrefs_remain(self):
+        html_files = sorted(f for f in os.listdir(SITE_DIR) if f.endswith(".html"))
+        self.assertGreaterEqual(len(html_files), 13)
+        for fname in html_files:
+            with open(os.path.join(SITE_DIR, fname), encoding="utf-8") as fh:
+                content = fh.read()
+            internal_hrefs = re.findall(r'href="(/[^"]*)"', content)
+            self.assertTrue(internal_hrefs, f"Expected internal hrefs in {fname}")
+            for href in internal_hrefs:
+                self.assertNotIn(".html", href, f"Internal .html href {href!r} remained in {fname}")
+        with open(os.path.join(SITE_DIR, "llms.txt"), encoding="utf-8") as fh:
+            llms_text = fh.read()
+        self.assertNotIn(".html", llms_text)
+        self.assertIn("31 translation targets", llms_text)
+        self.assertNotIn("21 translation targets", llms_text)
+        self.assertEqual(build.href_path("index.html"), "/")
+        self.assertEqual(build.href_path("compare.html"), "/compare")
+
+    def test_active_nav_marks_clean_url_current(self):
+        compare_html = build.compare()
+        help_html = build.help_page()
+        home_html = build.home()
+        self.assertIn('<a href="/compare" class="on" aria-current="page">Compare</a>', compare_html)
+        self.assertNotIn('aria-current="page">Help</a>', compare_html)
+        self.assertIn('<a href="/help" class="on" aria-current="page">Help</a>', help_html)
+        self.assertNotIn('aria-current="page"', home_html)
+
+    def test_vercel_insights_and_url_sanitizer_in_head(self):
+        html_files = sorted(f for f in os.listdir(SITE_DIR) if f.endswith(".html"))
+        sanitizer_script = None
+        for fname in html_files:
+            with open(os.path.join(SITE_DIR, fname), encoding="utf-8") as fh:
+                content = fh.read()
+            head_match = re.search(r"<head>(.*?)</head>", content, flags=re.DOTALL)
+            self.assertIsNotNone(head_match, f"Missing <head> in {fname}")
+            head = head_match.group(1)
+            insights_tag = '<script defer src="/_vercel/insights/script.js"></script>'
+            self.assertIn(insights_tag, head, f"Missing Vercel Insights script in {fname}")
+            va_match = re.search(
+                r"<script>(window\.va=.*?beforeSend.*?)</script>\s*" + re.escape(insights_tag),
+                head,
+                flags=re.DOTALL,
+            )
+            self.assertIsNotNone(va_match, f"Missing beforeSend URL sanitizer before Vercel Insights in {fname}")
+            sanitizer_script = va_match.group(1)
+
+        probe = r"""
+const vm = require("vm");
+const code = process.argv[1];
+const sandbox = { window: {}, location: { origin: "https://smartype.in" }, URL, Object, Array };
+vm.runInNewContext(code, sandbox);
+const entry = (sandbox.window.vaq || []).find((args) => args[0] === "beforeSend");
+if (!entry || typeof entry[1] !== "function") {
+  throw new Error("beforeSend hook not registered on window.vaq");
+}
+const fn = entry[1];
+const out = {
+  styleHash: fn({ type: "pageview", url: "https://smartype.in/custom-style#n=MyStyle&p=SecretPrompt" }),
+  styleQuery: fn({ type: "pageview", url: "https://smartype.in/custom-style?n=MyStyle&p=SecretPrompt&utm_source=share" }),
+  styleSlash: fn({ type: "pageview", url: "https://smartype.in/custom-style/?n=MyStyle&p=SecretPrompt" }),
+  styleLegacyHtml: fn({ type: "pageview", url: "https://smartype.in/custom-style.html?n=MyStyle&p=SecretPrompt" }),
+  utmKeptOtherStripped: fn({ type: "pageview", url: "https://smartype.in/compare?utm_source=gsc&utm_campaign=seo&q=private+text#pricing" }),
+  malformedDropped: fn({ type: "pageview", url: "http://[::1" }),
+};
+process.stdout.write(JSON.stringify(out));
+"""
+        proc = subprocess.run(["node", "-e", probe, sanitizer_script], check=True, capture_output=True, text=True)
+        res = json.loads(proc.stdout)
+        self.assertEqual(res["styleHash"]["url"], "https://smartype.in/custom-style")
+        self.assertEqual(res["styleQuery"]["url"], "https://smartype.in/custom-style")
+        self.assertEqual(res["styleSlash"]["url"], "https://smartype.in/custom-style/")
+        self.assertEqual(res["styleLegacyHtml"]["url"], "https://smartype.in/custom-style.html")
+        self.assertEqual(
+            res["utmKeptOtherStripped"]["url"],
+            "https://smartype.in/compare?utm_source=gsc&utm_campaign=seo",
+        )
+        self.assertIsNone(res["malformedDropped"])
 
     def test_mobile_menu_nav_link_selector_excludes_play_button(self):
         with open(os.path.join(TOOLS_DIR, "site.css"), encoding="utf-8") as css_fh:
@@ -153,6 +253,7 @@ class WebBuildPrivacyTests(unittest.TestCase):
         self.assertNotRegex(css_text, r"\.menu\s+a\s*\{")
 
     def test_generated_site_matches_builder_and_contains_only_smartype_emails(self):
+        self.assertTrue(hasattr(build, "voice_typing_keyboard"), "Missing voice_typing_keyboard() in build.py")
         expected_pages = {
             "index.html": build.home(),
             "compare.html": build.compare(),
@@ -161,6 +262,7 @@ class WebBuildPrivacyTests(unittest.TestCase):
             "polite-whatsapp-rewriter.html": build.polite_whatsapp_rewriter(),
             "ai-tone-translator.html": build.ai_tone_translator(),
             "rough-notes-to-neat-list.html": build.rough_notes_to_neat_list(),
+            "voice-typing-keyboard.html": build.voice_typing_keyboard(),
             "custom-style.html": build.custom_style_preview(),
             "privacy.html": build.privacy(),
             "terms.html": build.terms(),
@@ -203,9 +305,8 @@ class WebBuildPrivacyTests(unittest.TestCase):
                     self.assertTrue(os.path.isfile(asset_disk), f"Broken asset {href} in {filename}")
                     continue
                 path_part, _, frag = href.partition("#")
-                target_name = "index.html" if path_part in ("/", "") else (
-                    path_part.lstrip("/") if path_part.endswith(".html") else f"{path_part.lstrip('/')}.html"
-                )
+                self.assertFalse(path_part.endswith(".html"), f"Expected clean URL without .html, got {href} in {filename}")
+                target_name = "index.html" if path_part in ("/", "") else f"{path_part.lstrip('/')}.html"
                 self.assertIn(target_name, expected_pages, f"Broken internal link {href} in {filename}")
                 if frag:
                     self.assertIn(
@@ -266,7 +367,7 @@ class WebBuildPrivacyTests(unittest.TestCase):
             "floating",
             "password",
             "incognito",
-            "/privacy-architecture.html",
+            "/privacy-architecture",
         ):
             self.assertIn(term, html_text)
         for unshipped in ("friendly", "concise", "emoji search", "smartype pro"):
@@ -320,7 +421,7 @@ class WebBuildPrivacyTests(unittest.TestCase):
             "Gemini",
             "do not store",
             "train models",
-            "/privacy.html#choices",
+            "/privacy#choices",
         ):
             self.assertIn(term, html_text)
         for unshipped in ("friendly", "concise", "emoji search", "smartype pro"):
@@ -329,7 +430,8 @@ class WebBuildPrivacyTests(unittest.TestCase):
     def test_citation_files_robots_sitemap_and_llms(self):
         with open(os.path.join(SITE_DIR, "sitemap.xml"), encoding="utf-8") as fh:
             sitemap_disk = fh.read()
-        ET.fromstring(sitemap_disk)
+        sitemap_root = ET.fromstring(sitemap_disk)
+        self.assertEqual(len(sitemap_root), 12)
         for loc in (
             "https://smartype.in/",
             "https://smartype.in/compare",
@@ -338,6 +440,7 @@ class WebBuildPrivacyTests(unittest.TestCase):
             "https://smartype.in/polite-whatsapp-rewriter",
             "https://smartype.in/ai-tone-translator",
             "https://smartype.in/rough-notes-to-neat-list",
+            "https://smartype.in/voice-typing-keyboard",
             "https://smartype.in/privacy",
             "https://smartype.in/terms",
             "https://smartype.in/help",
@@ -368,6 +471,7 @@ class WebBuildPrivacyTests(unittest.TestCase):
             "https://smartype.in/polite-whatsapp-rewriter",
             "https://smartype.in/ai-tone-translator",
             "https://smartype.in/rough-notes-to-neat-list",
+            "https://smartype.in/voice-typing-keyboard",
             "https://smartype.in/custom-style",
             "https://smartype.in/privacy",
             "22 built-in",
@@ -952,7 +1056,73 @@ class WebMicroToolsTests(unittest.TestCase):
         self.assertEqual(hindi_group.get("outLang"), "hi")
         self.assertIn('data-output lang="hi"', html_text)
         self.assertIn('role="group" aria-label="1. Choose a language pair"', html_text)
-        self.assertIn("21", html_text)
+        self.assertIn("31", html_text)
+
+    def test_ai_tone_translator_includes_telugu_and_tamil_presets(self):
+        html_text = build.ai_tone_translator()
+        payload = self._assert_common_tool_contract("ai-tone-translator", html_text)
+        groups_by_label = {g["label"]: g for g in payload["groups"]}
+        self.assertIn("English → Telugu (తెలుగు)", groups_by_label)
+        self.assertIn("English → Tamil (தமிழ்)", groups_by_label)
+
+        telugu_group = groups_by_label["English → Telugu (తెలుగు)"]
+        self.assertEqual(telugu_group.get("outLang"), "te")
+        self.assertGreaterEqual(len(telugu_group["presets"]), 2)
+        for preset in telugu_group["presets"]:
+            tone_names = [t["name"] for t in preset["tones"]]
+            self.assertTrue(any("Polite" in n for n in tone_names), f"Missing Polite in {tone_names}")
+            self.assertTrue(any("Casual" in n for n in tone_names), f"Missing Casual in {tone_names}")
+            for tone in preset["tones"]:
+                self.assertRegex(tone["out"], r"[\u0C00-\u0C7F]", f"Expected Telugu script in {tone['out']!r}")
+
+        tamil_group = groups_by_label["English → Tamil (தமிழ்)"]
+        self.assertEqual(tamil_group.get("outLang"), "ta")
+        self.assertGreaterEqual(len(tamil_group["presets"]), 2)
+        for preset in tamil_group["presets"]:
+            tone_names = [t["name"] for t in preset["tones"]]
+            self.assertTrue(any("Polite" in n for n in tone_names), f"Missing Polite in {tone_names}")
+            self.assertTrue(any("Casual" in n for n in tone_names), f"Missing Casual in {tone_names}")
+            for tone in preset["tones"]:
+                self.assertRegex(tone["out"], r"[\u0B80-\u0BFF]", f"Expected Tamil script in {tone['out']!r}")
+
+    def test_voice_typing_keyboard_page_covers_60s_31_languages_and_privacy(self):
+        self.assertTrue(hasattr(build, "voice_typing_keyboard"), "Missing voice_typing_keyboard() in build.py")
+        html_text = build.voice_typing_keyboard()
+        payload = self._assert_common_tool_contract("voice-typing-keyboard", html_text)
+        self.assertEqual(len(re.findall(r"<h1\b", html_text)), 1)
+        self.assertIn('data-tool="presets"', html_text)
+        self.assertIn("speech to text", html_text.lower())
+        self.assertIn("voice typing", html_text.lower())
+        for term in (
+            "60",
+            "31",
+            "11",
+            "password",
+            "incognito",
+            "system voice input",
+            "utm_campaign%3Dvoice-typing-keyboard",
+        ):
+            self.assertIn(term, html_text)
+        lowered = html_text.lower()
+        self.assertTrue("do not store" in lowered or "not stored" in lowered)
+        self.assertIn("train models", lowered)
+        for wrong_on_device_claim in (
+            "speech becomes text on your phone",
+            "speech to text on your phone",
+            "speech is turned into text on your phone",
+        ):
+            self.assertNotIn(wrong_on_device_claim, lowered)
+
+        groups = payload.get("groups") or [{"presets": payload.get("presets", [])}]
+        all_outputs = " ".join(
+            t["out"] for g in groups for p in g.get("presets", []) for t in p.get("tones", [])
+        )
+        self.assertRegex(all_outputs, r"[\u0900-\u097F]", "Expected Devanagari Hindi voice output")
+        self.assertRegex(all_outputs, r"[\u0C00-\u0C7F]", "Expected Telugu voice output")
+        self.assertRegex(all_outputs, r"[\u0B80-\u0BFF]", "Expected Tamil voice output")
+
+        for cross_page in (build.home(), build.compare(), build.languages_page(), build.ai_tone_translator()):
+            self.assertIn('href="/voice-typing-keyboard"', cross_page)
 
     def test_rough_notes_to_neat_list_page(self):
         html_text = build.rough_notes_to_neat_list()
