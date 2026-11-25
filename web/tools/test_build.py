@@ -52,7 +52,10 @@ class WebBuildPrivacyTests(unittest.TestCase):
     def test_privacy_page_has_no_draft_banner_and_discloses_ephemeral_voice_dictation(self):
         html_text = build.privacy()
         self.assertNotIn('class="draft"', html_text)
-        self.assertIn("Last updated: 18 November 2026", html_text)
+        self.assertIn("Last updated: 23 November 2026", html_text)
+        self.assertIn("AI feature actions and stage response times", html_text)
+        self.assertIn("AI feature analytics are not recorded in incognito mode, private fields or password fields", html_text)
+        self.assertIn("analytics never receive what you type, copy, save or dictate", html_text)
         self.assertNotIn("speech is turned into text on your phone", html_text.lower())
         self.assertIn("60 seconds", html_text)
         self.assertIn("Check", html_text)
@@ -381,6 +384,12 @@ process.stdout.write(JSON.stringify(out));
         self.assertIn('<meta property="og:url" content="https://smartype.in/privacy-architecture">', html_text)
         self.assertIn("periodically removing unpinned sensitive items older than 20 seconds by default", html_text)
         self.assertIn("periodically removes unpinned sensitive items older than 20 seconds by default", privacy_html)
+        self.assertIn(
+            "AI feature analytics are not recorded in incognito mode, private fields or password fields, "
+            "and analytics never receive what you type, copy, save or dictate.",
+            privacy_html,
+        )
+        self.assertNotIn("It is turned off in incognito mode", privacy_html)
         self.assertIn("periodically removing unpinned sensitive items older than 20 seconds by default", llms_text)
         repo_root = os.path.dirname(WEB_DIR)
         backup_v23 = ET.parse(os.path.join(repo_root, "app/src/main/res/xml/backup_rules.xml")).getroot()

@@ -429,8 +429,9 @@ def privacy():
          "We use them to give you free AI tries, keep Premium on all your phones and help you if you contact us.</p>"),
         ("payments", "Payments", "<p>Premium is bought through Google Play. Google handles payment details; we receive only whether your subscription is active and when it renews.</p>"),
         ("device", "Keeping the service safe", "<p>To stop abuse of the AI service, the app uses Firebase App Check with Google Play Integrity, which confirms requests come from a real copy of the app on a real device.</p>"),
-        ("analytics", "Usage analytics", "<p>The app includes Google Analytics for Firebase, which collects basic, non-content information such as app opens, device model, Android version and approximate country. "
-         "It never receives what you type or dictate.</p>"),
+        ("analytics", "Usage analytics", "<p>The app includes Google Analytics for Firebase, which collects basic, non-content information such as app opens, device model, Android version, approximate country, "
+         "and AI feature actions and stage response times (for example whether Rewrite, Format, Translate or voice typing succeeded, was cancelled or was applied, and how long each step took). "
+         "AI feature analytics are not recorded in incognito mode, private fields or password fields, and analytics never receive what you type, copy, save or dictate.</p>"),
         ("sharing", "Who we share data with", "<p>Only the service providers that run SmarType: Google (Firebase, Gemini, Google Play). "
          "We don't sell personal data. We may disclose data if the law requires it.</p>"),
         ("choices", "Your choices", "<ul><li>Use SmarType without signing in: typing and on-device suggestions work without an account.</li>"
@@ -442,7 +443,7 @@ def privacy():
         ("changes", "Changes and contact", f"<p>We'll update this page when how we handle data changes, and change the date at the top. Questions: <a href=\"mailto:{SUPPORT}\">{SUPPORT}</a>.</p>"),
     ]
     return doc("privacy.html", "Privacy policy · SmarType", "How SmarType handles your data: typing stays on your phone; text or voice audio is sent only when you use AI.",
-               "Privacy policy", "18 November 2026", s)
+               "Privacy policy", "23 November 2026", s)
 
 
 def terms():
